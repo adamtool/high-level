@@ -22,4 +22,16 @@ public class ColorDomain extends ArrayList<String> {
         super(c);
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < this.size() - 1; i++) {
+            sb.append(this.get(i)).append(" x ");
+        }
+        if (this.size() >= 1) {
+            sb.append(this.get(this.size() - 1));
+        }
+        return sb.toString();
+    }
+
 }

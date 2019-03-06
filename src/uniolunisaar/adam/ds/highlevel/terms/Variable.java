@@ -1,5 +1,6 @@
-package uniolunisaar.adam.ds.highlevel.predicate;
+package uniolunisaar.adam.ds.highlevel.terms;
 
+import uniolunisaar.adam.ds.highlevel.Valuation;
 import uniolunisaar.adam.ds.highlevel.Color;
 
 /**

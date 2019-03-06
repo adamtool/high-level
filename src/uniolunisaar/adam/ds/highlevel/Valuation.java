@@ -1,7 +1,8 @@
-package uniolunisaar.adam.ds.highlevel.predicate;
+package uniolunisaar.adam.ds.highlevel;
 
 import java.util.HashMap;
 import uniolunisaar.adam.ds.highlevel.Color;
+import uniolunisaar.adam.ds.highlevel.terms.Variable;
 
 /**
  *

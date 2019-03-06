@@ -1,11 +1,14 @@
 package uniolunisaar.adam.ds.highlevel.predicate;
 
+import uniolunisaar.adam.ds.highlevel.terms.ITerm;
+import uniolunisaar.adam.ds.highlevel.Valuation;
+
 /**
  *
  * @author Manuel Gieseking
  * @param <TT>
  */
-public class BasicPredicate<TT extends ITermType> implements IPredicate {
+public class BasicPredicate<TT extends IPredicateTerm> implements IPredicate {
 
     public enum Operator implements IOperator {
         EQ {

@@ -11,6 +11,8 @@ import uniol.apt.adt.pn.Node;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.util.Pair;
+import uniolunisaar.adam.ds.highlevel.predicate.Constants;
+import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.exceptions.highlevel.IdentifierAlreadyExistentException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuccessorForUnorderedColorClassException;
@@ -63,6 +65,7 @@ public class HLPetriGame {
         }
     }
 
+// %%%%%%%%%%%%%%%%%% PLACES    
     public Place createSysPlace(String... colorClasses) throws NoSuchColorDomainException {
         Place p = game.createPlace();
         setColorDomain(p, new ColorDomain(Arrays.asList(colorClasses)));
@@ -94,6 +97,65 @@ public class HLPetriGame {
             }
         }
         HLPetriGameExtensionHandler.setColorClasses(p, domain);
+    }
+
+    public ColorDomain getColorDomain(Place p) {
+        return HLPetriGameExtensionHandler.getColorDomain(p);
+    }
+
+    public BasicColorClass[] getBasicColorClasses(Place p) {
+        ColorDomain classes = HLPetriGameExtensionHandler.getColorDomain(p);
+        BasicColorClass[] c = new BasicColorClass[classes.size()];
+        for (int i = 0; i < c.length; i++) {
+            c[i] = colorClasses.get(classes.get(i));
+        }
+        return c;
+    }
+
+// %%%%%%%%%%%%%%% TRANSITIONS
+    public Transition createTransition() {
+        Transition t = game.createTransition();
+        HLPetriGameExtensionHandler.setPredicate(t, Constants.TRUE);
+        return t;
+    }
+
+    public Transition createTransition(IPredicate pred) {
+        Transition t = game.createTransition();
+        HLPetriGameExtensionHandler.setPredicate(t, pred);
+        return t;
+    }
+
+    public Transition createTransition(String id) {
+        Transition t = game.createTransition(id);
+        HLPetriGameExtensionHandler.setPredicate(t, Constants.TRUE);
+        return t;
+    }
+
+    public Transition createTransition(String id, IPredicate pred) {
+        Transition t = game.createTransition(id);
+        HLPetriGameExtensionHandler.setPredicate(t, pred);
+        return t;
+    }
+
+    public IPredicate getPredicate(Transition t) {
+        return HLPetriGameExtensionHandler.getPredicate(t);
+    }
+
+// %%%%%%%%%%%%%%%%%%%% FLOWS   
+    public Flow createFlow(String sourceId, String targetId) {
+        return game.createFlow(sourceId, targetId);
+    }
+
+    public Flow createFlow(String sourceId, String targetId, int weight) {
+        return game.createFlow(sourceId, targetId, weight);
+    }
+
+    public Flow createFlow(Node source, Node target, int weight) {
+        return game.createFlow(source, target, weight);
+    }
+
+    public Flow createFlow(Node source, Node target) {
+        return game.createFlow(source, target);
     }
 
     public boolean isBasicColorClass(String id) {
@@ -141,19 +203,6 @@ public class HLPetriGame {
         return null;
     }
 
-    public ColorDomain getColorDomain(Place p) {
-        return HLPetriGameExtensionHandler.getColorDomain(p);
-    }
-
-    public BasicColorClass[] getBasicColorClasses(Place p) {
-        ColorDomain classes = HLPetriGameExtensionHandler.getColorDomain(p);
-        BasicColorClass[] c = new BasicColorClass[classes.size()];
-        for (int i = 0; i < c.length; i++) {
-            c[i] = colorClasses.get(classes.get(i));
-        }
-        return c;
-    }
-
     public Color getSuccessorValue(Color color) throws NoSuchColorException, NoSuccessorForUnorderedColorClassException {
         for (BasicColorClass cc : colorClasses.values()) {
             Color ret = cc.getSuccessorValue(color);
@@ -187,6 +236,22 @@ public class HLPetriGame {
 
     public boolean isBuchi(Place place) {
         return game.isBuchi(place);
+    }
+
+    public boolean isStrongFair(Transition t) {
+        return game.isStrongFair(t);
+    }
+
+    public boolean isWeakFair(Transition t) {
+        return game.isWeakFair(t);
+    }
+
+    public boolean isEnvironment(Place place) {
+        return game.isEnvironment(place);
+    }
+
+    public boolean isSystem(Place place) {
+        return game.isSystem(place);
     }
 
     public Flow getFlow(String sourceId, String targetId) {
@@ -259,6 +324,10 @@ public class HLPetriGame {
 
     public Set<Node> getPresetNodes(Node node) {
         return game.getPresetNodes(node);
+    }
+
+    public void setBad(Place place) {
+        game.setBad(place);
     }
 
 }

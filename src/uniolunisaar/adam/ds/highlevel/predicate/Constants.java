@@ -1,13 +1,14 @@
 package uniolunisaar.adam.ds.highlevel.predicate;
 
+import uniolunisaar.adam.ds.highlevel.Valuation;
+
 /**
  *
  * @author Manuel Gieseking
  */
-public class Constants {
+public enum Constants implements IPredicate {
 
-    public static class TRUE implements IPredicate {
-
+    TRUE {
         @Override
         public boolean check(Valuation valuation) {
             return true;
@@ -22,10 +23,8 @@ public class Constants {
         public String toString() {
             return "";
         }
-    }
-
-    public static class FALSE implements IPredicate {
-
+    },
+    FALSE {
         @Override
         public boolean check(Valuation valuation) {
             return false;

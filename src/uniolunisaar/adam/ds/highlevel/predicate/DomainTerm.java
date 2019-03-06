@@ -1,5 +1,9 @@
 package uniolunisaar.adam.ds.highlevel.predicate;
 
+import uniolunisaar.adam.ds.highlevel.terms.ColorClassType;
+import uniolunisaar.adam.ds.highlevel.terms.ITerm;
+import uniolunisaar.adam.ds.highlevel.terms.Variable;
+import uniolunisaar.adam.ds.highlevel.Valuation;
 import uniolunisaar.adam.ds.highlevel.BasicColorClass;
 import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
@@ -10,7 +14,7 @@ import uniolunisaar.adam.exceptions.highlevel.NoSuchColorException;
  *
  * @author Manuel Gieseking
  */
-public class DomainTerm implements ITerm<ColorDomainType> {
+public class DomainTerm implements ITerm<ColorClassType> {
 
     private final Variable x;
     private final HLPetriGame game;
@@ -21,7 +25,7 @@ public class DomainTerm implements ITerm<ColorDomainType> {
     }
 
     @Override
-    public ColorDomainType getValue(Valuation valuation) throws NoSuchColorClassException, NoSuchColorException {
+    public ColorClassType getValue(Valuation valuation) throws NoSuchColorClassException, NoSuchColorException {
         Color c = valuation.get(x);
         BasicColorClass bcc = game.getBasicColorClass(c);
         if (bcc == null) {
@@ -31,7 +35,7 @@ public class DomainTerm implements ITerm<ColorDomainType> {
         if (id == null) {
             throw new NoSuchColorClassException("The color  " + c.getId() + " of the valuation " + valuation + " is not in any static subclass of the Petri game '" + game.getName() + "'.");
         }
-        return new ColorDomainType(id);
+        return new ColorClassType(id);
     }
 
     @Override

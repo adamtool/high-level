@@ -1,4 +1,4 @@
-package uniolunisaar.adam.ds.highlevel.predicate;
+package uniolunisaar.adam.ds.highlevel.terms;
 
 import java.util.Objects;
 
@@ -6,11 +6,11 @@ import java.util.Objects;
  *
  * @author Manuel Gieseking
  */
-public class ColorDomainType implements ITermType {
+public class ColorClassType implements IColorClassType {
 
     private final String id;
 
-    public ColorDomainType(String id) {
+    public ColorClassType(String id) {
         this.id = id;
     }
 
@@ -32,7 +32,7 @@ public class ColorDomainType implements ITermType {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final ColorDomainType other = (ColorDomainType) obj;
+        final ColorClassType other = (ColorClassType) obj;
         if (!Objects.equals(this.id, other.id)) {
             return false;
         }

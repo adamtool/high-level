@@ -1,13 +1,13 @@
 package uniolunisaar.adam.ds.highlevel;
 
 import java.util.Objects;
-import uniolunisaar.adam.ds.highlevel.predicate.ITermType;
+import uniolunisaar.adam.ds.highlevel.terms.IColorType;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class Color implements ITermType {
+public class Color implements IColorType {
 
     private final String id;
 
