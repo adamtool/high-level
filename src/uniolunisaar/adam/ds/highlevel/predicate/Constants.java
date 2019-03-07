@@ -1,6 +1,9 @@
 package uniolunisaar.adam.ds.highlevel.predicate;
 
+import java.util.HashSet;
+import java.util.Set;
 import uniolunisaar.adam.ds.highlevel.Valuation;
+import uniolunisaar.adam.ds.highlevel.terms.Variable;
 
 /**
  *
@@ -9,6 +12,12 @@ import uniolunisaar.adam.ds.highlevel.Valuation;
 public enum Constants implements IPredicate {
 
     TRUE {
+
+        @Override
+        public Set<Variable> getVariables() {
+            return new HashSet<>();
+        }
+
         @Override
         public boolean check(Valuation valuation) {
             return true;
@@ -25,6 +34,12 @@ public enum Constants implements IPredicate {
         }
     },
     FALSE {
+
+        @Override
+        public Set<Variable> getVariables() {
+            return new HashSet<>();
+        }
+
         @Override
         public boolean check(Valuation valuation) {
             return false;

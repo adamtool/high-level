@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -179,6 +180,20 @@ public class HLPetriGame {
 
     public IPredicate getPredicate(Transition t) {
         return HLPetriGameExtensionHandler.getPredicate(t);
+    }
+
+    public Set<Variable> getVariables(Transition t) {
+        Set<Variable> vars = new HashSet<>();
+        for (Flow presetEdge : t.getPresetEdges()) {
+            ArcExpression expr = getArcExpression(presetEdge);
+            vars.addAll(expr.getVariables());
+        }
+        vars.addAll(getPredicate(t).getVariables());
+        for (Flow postsetEdge : t.getPostsetEdges()) {
+            ArcExpression expr = getArcExpression(postsetEdge);
+            vars.addAll(expr.getVariables());
+        }
+        return vars;
     }
 
 // %%%%%%%%%%%%%%%%%%%% FLOWS   

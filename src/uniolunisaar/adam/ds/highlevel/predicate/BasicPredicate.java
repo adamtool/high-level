@@ -1,6 +1,9 @@
 package uniolunisaar.adam.ds.highlevel.predicate;
 
+import java.util.HashSet;
+import java.util.Set;
 import uniolunisaar.adam.ds.highlevel.Valuation;
+import uniolunisaar.adam.ds.highlevel.terms.Variable;
 
 /**
  *
@@ -32,6 +35,14 @@ public class BasicPredicate<TT extends IPredicateType> implements IPredicate {
         this.t1 = t1;
         this.op = op;
         this.t2 = t2;
+    }
+
+    @Override
+    public Set<Variable> getVariables() {
+        Set<Variable> vars = new HashSet<>();
+        vars.addAll(t1.getVariables());
+        vars.addAll(t2.getVariables());
+        return vars;
     }
 
     @Override

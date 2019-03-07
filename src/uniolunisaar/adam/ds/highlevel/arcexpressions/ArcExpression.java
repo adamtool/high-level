@@ -1,6 +1,8 @@
 package uniolunisaar.adam.ds.highlevel.arcexpressions;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 import uniol.apt.util.Pair;
 import uniolunisaar.adam.ds.highlevel.terms.ColorClassTerm;
 import uniolunisaar.adam.ds.highlevel.terms.SuccessorTerm;
@@ -52,6 +54,14 @@ public class ArcExpression {
 
     public boolean add(ArcTuple tuple) {
         return expressions.add(new Pair<>(IArcTerm.Sort.TUPLE, tuple));
+    }
+
+    public Set<Variable> getVariables() {
+        Set<Variable> vars = new HashSet<>();
+        for (Pair<IArcTerm.Sort, IArcTerm<? extends IArcType>> expression : expressions) {
+            vars.addAll(expression.getSecond().getVariables());
+        }
+        return vars;
     }
 
     @Override

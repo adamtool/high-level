@@ -1,5 +1,7 @@
 package uniolunisaar.adam.ds.highlevel.predicate;
 
+import java.util.HashSet;
+import java.util.Set;
 import uniolunisaar.adam.ds.highlevel.terms.ColorClassType;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.highlevel.Valuation;
@@ -21,6 +23,13 @@ public class DomainTerm implements IPredicateTerm<ColorClassType> {
     public DomainTerm(Variable x, HLPetriGame game) {
         this.x = x;
         this.game = game;
+    }
+
+    @Override
+    public Set<Variable> getVariables() {
+        Set<Variable> vars = new HashSet<>();
+        vars.add(x);
+        return vars;
     }
 
     @Override

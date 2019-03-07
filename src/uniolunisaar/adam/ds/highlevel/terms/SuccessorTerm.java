@@ -1,5 +1,7 @@
 package uniolunisaar.adam.ds.highlevel.terms;
 
+import java.util.HashSet;
+import java.util.Set;
 import uniolunisaar.adam.ds.highlevel.Valuation;
 import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
@@ -44,6 +46,13 @@ public class SuccessorTerm implements IPredicateTerm<Color>, IArcTerm<Color>, IA
     public SuccessorTerm(Variable x, HLPetriGame game) {
         this.x = x;
         this.game = game;
+    }
+
+    @Override
+    public Set<Variable> getVariables() {
+        Set<Variable> vars = new HashSet<>();
+        vars.add(x);
+        return vars;
     }
 
     @Override

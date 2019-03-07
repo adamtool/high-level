@@ -1,5 +1,7 @@
 package uniolunisaar.adam.ds.highlevel.terms;
 
+import java.util.HashSet;
+import java.util.Set;
 import uniolunisaar.adam.ds.highlevel.Valuation;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTerm;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTupleElement;
@@ -15,6 +17,11 @@ public class ColorClassTerm implements IPredicateTerm<ColorClassType>, IArcTerm<
 
     public ColorClassTerm(String classID) {
         this.classID = classID;
+    }
+
+    @Override
+    public Set<Variable> getVariables() {
+        return new HashSet<>();
     }
 
     @Override
