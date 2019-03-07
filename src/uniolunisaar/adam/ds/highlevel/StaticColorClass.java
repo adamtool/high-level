@@ -34,4 +34,9 @@ public class StaticColorClass {
         return id;
     }
 
+    public String toDot() {
+        StringBuilder sb = new StringBuilder("S: ");
+        sb.append(getId()).append("=").append(colors.toString()).append("\n");
+        return sb.toString();
+    }
 }

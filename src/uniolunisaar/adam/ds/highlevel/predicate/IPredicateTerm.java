@@ -5,8 +5,8 @@ import uniolunisaar.adam.ds.highlevel.terms.ITerm;
 /**
  *
  * @author Manuel Gieseking
- * @param <TT>
+ * @param <T>
  */
-public interface IPredicateTerm<TT extends IPredicateType> extends ITerm<TT> {
+public interface IPredicateTerm<T extends IPredicateType> extends ITerm<T> {
 
 }

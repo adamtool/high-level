@@ -130,4 +130,15 @@ public class BasicColorClass {
         return colors.contains(c);
     }
 
+    public String toDot() {
+        StringBuilder sb = new StringBuilder(ordered ? "O: " : "U: ");
+        sb.append(getId()).append("=").append(colors.toString());
+        if (!staticSubclasses.isEmpty()) {
+            sb.append("\n");
+        }
+        for (StaticColorClass subclass : staticSubclasses.values()) {
+            sb.append(subclass.toDot()).append("\n");
+        }
+        return sb.toString();
+    }
 }

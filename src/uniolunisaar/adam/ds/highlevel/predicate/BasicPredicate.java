@@ -1,6 +1,5 @@
 package uniolunisaar.adam.ds.highlevel.predicate;
 
-import uniolunisaar.adam.ds.highlevel.terms.ITerm;
 import uniolunisaar.adam.ds.highlevel.Valuation;
 
 /**
@@ -8,7 +7,7 @@ import uniolunisaar.adam.ds.highlevel.Valuation;
  * @author Manuel Gieseking
  * @param <TT>
  */
-public class BasicPredicate<TT extends IPredicateTerm> implements IPredicate {
+public class BasicPredicate<TT extends IPredicateType> implements IPredicate {
 
     public enum Operator implements IOperator {
         EQ {
@@ -25,11 +24,11 @@ public class BasicPredicate<TT extends IPredicateTerm> implements IPredicate {
         }
     }
 
-    private final ITerm<TT> t1;
+    private final IPredicateTerm<TT> t1;
     private final Operator op;
-    private final ITerm<TT> t2;
+    private final IPredicateTerm<TT> t2;
 
-    public BasicPredicate(ITerm<TT> t1, Operator op, ITerm<TT> t2) {
+    public BasicPredicate(IPredicateTerm<TT> t1, Operator op, IPredicateTerm<TT> t2) {
         this.t1 = t1;
         this.op = op;
         this.t2 = t2;

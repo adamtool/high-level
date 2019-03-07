@@ -9,6 +9,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.highlevel.BasicColorClass;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.tools.ExternalProcessHandler;
 import uniolunisaar.adam.tools.Logger;
@@ -32,9 +33,18 @@ public class HLTools {
         StringBuilder sb = new StringBuilder();
         sb.append("digraph PetriNet {\n");
 
+        // Basic Color classes
+        sb.append("#basic color classes\n");
+        sb.append("node [shape=box, style=dashed];\n");
+        sb.append("\"");
+        for (BasicColorClass basicColorClasse : game.getBasicColorClasses()) {
+            sb.append(basicColorClasse.toDot()).append("\n");
+        }
+        sb.append("\"\n");
+
         // Transitions
         sb.append("#transitions\n");
-        sb.append("node [shape=box, height=0.5, width=0.5, fixedsize=true];\n");
+        sb.append("node [shape=box, style=solid, height=0.5, width=0.5, fixedsize=true];\n");
         for (Transition t : game.getTransitions()) {
             String c = null;
             if (game.isStrongFair(t)) {
@@ -57,10 +67,10 @@ public class HLTools {
             // special?
             String shape = (game.isBad(place) || game.isReach(place) || game.isBuchi(place)) ? specialPlaceShape : placeShape;
             // Initialtoken number
-            String tokenString = game.hasColorToken(place) ? game.getColorToken(place).toString() : "";
+            String tokenString = game.hasColorToken(place) ? game.getColorToken(place).toDotString() : "";
             // Drawing
             sb.append("\"").append(place.getId()).append("\"").append("[shape=").append(shape);
-            sb.append(", height=0.5, width=0.5, fixedsize=true");
+            sb.append(", height=0.5, width=0.5, fixedsize=false, margin=0");
             sb.append(", xlabel=").append("\"").append(place.getId()).append("\\n(").append(game.getColorDomain(place)).append(")").append("\"");
             sb.append(", label=").append("\"").append(tokenString).append("\"");
 
@@ -103,6 +113,9 @@ public class HLTools {
 //            if (map.containsKey(f)) {
 //                weight += map.get(f);
 //            }
+            if (game.hasArcExpression(f)) {
+                weight += game.getArcExpression(f).toString();
+            }
             weight += "\"";
             sb.append("[label=").append(weight);
 //            if (map.containsKey(f)) {

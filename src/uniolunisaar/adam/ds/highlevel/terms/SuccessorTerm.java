@@ -3,6 +3,9 @@ package uniolunisaar.adam.ds.highlevel.terms;
 import uniolunisaar.adam.ds.highlevel.Valuation;
 import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTerm;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTupleElement;
+import uniolunisaar.adam.ds.highlevel.predicate.IPredicateTerm;
 import uniolunisaar.adam.exceptions.highlevel.NoSuccessorForUnorderedColorClassException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuchColorException;
 
@@ -10,7 +13,7 @@ import uniolunisaar.adam.exceptions.highlevel.NoSuchColorException;
  *
  * @author Manuel Gieseking
  */
-public class SuccessorTerm implements ITerm<Color> {
+public class SuccessorTerm implements IPredicateTerm<Color>, IArcTerm<Color>, IArcTupleElement<Color> {
 
     private final Variable x;
     private final HLPetriGame game;

@@ -2,6 +2,7 @@ package uniolunisaar.adam.ds.highlevel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,8 +12,10 @@ import uniol.apt.adt.pn.Node;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.util.Pair;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcExpression;
 import uniolunisaar.adam.ds.highlevel.predicate.Constants;
 import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
+import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.exceptions.highlevel.IdentifierAlreadyExistentException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuccessorForUnorderedColorClassException;
@@ -179,12 +182,28 @@ public class HLPetriGame {
     }
 
 // %%%%%%%%%%%%%%%%%%%% FLOWS   
-    public Flow createFlow(Node source, Node target, int weight) {
-        return game.createFlow(source, target, weight);
+    public boolean hasArcExpression(Flow f) {
+        return HLPetriGameExtensionHandler.hasArcExpression(f);
+    }
+
+    public ArcExpression getArcExpression(Flow f) {
+        return HLPetriGameExtensionHandler.getArcExpression(f);
     }
 
     public Flow createFlow(Node source, Node target) {
-        return game.createFlow(source, target);
+        Flow f = game.createFlow(source, target);
+        HLPetriGameExtensionHandler.setArcExpression(f, new ArcExpression(new Variable("x")));
+        return f;
+    }
+
+    public Flow createFlow(Node source, Node target, ArcExpression expr) {
+        Flow f = game.createFlow(source, target);
+        HLPetriGameExtensionHandler.setArcExpression(f, expr);
+        return f;
+    }
+
+    public Collection<BasicColorClass> getBasicColorClasses() {
+        return colorClasses.values();
     }
 
     public boolean isBasicColorClass(String id) {

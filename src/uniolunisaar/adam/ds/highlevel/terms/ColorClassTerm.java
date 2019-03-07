@@ -1,12 +1,15 @@
 package uniolunisaar.adam.ds.highlevel.terms;
 
 import uniolunisaar.adam.ds.highlevel.Valuation;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTerm;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTupleElement;
+import uniolunisaar.adam.ds.highlevel.predicate.IPredicateTerm;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class ColorClassTerm implements ITerm<ColorClassType> {
+public class ColorClassTerm implements IPredicateTerm<ColorClassType>, IArcTerm<ColorClassType>, IArcTupleElement<ColorClassType> {
 
     private final String classID;
 

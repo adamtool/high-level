@@ -1,12 +1,13 @@
 package uniolunisaar.adam.ds.highlevel.terms;
 
 import java.util.Objects;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTupleElementType;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class ColorClassType implements IColorClassType {
+public class ColorClassType implements IColorClassType, IArcTupleElementType {
 
     private final String id;
 

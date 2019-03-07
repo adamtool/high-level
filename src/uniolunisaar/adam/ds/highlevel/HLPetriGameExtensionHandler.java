@@ -1,8 +1,10 @@
 package uniolunisaar.adam.ds.highlevel;
 
 import uniol.apt.adt.extension.ExtensionProperty;
+import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcExpression;
 import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
 import uniolunisaar.adam.util.AdamExtensions;
 
@@ -40,6 +42,19 @@ public class HLPetriGameExtensionHandler {
 
     static void setPredicate(Transition transition, IPredicate pred) {
         transition.putExtension(AdamExtensions.predicate.name(), pred, ExtensionProperty.WRITE_TO_FILE);
+    }
+
+// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FLOW EXTENSIONS   
+    static boolean hasArcExpression(Flow flow) {
+        return flow.hasExtension(AdamExtensions.arcExpression.name());
+    }
+
+    static ArcExpression getArcExpression(Flow flow) {
+        return (ArcExpression) flow.getExtension(AdamExtensions.arcExpression.name());
+    }
+
+    static void setArcExpression(Flow flow, ArcExpression expr) {
+        flow.putExtension(AdamExtensions.arcExpression.name(), expr, ExtensionProperty.WRITE_TO_FILE);
     }
 
 }

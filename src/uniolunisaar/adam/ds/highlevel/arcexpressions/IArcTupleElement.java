@@ -1,18 +1,15 @@
 package uniolunisaar.adam.ds.highlevel.arcexpressions;
 
-import uniolunisaar.adam.ds.highlevel.terms.ITerm;
-
 /**
  *
  * @author Manuel Gieseking
  * @param <T>
  */
-public interface IArcTerm<T extends IArcType> extends ITerm<T> {
+public interface IArcTupleElement<T extends IArcType> extends IArcTerm<T> {
 
     public enum Sort {
         VARIABLE,
         SUCCESSOR,
-        COLORCLASS,
-        TUPLE
+        COLORCLASS
     }
 }

@@ -1,7 +1,6 @@
 package uniolunisaar.adam.ds.highlevel.predicate;
 
 import uniolunisaar.adam.ds.highlevel.terms.ColorClassType;
-import uniolunisaar.adam.ds.highlevel.terms.ITerm;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.highlevel.Valuation;
 import uniolunisaar.adam.ds.highlevel.BasicColorClass;
@@ -14,7 +13,7 @@ import uniolunisaar.adam.exceptions.highlevel.NoSuchColorException;
  *
  * @author Manuel Gieseking
  */
-public class DomainTerm implements ITerm<ColorClassType> {
+public class DomainTerm implements IPredicateTerm<ColorClassType> {
 
     private final Variable x;
     private final HLPetriGame game;

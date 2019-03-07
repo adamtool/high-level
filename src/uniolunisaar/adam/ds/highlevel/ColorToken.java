@@ -24,14 +24,17 @@ public class ColorToken extends HashSet<Color> {
         super(initialCapacity);
     }
 
-    @Override
-    public String toString() {
+    public String toDotString() {
         StringBuilder sb = new StringBuilder();
         if (this.size() > 1) {
             sb.append("{");
         }
+        int i = 1;
         for (Color col : this) {
             sb.append(col.toString()).append(",");
+            if (i++ % 3 == 0) {
+                sb.append("\\n");
+            }
         }
         if (size() >= 1) {
             sb.delete(sb.length() - 1, sb.length());
