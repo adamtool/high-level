@@ -1,6 +1,7 @@
 package uniolunisaar.adam.ds.highlevel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,6 +124,10 @@ public class BasicColorClass {
             }
         }
         return null;
+    }
+
+    public List<Color> getColors() {
+        return Collections.unmodifiableList(colors);
     }
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DELEGATES
