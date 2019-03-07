@@ -44,4 +44,9 @@ public class Color implements IColorType {
         return true;
     }
 
+    @Override
+    public String toString() {
+        return id;
+    }
+
 }

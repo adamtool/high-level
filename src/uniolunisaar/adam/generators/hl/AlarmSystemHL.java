@@ -2,6 +2,7 @@ package uniolunisaar.adam.generators.hl;
 
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.highlevel.predicate.BasicPredicate;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
@@ -30,9 +31,9 @@ public class AlarmSystemHL {
 //        PNWTTools.setConditionAnnotation(net, Condition.Objective.A_SAFETY);
 
         // create the color classes
-        String[] colors = new String[nb_alarmSystems];
+        Color[] colors = new Color[nb_alarmSystems];
         for (int i = 0; i < nb_alarmSystems; i++) {
-            colors[i] = "a1";
+            colors[i] = new Color("a" + i);
         }
         net.createBasicColorClass("alarmsystems", false, colors);
         net.createBasicColorClass("burglar", false, "e");
@@ -43,7 +44,7 @@ public class AlarmSystemHL {
 
         // Environment
         Place env = net.createEnvPlace("env", ec);
-//        env.setInitialToken(1);
+        net.setColorToken(env, "e");
         Place env1 = net.createEnvPlace("C", ec);
         Transition t = net.createTransition("i");
         net.createFlow(env, t);
@@ -51,7 +52,7 @@ public class AlarmSystemHL {
         Place e = net.createEnvPlace("I", ec);
         // system
         Place alarmSystem = net.createSysPlace("S", s0);
-//        alarmSystem.setInitialToken(1);
+        net.setColorToken(alarmSystem, colors);
         Place in = net.createSysPlace("D", s0);
         Place initAlarm = net.createSysPlace("P", s0);
         t = net.createTransition("t");
@@ -82,8 +83,8 @@ public class AlarmSystemHL {
         net.setBad(error);
         // for the env places before EA, EB, etc
         Transition tr = net.createTransition("bot1");
-        net.createFlow(env1, t);
-        net.createFlow(t, error);
+        net.createFlow(env1, tr);
+        net.createFlow(tr, error);
         net.createFlow(p, tr);
         // for the EA, EB, etc places
         tr = net.createTransition("bot2", new BasicPredicate(new Variable("b"), BasicPredicate.Operator.NEQ, new Variable("x")));

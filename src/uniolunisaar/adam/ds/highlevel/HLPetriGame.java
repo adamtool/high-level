@@ -34,14 +34,22 @@ public class HLPetriGame {
     }
 
     public void createBasicColorClass(String id, boolean ordered, String... colors) throws IdentifierAlreadyExistentException {
-        if (colorClasses.containsKey(id)) {
-            throw new IdentifierAlreadyExistentException("The basic color identifier " + id + " already exists in the Petri game '" + game.getName() + "'.");
-        }
         List<Color> cls = new ArrayList<>();
         for (int i = 0; i < colors.length; i++) {
             cls.add(new Color(colors[i]));
         }
-        colorClasses.put(id, new BasicColorClass(id, ordered, cls));
+        createBasicColorClass(id, ordered, cls);
+    }
+
+    public void createBasicColorClass(String id, boolean ordered, Color... colors) throws IdentifierAlreadyExistentException {
+        createBasicColorClass(id, ordered, Arrays.asList(colors));
+    }
+
+    public void createBasicColorClass(String id, boolean ordered, List<Color> colors) throws IdentifierAlreadyExistentException {
+        if (colorClasses.containsKey(id)) {
+            throw new IdentifierAlreadyExistentException("The basic color identifier " + id + " already exists in the Petri game '" + game.getName() + "'.");
+        }
+        colorClasses.put(id, new BasicColorClass(id, ordered, colors));
     }
 
     public void createBasicColorClass(String id, boolean ordered, Pair<String, String[]>... staticSubClasses) throws IdentifierAlreadyExistentException {
@@ -99,6 +107,35 @@ public class HLPetriGame {
         HLPetriGameExtensionHandler.setColorClasses(p, domain);
     }
 
+    public boolean hasColorToken(Place p) {
+        return HLPetriGameExtensionHandler.hasColorToken(p);
+    }
+
+    public void setColorToken(Place p, ColorToken token) {
+        HLPetriGameExtensionHandler.setColorToken(p, token);
+    }
+
+    public void setColorToken(Place p, String... colors) {
+        List<Color> cls = new ArrayList<>();
+        for (String color : colors) {
+            cls.add(new Color(color));
+        }
+        setColorToken(p, cls);
+    }
+
+    public void setColorToken(Place p, Color... colors) {
+        setColorToken(p, Arrays.asList(colors));
+    }
+
+    public void setColorToken(Place p, List<Color> colors) {
+        ColorToken token = new ColorToken(colors);
+        HLPetriGameExtensionHandler.setColorToken(p, token);
+    }
+
+    public ColorToken getColorToken(Place p) {
+        return HLPetriGameExtensionHandler.getColorToken(p);
+    }
+
     public ColorDomain getColorDomain(Place p) {
         return HLPetriGameExtensionHandler.getColorDomain(p);
     }
@@ -142,14 +179,6 @@ public class HLPetriGame {
     }
 
 // %%%%%%%%%%%%%%%%%%%% FLOWS   
-    public Flow createFlow(String sourceId, String targetId) {
-        return game.createFlow(sourceId, targetId);
-    }
-
-    public Flow createFlow(String sourceId, String targetId, int weight) {
-        return game.createFlow(sourceId, targetId, weight);
-    }
-
     public Flow createFlow(Node source, Node target, int weight) {
         return game.createFlow(source, target, weight);
     }

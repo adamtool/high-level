@@ -21,6 +21,18 @@ public class HLPetriGameExtensionHandler {
         place.putExtension(AdamExtensions.colorDomain.name(), domain, ExtensionProperty.WRITE_TO_FILE);
     }
 
+    static boolean hasColorToken(Place place) {
+        return place.hasExtension(AdamExtensions.colorToken.name());
+    }
+
+    static ColorToken getColorToken(Place place) {
+        return (ColorToken) place.getExtension(AdamExtensions.colorToken.name());
+    }
+
+    static void setColorToken(Place place, ColorToken token) {
+        place.putExtension(AdamExtensions.colorToken.name(), token, ExtensionProperty.WRITE_TO_FILE);
+    }
+
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TRANSITION EXTENSIONS   
     static IPredicate getPredicate(Transition transition) {
         return (IPredicate) transition.getExtension(AdamExtensions.predicate.name());
