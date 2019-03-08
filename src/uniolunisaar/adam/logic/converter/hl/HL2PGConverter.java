@@ -6,7 +6,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import uniol.apt.adt.exception.FlowExistsException;
 import uniol.apt.adt.pn.Flow;
+import uniol.apt.adt.pn.Node;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.util.Pair;
@@ -77,38 +79,56 @@ public class HL2PGConverter {
             ColorDomain dom = hlgame.getColorDomain(place);
             boolean env = hlgame.isEnvironment(place);
             boolean special = hlgame.isSpecial(place);
-            if (dom.size() <= 1) {
-                BasicColorClass bcc = hlgame.getBasicColorClass(dom.get(0));
-                for (Color color : bcc.getColors()) {
-                    Place p = pg.createPlace(getPlaceID(place.getId(), color));
-                    if (env) {
-                        pg.setEnvironment(p);
-                    } else {
-                        pg.setSystem(p);
-                    }
-                    if (special) {
-                        pg.setBad(p);
-                    }
+            // EXPLICIT VERSION FOR SIZES 1 AND 2 (not needed anymore, programmed the cartesian product)
+//            if (dom.size() <= 1) {
+//                BasicColorClass bcc = hlgame.getBasicColorClass(dom.get(0));
+//                for (Color color : bcc.getColors()) {
+//                    Place p = pg.createPlace(getPlaceID(place.getId(), color));
+//                    if (env) {
+//                        pg.setEnvironment(p);
+//                    } else {
+//                        pg.setSystem(p);
+//                    }
+//                    if (special) {
+//                        pg.setBad(p);
+//                    }
+//                }
+//            } else if (dom.size() == 2) {
+////                createPlace(dom, 0, place.getId(), env, hlgame, pg);
+//                BasicColorClass bcc1 = hlgame.getBasicColorClass(dom.get(0));
+//                BasicColorClass bcc2 = hlgame.getBasicColorClass(dom.get(1));
+//                for (Color c1 : bcc1.getColors()) {
+//                    for (Color c2 : bcc2.getColors()) {
+//                        Place p = pg.createPlace(getPlaceID(place.getId(), c1, c2));
+//                        if (env) {
+//                            pg.setEnvironment(p);
+//                        } else {
+//                            pg.setSystem(p);
+//                        }
+//                        if (special) {
+//                            pg.setBad(p);
+//                        }
+//                    }
+//                }
+//            } else {
+//                throw new UnsupportedOperationException("Color domains with more than two basic color classes are not yet supported.");
+//            }
+            // NEW VERSION USING THE CARTESIAN PRODUCT
+            List<List<Color>> colorClasses = new ArrayList<>();
+            for (int i = 0; i < dom.size(); i++) {
+                colorClasses.add(hlgame.getBasicColorClass(dom.get(i)).getColors());
+            }
+            CartesianProduct<Color> prod = new CartesianProduct<>(colorClasses);
+            for (Iterator<List<Color>> it = prod.iterator(); it.hasNext();) {
+                Place p = pg.createPlace(getPlaceID(place.getId(), it.next()));
+                if (env) {
+                    pg.setEnvironment(p);
+                } else {
+                    pg.setSystem(p);
                 }
-            } else if (dom.size() == 2) {
-//                createPlace(dom, 0, place.getId(), env, hlgame, pg);
-                BasicColorClass bcc1 = hlgame.getBasicColorClass(dom.get(0));
-                BasicColorClass bcc2 = hlgame.getBasicColorClass(dom.get(1));
-                for (Color c1 : bcc1.getColors()) {
-                    for (Color c2 : bcc2.getColors()) {
-                        Place p = pg.createPlace(getPlaceID(place.getId(), c1, c2));
-                        if (env) {
-                            pg.setEnvironment(p);
-                        } else {
-                            pg.setSystem(p);
-                        }
-                        if (special) {
-                            pg.setBad(p);
-                        }
-                    }
+                if (special) {
+                    pg.setBad(p);
                 }
-            } else {
-                throw new UnsupportedOperationException("Color domains with more than two basic color classes are not yet supported.");
             }
         }
     }
@@ -192,34 +212,34 @@ public class HL2PGConverter {
     private static void createFlows(Transition tLL, Flow flowHL, Valuation val, HLPetriGame hlgame, PetriGame pg, boolean pre) {
         String origID = flowHL.getPlace().getId();
         ArcExpression expr = hlgame.getArcExpression(flowHL);
-        for (Pair<IArcTerm.Sort, IArcTerm<? extends IArcType>> expresssion : expr.getExpresssions()) {
-            switch (expresssion.getFirst()) {
+        for (Pair<IArcTerm.Sort, IArcTerm<? extends IArcType>> expression : expr.getExpresssions()) {
+            switch (expression.getFirst()) {
                 case VARIABLE: // this creates kind of VARIABLE || SUCCESSOR                                         
                 case SUCCESSOR: {
-                    Color col = (Color) expresssion.getSecond().getValue(val);
+                    Color col = (Color) expression.getSecond().getValue(val);
                     Place place = pg.getPlace(getPlaceID(origID, col));
                     if (pre) {
-                        pg.createFlow(place, tLL);
+                        createFlow(place, tLL, pg);
                     } else {
-                        pg.createFlow(tLL, place);
+                        createFlow(tLL, place, pg);
                     }
                     break;
                 }
                 case COLORCLASS: {
-                    ColorClassType colors = (ColorClassType) expresssion.getSecond().getValue(val);
+                    ColorClassType colors = (ColorClassType) expression.getSecond().getValue(val);
                     BasicColorClass bc = hlgame.getBasicColorClass(colors.getId());
                     for (Color color : bc.getColors()) {
                         Place place = pg.getPlace(getPlaceID(origID, color));
                         if (pre) {
-                            pg.createFlow(place, tLL);
+                            createFlow(place, tLL, pg);
                         } else {
-                            pg.createFlow(tLL, place);
+                            createFlow(tLL, place, pg);
                         }
                     }
                     break;
                 }
                 case TUPLE: {
-                    ArcTuple tuple = (ArcTuple) expresssion.getSecond();
+                    ArcTuple tuple = (ArcTuple) expression.getSecond();
                     List<Color> colors = new ArrayList<>();
                     List<List<Color>> colorClasses = new ArrayList<>();
                     List<Integer> idxs = new ArrayList<>();
@@ -245,9 +265,9 @@ public class HL2PGConverter {
                     if (colorClasses.isEmpty()) {
                         Place place = pg.getPlace(getPlaceID(origID, colors));
                         if (pre) {
-                            pg.createFlow(place, tLL);
+                            createFlow(place, tLL, pg);
                         } else {
-                            pg.createFlow(tLL, place);
+                            createFlow(tLL, place, pg);
                         }
                     } else {
                         CartesianProduct<Color> prod = new CartesianProduct<>(colorClasses);
@@ -266,9 +286,9 @@ public class HL2PGConverter {
                             }
                             Place place = pg.getPlace(getPlaceID(origID, newColors));
                             if (pre) {
-                                pg.createFlow(place, tLL);
+                                createFlow(place, tLL, pg);
                             } else {
-                                pg.createFlow(tLL, place);
+                                createFlow(tLL, place, pg);
                             }
                         }
                     }
@@ -277,30 +297,12 @@ public class HL2PGConverter {
         }
     }
 
-    /**
-     * TODO: Finish this method which creates the places of the cartesian
-     * product for an arbitrary number of basic color classes.
-     *
-     * @param dom
-     * @param idx
-     * @param placeName
-     * @param env
-     * @param hlgame
-     * @param pg
-     */
-    private static void createPlace(ColorDomain dom, int idx, String placeName, boolean env, HLPetriGame hlgame, PetriGame pg) {
-        if (idx == dom.size()) {
-            Place p = pg.createPlace(placeName);
-            if (env) {
-                pg.setEnvironment(p);
-            } else {
-                pg.setSystem(p);
-            }
-        } else {
-            BasicColorClass bcc = hlgame.getBasicColorClass(dom.get(0));
-            for (Color color : bcc.getColors()) {
-
-            }
+    private static void createFlow(Node pre, Node post, PetriGame pg) {
+        try { // TODO: replace this when addded a containsFlow method to APT
+            pg.createFlow(pre, post);
+        } catch (FlowExistsException e) { // not nice but APT currently has no containsFlow method.
+            Flow f = pg.getFlow(pre, post);
+            f.setWeight(f.getWeight() + 1);
         }
     }
 

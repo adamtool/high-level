@@ -78,14 +78,25 @@ public class AlarmSystemHL {
         net.createFlow(t, initAlarm, new ArcExpression(new Variable("y")));
 
         ArcExpression expr = new ArcExpression();
-        Variable x = new Variable("x");;
+        Variable x = new Variable("x");
         List<IPredicate> uneq = new ArrayList<>();
         for (int i = 0; i < nb_alarmSystems - 1; i++) {
             Variable xi = new Variable("x" + i);
             expr.add(xi);
             uneq.add(new BasicPredicate(x, BasicPredicate.Operator.NEQ, xi));
         }
-        Transition info = net.createTransition("info", Predicate.createPredicate(uneq, Predicate.Operator.AND));
+        IPredicate p1 = Predicate.createPredicate(uneq, Predicate.Operator.AND);
+        // this next predicate would not be needed if the check online valuations which correspond to safe nets                
+        List<IPredicate> different = new ArrayList<>();
+        for (int i = 0; i < nb_alarmSystems - 1; i++) {
+            Variable xi = new Variable("x" + i);
+            for (int j = i + 1; j < nb_alarmSystems - 1; j++) {
+                Variable xj = new Variable("x" + j);
+                different.add(new BasicPredicate(xi, BasicPredicate.Operator.NEQ, xj));
+            }
+        }
+        IPredicate p2 = Predicate.createPredicate(different, Predicate.Operator.AND);
+        Transition info = net.createTransition("info", new Predicate(p1, Predicate.Operator.AND, p2));
         net.createFlow(in, info, new ArcExpression(x));
         net.createFlow(info, initAlarm, new ArcExpression(new ColorClassTerm("alarmsystems")));
         net.createFlow(alarmSystem, info, expr);
