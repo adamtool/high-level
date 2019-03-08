@@ -40,7 +40,6 @@ public class ConcurrentMachinesHL {
         for (int i = 0; i < m.length; i++) {
             m[i] = new Color("m" + i);
         }
-        // create the color classes
         Color[] o = new Color[orders];
         for (int i = 0; i < o.length; i++) {
             o[i] = new Color("o" + i);

@@ -105,7 +105,7 @@ public class HLPetriGame {
     private void setColorDomain(Place p, ColorDomain domain) throws NoSuchColorDomainException {
         for (int i = 0; i < domain.size(); i++) {
             if (!colorClasses.containsKey(domain.get(i))) {
-                throw new NoSuchColorDomainException("The color domain " + domain.get(i) + " does not exists in the Petri net " + getName());
+                throw new NoSuchColorDomainException("The color domain " + domain.get(i) + " does not exist in the Petri net " + getName());
             }
         }
         HLPetriGameExtensionHandler.setColorClasses(p, domain);
