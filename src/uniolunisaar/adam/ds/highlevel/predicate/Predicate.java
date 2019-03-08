@@ -42,9 +42,9 @@ public class Predicate implements IPredicate {
     public static IPredicate createPredicate(List<IPredicate> preds, Operator op) {
         if (preds.isEmpty()) {
             if (op == Operator.AND) {
-                return Constants.FALSE;
-            } else {
                 return Constants.TRUE;
+            } else {
+                return Constants.FALSE;
             }
         } else if (preds.size() == 1) {
             return preds.get(0);
@@ -74,12 +74,16 @@ public class Predicate implements IPredicate {
 
     @Override
     public String toString() {
-        return "(" + p1.toString() + " " + op.toString() + " " + p2.toString() + ")";
+        IPredicate lost = op.equals(Operator.AND) ? Constants.TRUE : Constants.FALSE;
+        String operator = p1.equals(lost) || p2.equals(lost) ? "" : op.toString();
+        return "(" + p1.toString() + " " + operator + " " + p2.toString() + ")";
     }
 
     @Override
     public String toSymbol() {
-        return "(" + p1.toSymbol() + " " + op.toSymbol() + " " + p2.toSymbol() + ")";
+        IPredicate lost = op.equals(Operator.AND) ? Constants.TRUE : Constants.FALSE;
+        String operator = p1.equals(lost) || p2.equals(lost) ? "" : op.toSymbol();
+        return "(" + p1.toSymbol() + " " + operator + " " + p2.toSymbol() + ")";
     }
 
 }

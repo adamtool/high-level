@@ -1,14 +1,18 @@
 package uniolunisaar.adam.generators.hl;
 
-import uniolunisaar.adam.generators.pg.*;
+import java.util.ArrayList;
+import java.util.List;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
-import uniolunisaar.adam.ds.objectives.Condition;
-import uniolunisaar.adam.logic.pg.calculators.CalculatorIDs;
-import uniolunisaar.adam.logic.pg.calculators.MaxTokenCountCalculator;
-import uniolunisaar.adam.util.PGTools;
-import uniolunisaar.adam.util.PNWTTools;
+import uniolunisaar.adam.ds.highlevel.Color;
+import uniolunisaar.adam.ds.highlevel.HLPetriGame;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcExpression;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcTuple;
+import uniolunisaar.adam.ds.highlevel.predicate.BasicPredicate;
+import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
+import uniolunisaar.adam.ds.highlevel.predicate.Predicate;
+import uniolunisaar.adam.ds.highlevel.terms.ColorClassTerm;
+import uniolunisaar.adam.ds.highlevel.terms.Variable;
 
 /**
  *
@@ -23,78 +27,90 @@ public class ConcurrentMachinesHL {
      * @param orders
      * @return
      */
-    public static PetriGame generateImprovedVersion(int machines, int orders) {
+    public static HLPetriGame generateImprovedVersion(int machines, int orders) {
         if (machines < 2 || orders < 1) {
             throw new RuntimeException("less than 2 machines or 1 order does not make any sense!");
         }
-        PetriGame net = PGTools.createPetriGame("CM_" + "M" + machines + "WP" + orders);
-        MaxTokenCountCalculator calc = new MaxTokenCountCalculator();
-        net.addExtensionCalculator(CalculatorIDs.MAX_TOKEN_COUNT.name(), calc, true);
-        PNWTTools.setConditionAnnotation(net, Condition.Objective.A_SAFETY);
+
+        HLPetriGame net = new HLPetriGame("High-Level Concurrent Machines with " + machines + " machines and " + orders + " orders. (Safety)");
+//        PNWTTools.setConditionAnnotation(net, Condition.Objective.A_SAFETY);
+
+        // create the color classes
+        Color[] m = new Color[machines];
+        for (int i = 0; i < m.length; i++) {
+            m[i] = new Color("m" + i);
+        }
+        // create the color classes
+        Color[] o = new Color[orders];
+        for (int i = 0; i < o.length; i++) {
+            o[i] = new Color("o" + i);
+        }
+        net.createBasicColorClass("M", false, m);
+        net.createBasicColorClass("O", false, o);
+        net.createBasicColorClass("E", false, "e");
+        // color classes        
+        String[] ec = {"E"};
+        String[] mc = {"M"};
+        String[] oc = {"O"};
+        String[] omc = {"O", "M"};
 
         // Environment
-        Place start = net.createEnvPlace("Env");
-        start.setInitialToken(1);
-       
-//        Place stop = net.createEnvPlace("e"); should not be necessary anymore to always have an env place
+        Place start = net.createEnvPlace("Env", ec);
+        net.setColorTokens(start, "e");
 
-        Place[] macs = new Place[machines];
+        // activate/deactivate
+        Place err = net.createSysPlace("ERR", mc);
+        Place ok = net.createSysPlace("OK", mc);
+        ArcExpression expr = new ArcExpression();
+        Variable mVar = new Variable("m");
+        List<IPredicate> uneq = new ArrayList<>();
+        for (int i = 0; i < machines - 1; i++) {
+            Variable mi = new Variable("m" + i);
+            expr.add(mi);
+            uneq.add(new BasicPredicate(mVar, BasicPredicate.Operator.NEQ, mi));
+        }
+        IPredicate p1 = Predicate.createPredicate(uneq, Predicate.Operator.AND);
+        // this next predicate would not be needed if the check online valuations which correspond to safe nets                
+        List<IPredicate> different = new ArrayList<>();
+        for (int i = 0; i < machines - 1; i++) {
+            Variable mi = new Variable("m" + i);
+            for (int j = i + 1; j < machines - 1; j++) {
+                Variable mj = new Variable("m" + j);
+                different.add(new BasicPredicate(mi, BasicPredicate.Operator.NEQ, mj));
+            }
+        }
+        IPredicate p2 = Predicate.createPredicate(different, Predicate.Operator.AND);
+        Transition d = net.createTransition("d", new Predicate(p1, Predicate.Operator.AND, p2));
+        net.createFlow(start, d, new ArcExpression(new Variable("e")));
+        net.createFlow(d, err, new ArcExpression(new Variable("m")));
+        net.createFlow(d, ok, expr);
+
         // testing
-        Place test = net.createPlace("testP");
-        net.setPartition(test, orders + 1);
-        // activing all, but one
-        Transition[] trans = new Transition[machines];
-        for (int i = 0; i < machines; ++i) {
-            macs[i] = net.createPlace("A" + i);
-            trans[i] = net.createTransition();
-            //environment
-            net.createFlow(start, trans[i]);
-//            net.createFlow(trans[i], stop);should not be necessary anymore to always have an env place
-        }
-        for (int i = 0; i < machines; ++i) {
-            for (int j = 0; j < machines; ++j) {
-                if (i != j) {
-                    net.createFlow(trans[i], macs[j]);
-                }
-            }
-            net.createFlow(trans[i], test);
-        }
-
-        // test transition
+        Place s = net.createSysPlace("Sys", oc);
+        net.setColorTokens(s, o);
         Transition testT = net.createTransition("test");
-        net.createFlow(test, testT);
-        for (int i = 0; i < orders; ++i) {
-            Place s = net.createPlace("S" + i);
-            s.setInitialToken(1);
-            //testing: version all orders together
-            net.createFlow(testT, s);
-            net.createFlow(s, testT);
+        net.createFlow(err, testT, new ArcExpression(mVar));
+        net.createFlow(testT, s, new ArcExpression(new ColorClassTerm("O")));
+        net.createFlow(s, testT, new ArcExpression(new ColorClassTerm("O")));
 
-            // testing: version when each order does it separatly (still must adds things that not the type2 strategy (infinitely testing) is winning)
-//            Transition testT = net.createTransition("test" + i);
-//            net.createFlow(test, testT);
-//            net.createFlow(testT, test);
-//            net.createFlow(testT, s);
-//            net.createFlow(s, testT);
-            for (int j = 0; j < machines; ++j) {
-                // working
-                Place m = net.createPlace("M" + j + "" + i);
-                Transition t = net.createTransition();
-                net.createFlow(s, t);
-                net.createFlow(t, m);
-                Place bad = net.createPlace("B" + j + "" + i);
-                net.setBad(bad);
-                t = net.createTransition();
-                net.createFlow(m, t);
-                net.createFlow(t, bad);
-                t = net.createTransition();
-                net.createFlow(m, t);
-                net.createFlow(macs[j], t);
-                Place mready = net.createPlace("G" + j + "" + i);
-                net.createFlow(t, mready);                
-            }
-        }
+        // working
+        ArcExpression omA = new ArcExpression(new ArcTuple(new Variable("o"), new Variable("m")));
+        Place mPlace = net.createSysPlace("M", omc);
+        Transition t = net.createTransition("p");
+        net.createFlow(s, t, new ArcExpression(new Variable("o")));
+        net.createFlow(t, mPlace, omA);
 
+        Place bad = net.createSysPlace("B", omc);
+        net.setBad(bad);
+        t = net.createTransition("b");
+        net.createFlow(mPlace, t, omA);
+        net.createFlow(t, bad, omA);
+
+        Place good = net.createSysPlace("G", omc);
+        t = net.createTransition("g");
+        net.createFlow(mPlace, t, omA);
+        net.createFlow(ok, t, new ArcExpression(new Variable("m")));
+        net.createFlow(t, good, omA);
         return net;
     }
 }
