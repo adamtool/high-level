@@ -23,16 +23,16 @@ public class HLPetriGameExtensionHandler {
         place.putExtension(AdamExtensions.colorDomain.name(), domain, ExtensionProperty.WRITE_TO_FILE);
     }
 
-    static boolean hasColorToken(Place place) {
-        return place.hasExtension(AdamExtensions.colorToken.name());
+    static boolean hasColorTokens(Place place) {
+        return place.hasExtension(AdamExtensions.colorTokens.name()) && !((ColorTokens) place.getExtension(AdamExtensions.colorTokens.name())).isEmpty();
     }
 
-    static ColorToken getColorToken(Place place) {
-        return (ColorToken) place.getExtension(AdamExtensions.colorToken.name());
+    static ColorTokens getColorTokens(Place place) {
+        return (ColorTokens) place.getExtension(AdamExtensions.colorTokens.name());
     }
 
-    static void setColorToken(Place place, ColorToken token) {
-        place.putExtension(AdamExtensions.colorToken.name(), token, ExtensionProperty.WRITE_TO_FILE);
+    static void setColorTokens(Place place, ColorTokens token) {
+        place.putExtension(AdamExtensions.colorTokens.name(), token, ExtensionProperty.WRITE_TO_FILE);
     }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TRANSITION EXTENSIONS   

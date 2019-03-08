@@ -11,34 +11,36 @@ import uniolunisaar.adam.ds.highlevel.terms.SuccessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 
 /**
- * Currently still the same class as ArcExpressionDifferentArguments
- * 
+ * This class allows to have a sum of different objects (Variable, Colorclass,
+ * Successors, Tuples) as arc expression. This is not possible for well-formed
+ * nets.
+ *
  * @author Manuel Gieseking
  */
-public class ArcExpression {
+public class ArcExpressionDifferentArguments {
 
     private final ArrayList<Pair<IArcTerm.Sort, IArcTerm<? extends IArcType>>> expressions;
 
-    public ArcExpression() {
+    public ArcExpressionDifferentArguments() {
         expressions = new ArrayList<>();
     }
 
-    public ArcExpression(Variable x) {
+    public ArcExpressionDifferentArguments(Variable x) {
         this();
         expressions.add(new Pair<>(IArcTerm.Sort.VARIABLE, x));
     }
 
-    public ArcExpression(SuccessorTerm succ) {
+    public ArcExpressionDifferentArguments(SuccessorTerm succ) {
         this();
         expressions.add(new Pair<>(IArcTerm.Sort.SUCCESSOR, succ));
     }
 
-    public ArcExpression(ColorClassTerm colorClass) {
+    public ArcExpressionDifferentArguments(ColorClassTerm colorClass) {
         this();
         expressions.add(new Pair<>(IArcTerm.Sort.COLORCLASS, colorClass));
     }
 
-    public ArcExpression(ArcTuple tuple) {
+    public ArcExpressionDifferentArguments(ArcTuple tuple) {
         this();
         expressions.add(new Pair<>(IArcTerm.Sort.TUPLE, tuple));
     }

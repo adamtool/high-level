@@ -111,33 +111,39 @@ public class HLPetriGame {
         HLPetriGameExtensionHandler.setColorClasses(p, domain);
     }
 
-    public boolean hasColorToken(Place p) {
-        return HLPetriGameExtensionHandler.hasColorToken(p);
+    public boolean hasColorTokens(Place p) {
+        return HLPetriGameExtensionHandler.hasColorTokens(p);
     }
 
-    public void setColorToken(Place p, ColorToken token) {
-        HLPetriGameExtensionHandler.setColorToken(p, token);
+    public void setColorTokens(Place p, ColorTokens tokens) {
+        HLPetriGameExtensionHandler.setColorTokens(p, tokens);
     }
 
-    public void setColorToken(Place p, String... colors) {
-        List<Color> cls = new ArrayList<>();
+    public void setColorTokens(Place p, String... colors) {
+        ColorTokens tokens = new ColorTokens();
         for (String color : colors) {
-            cls.add(new Color(color));
+            tokens.add(new ColorToken(new Color(color)));
         }
-        setColorToken(p, cls);
+        setColorTokens(p, tokens);
     }
 
-    public void setColorToken(Place p, Color... colors) {
-        setColorToken(p, Arrays.asList(colors));
+    public void setColorTokens(Place p, Color... colors) {
+        ColorTokens tokens = new ColorTokens();
+        for (Color color : colors) {
+            ColorToken token = new ColorToken();
+            token.add(color);
+            tokens.add(token);
+        }
+        HLPetriGameExtensionHandler.setColorTokens(p, tokens);
     }
 
-    public void setColorToken(Place p, List<Color> colors) {
-        ColorToken token = new ColorToken(colors);
-        HLPetriGameExtensionHandler.setColorToken(p, token);
+    public void setColorTokens(Place p, List<ColorToken> tokens) {
+        ColorTokens tks = new ColorTokens(tokens);
+        HLPetriGameExtensionHandler.setColorTokens(p, tks);
     }
 
-    public ColorToken getColorToken(Place p) {
-        return HLPetriGameExtensionHandler.getColorToken(p);
+    public ColorTokens getColorTokens(Place p) {
+        return HLPetriGameExtensionHandler.getColorTokens(p);
     }
 
     public ColorDomain getColorDomain(Place p) {

@@ -67,7 +67,7 @@ public class HLTools {
             // special?
             String shape = (game.isBad(place) || game.isReach(place) || game.isBuchi(place)) ? specialPlaceShape : placeShape;
             // Initialtoken number
-            String tokenString = game.hasColorToken(place) ? game.getColorToken(place).toDotString() : "";
+            String tokenString = game.hasColorTokens(place) ? game.getColorTokens(place).toDotString() : "";
             // Drawing
             sb.append("\"").append(place.getId()).append("\"").append("[shape=").append(shape);
             sb.append(", height=0.5, width=0.5, fixedsize=false, margin=0");

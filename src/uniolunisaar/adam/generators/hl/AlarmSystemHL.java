@@ -51,7 +51,7 @@ public class AlarmSystemHL {
 
         // Environment
         Place env = net.createEnvPlace("env", ec);
-        net.setColorToken(env, "e");
+        net.setColorTokens(env, "e");
         Place env1 = net.createEnvPlace("C", s0);
         Transition t = net.createTransition("i");
         net.createFlow(env, t, new ArcExpression(new Variable("e")));
@@ -59,7 +59,7 @@ public class AlarmSystemHL {
         Place e = net.createEnvPlace("I", s0);
         // system
         Place alarmSystem = net.createSysPlace("S", s0);
-        net.setColorToken(alarmSystem, colors);
+        net.setColorTokens(alarmSystem, colors);
         Place in = net.createSysPlace("D", s0);
         Place initAlarm = net.createSysPlace("P", s0);
 

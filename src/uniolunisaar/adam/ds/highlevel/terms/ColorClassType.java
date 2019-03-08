@@ -40,4 +40,8 @@ public class ColorClassType implements IColorClassType, IArcTupleElementType {
         return true;
     }
 
+    public String getId() {
+        return id;
+    }
+
 }

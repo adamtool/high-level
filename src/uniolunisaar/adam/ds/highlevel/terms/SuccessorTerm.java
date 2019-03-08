@@ -48,6 +48,10 @@ public class SuccessorTerm implements IPredicateTerm<Color>, IArcTerm<Color>, IA
         this.game = game;
     }
 
+    public Variable getVariable() {
+        return x;
+    }
+
     @Override
     public Set<Variable> getVariables() {
         Set<Variable> vars = new HashSet<>();

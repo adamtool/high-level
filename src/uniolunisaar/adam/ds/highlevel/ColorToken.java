@@ -1,46 +1,32 @@
 package uniolunisaar.adam.ds.highlevel;
 
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class ColorToken extends HashSet<Color> {
+public class ColorToken extends ArrayList<Color> {
 
-    public ColorToken() {
+    public ColorToken(Color... color) {
+        this.addAll(Arrays.asList(color));
     }
 
-    public ColorToken(Collection<? extends Color> c) {
-        super(c);
-    }
-
-    public ColorToken(int initialCapacity, float loadFactor) {
-        super(initialCapacity, loadFactor);
-    }
-
-    public ColorToken(int initialCapacity) {
-        super(initialCapacity);
-    }
-
-    public String toDotString() {
+    @Override
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         if (this.size() > 1) {
-            sb.append("{");
+            sb.append("(");
         }
-        int i = 1;
-        for (Color col : this) {
-            sb.append(col.toString()).append(",");
-            if (i++ % 3 == 0) {
-                sb.append("\\n");
+        for (int i = 0; i < this.size() - 1; i++) {
+            sb.append(this.get(i).toString()).append(",");
+        }
+        if (this.size() >= 1) {
+            sb.append(this.get(this.size() - 1).toString());
+            if (this.size() > 1) {
+                sb.append(")");
             }
-        }
-        if (size() >= 1) {
-            sb.delete(sb.length() - 1, sb.length());
-        }
-        if (this.size() > 1) {
-            sb.append("}");
         }
         return sb.toString();
     }

@@ -32,7 +32,7 @@ public class TestConverter {
     public void alarmSystem() throws IOException, InterruptedException {
         HLPetriGame hlgame = AlarmSystemHL.createSafetyVersionForHLRep(2);
         PetriGame pg = HL2PGConverter.convert(hlgame);
-        PGTools.savePG2PDF(outputDir + pg.getName(), pg, true);
+        PGTools.savePG2PDF(outputDir + pg.getName(), pg, false);
     }
 
 }

@@ -1,6 +1,8 @@
 package uniolunisaar.adam.ds.highlevel.arcexpressions;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import uniol.apt.util.Pair;
@@ -40,6 +42,10 @@ public class ArcTuple implements IArcTerm<IArcTupleType> {
         for (int i = 0; i < colorClasses.length; i++) {
             tuple.add(new Pair<>(IArcTupleElement.Sort.COLORCLASS, colorClasses[i]));
         }
+    }
+
+    public Collection<Pair<IArcTupleElement.Sort, IArcTupleElement<? extends IArcTupleElementType>>> getValues() {
+        return Collections.unmodifiableCollection(tuple);
     }
 
     @Override
