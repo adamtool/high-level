@@ -62,7 +62,7 @@ public class HL2PGConverter {
     }
 
     public static String getTransitionID(String origID, Valuation val) {
-        return origID + ID_DELIM + val.toString();
+        return origID + ID_DELIM + val.toTransitionIdentifier();
     }
 
     public static PetriGame convert(HLPetriGame hlgame) {
