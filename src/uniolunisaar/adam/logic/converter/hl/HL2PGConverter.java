@@ -31,8 +31,10 @@ import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
 import uniolunisaar.adam.ds.highlevel.terms.ColorClassType;
 import uniolunisaar.adam.ds.highlevel.terms.SuccessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
+import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.tools.CartesianProduct;
+import uniolunisaar.adam.util.PNWTTools;
 
 /**
  *
@@ -40,7 +42,7 @@ import uniolunisaar.adam.tools.CartesianProduct;
  */
 public class HL2PGConverter {
 
-    private static final String ID_DELIM = "-";
+    private static final String ID_DELIM = "_"; // TODO: think of s.th. better on the one hand readable by APT on the other not already existing?
     private static final String COLOR_DELIM = "x";
 
     public static String getPlaceID(String origID, Color... colors) {
@@ -65,6 +67,7 @@ public class HL2PGConverter {
 
     public static PetriGame convert(HLPetriGame hlgame) {
         PetriGame pg = new PetriGame(hlgame.getName() + " - LL-Version");
+        PNWTTools.setConditionAnnotation(pg, Condition.Objective.A_SAFETY); // TODO: do it properly
         // Places
         addPlaces(hlgame, pg);
         // set initial marking
