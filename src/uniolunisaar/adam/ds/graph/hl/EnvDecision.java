@@ -2,6 +2,8 @@ package uniolunisaar.adam.ds.graph.hl;
 
 import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.highlevel.ColorToken;
+import uniolunisaar.adam.ds.highlevel.ColoredPlace;
+import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 
 /**
  *
@@ -9,12 +11,14 @@ import uniolunisaar.adam.ds.highlevel.ColorToken;
  */
 public class EnvDecision implements IDecision {
 
-    private final Place place;
-    private final ColorToken color;
+    private final ColoredPlace place;
+
+    public EnvDecision(ColoredPlace place) {
+        this.place = place;
+    }
 
     public EnvDecision(Place place, ColorToken color) {
-        this.place = place;
-        this.color = color;
+        this(new ColoredPlace(place, color));
     }
 
     @Override
@@ -22,12 +26,19 @@ public class EnvDecision implements IDecision {
         return true;
     }
 
-    public Place getPlace() {
+    @Override
+    public ColoredPlace getPlace() {
         return place;
     }
 
-    public ColorToken getColor() {
-        return color;
+    @Override
+    public boolean isChoosen(ColoredTransition t) {
+        return true;
+    }
+
+    @Override
+    public boolean isTop() {
+        return false;
     }
 
 }

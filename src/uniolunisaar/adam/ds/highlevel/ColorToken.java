@@ -2,8 +2,11 @@ package uniolunisaar.adam.ds.highlevel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 /**
+ * This class is used for one token in the Petri game. These token can be tuples
+ * (c_1, ..., c_2) of colors c_i.
  *
  * @author Manuel Gieseking
  */
@@ -11,6 +14,10 @@ public class ColorToken extends ArrayList<Color> {
 
     public ColorToken(Color... color) {
         this.addAll(Arrays.asList(color));
+    }
+
+    public ColorToken(Collection<? extends Color> c) {
+        super(c);
     }
 
     @Override

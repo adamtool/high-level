@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 
 /**
  *
@@ -13,21 +13,25 @@ import uniol.apt.adt.pn.Transition;
 public class CommitmentSet {
 
     public final boolean isTop;
-    public final Set<Transition> transitions;
+    public final Set<ColoredTransition> transitions;
 
     public CommitmentSet(boolean isTop) {
         this.isTop = isTop;
         transitions = null;
     }
 
-    public CommitmentSet(Transition... transitions) {
+    public CommitmentSet(ColoredTransition... transitions) {
         isTop = false;
         this.transitions = new HashSet<>(Arrays.asList(transitions));
     }
 
-    public CommitmentSet(Set<Transition> transitions) {
+    public CommitmentSet(Set<ColoredTransition> transitions) {
         isTop = false;
         this.transitions = transitions;
+    }
+
+    public boolean isChoosen(ColoredTransition t) {
+        return transitions.contains(t);
     }
 
     @Override
@@ -60,18 +64,23 @@ public class CommitmentSet {
         if ((this.transitions != null && other.transitions == null) || (this.transitions == null && other.transitions != null)) {
             return false;
         }
-        for (Transition transition : this.transitions) {
+        for (ColoredTransition transition : this.transitions) {
             if (!other.transitions.contains(transition)) {
                 return false;
             }
         }
-        for (Transition transition : other.transitions) {
+        for (ColoredTransition transition : other.transitions) {
             if (!this.transitions.contains(transition)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "CommitmentSet{" + "isTop=" + isTop + ", transitions=" + transitions + '}';
     }
 
 }

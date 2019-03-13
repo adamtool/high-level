@@ -36,4 +36,5 @@ public class Valuation extends HashMap<Variable, Color> {
         }
         return sb.toString();
     }
+
 }
