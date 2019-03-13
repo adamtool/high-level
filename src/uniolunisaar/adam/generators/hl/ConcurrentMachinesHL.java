@@ -2,13 +2,16 @@ package uniolunisaar.adam.generators.hl;
 
 import java.util.ArrayList;
 import java.util.List;
+import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcExpression;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcTuple;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.SetMinusTerm;
 import uniolunisaar.adam.ds.highlevel.predicate.BasicPredicate;
+import uniolunisaar.adam.ds.highlevel.predicate.Constants;
 import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
 import uniolunisaar.adam.ds.highlevel.predicate.Predicate;
 import uniolunisaar.adam.ds.highlevel.terms.ColorClassTerm;
@@ -22,6 +25,27 @@ public class ConcurrentMachinesHL {
 
     /**
      * Version for Bengt Jonsson Festschrift
+     *
+     * Here only C-{x} is used instead of the sum operator
+     *
+     * @param machines
+     * @param orders
+     * @return
+     */
+    public static HLPetriGame generateImprovedVersionWithSetMinus(int machines, int orders) {
+        HLPetriGame game = generateImprovedVersion(machines, orders);
+        Transition d = game.getTransition("d");
+        game.setPredicate(d, Constants.TRUE);
+        Flow f = game.getFlow(d, game.getPlace("OK"));
+        game.setArcExpression(f, new ArcExpression(new SetMinusTerm(new ColorClassTerm("M"), new Variable("m"))));
+        return game;
+    }
+
+    /**
+     * Version for Bengt Jonsson Festschrift
+     *
+     *      *
+     * This version uses the sum operator instead of C-{x}.
      *
      * @param machines
      * @param orders
