@@ -2,13 +2,16 @@ package uniolunisaar.adam.generators.hl;
 
 import java.util.ArrayList;
 import java.util.List;
+import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcExpression;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcTuple;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.SetMinusTerm;
 import uniolunisaar.adam.ds.highlevel.predicate.BasicPredicate;
+import uniolunisaar.adam.ds.highlevel.predicate.Constants;
 import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
 import uniolunisaar.adam.ds.highlevel.predicate.Predicate;
 import uniolunisaar.adam.ds.highlevel.terms.ColorClassTerm;
@@ -25,6 +28,26 @@ public class AlarmSystemHL {
     /**
      * Creates the example for the alarm system presented in the high-level
      * representation paper for the festschrift of Bengt Jonsson.
+     *
+     * Uses the new SetminusTerm for the arc expression
+     *
+     * @param nb_alarmSystems
+     * @return
+     */
+    public static HLPetriGame createSafetyVersionForHLRepWithSetMinus(int nb_alarmSystems) {
+        HLPetriGame game = createSafetyVersionForHLRep(nb_alarmSystems);
+        Transition info = game.getTransition("info");
+        game.setPredicate(info, Constants.TRUE);
+        Flow f = game.getFlow(game.getPlace("S"), info);
+        game.setArcExpression(f, new ArcExpression(new SetMinusTerm(new ColorClassTerm("alarmsystems"), new Variable("x"))));
+        return game;
+    }
+
+    /**
+     * Creates the example for the alarm system presented in the high-level
+     * representation paper for the festschrift of Bengt Jonsson.
+     *
+     * This version uses the sum operator instead of C-{x}.
      *
      * @param nb_alarmSystems
      * @return

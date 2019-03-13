@@ -188,6 +188,10 @@ public class HLPetriGame {
         return HLPetriGameExtensionHandler.getPredicate(t);
     }
 
+    public void setPredicate(Transition t, IPredicate pred) {
+        HLPetriGameExtensionHandler.setPredicate(t, pred);
+    }
+
     public Set<Variable> getVariables(Transition t) {
         Set<Variable> vars = new HashSet<>();
         for (Flow presetEdge : t.getPresetEdges()) {
@@ -209,6 +213,10 @@ public class HLPetriGame {
 
     public ArcExpression getArcExpression(Flow f) {
         return HLPetriGameExtensionHandler.getArcExpression(f);
+    }
+
+    public void setArcExpression(Flow f, ArcExpression expr) {
+        HLPetriGameExtensionHandler.setArcExpression(f, expr);
     }
 
     public Flow createFlow(Node source, Node target) {

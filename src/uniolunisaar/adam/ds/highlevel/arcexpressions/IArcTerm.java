@@ -13,6 +13,7 @@ public interface IArcTerm<T extends IArcType> extends ITerm<T> {
         VARIABLE,
         SUCCESSOR,
         COLORCLASS,
+        SETMINUS,
         TUPLE
     }
 }

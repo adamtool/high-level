@@ -32,7 +32,7 @@ public class ColorTokens extends HashSet<ColorToken> {
         int i = 1;
         for (ColorToken col : this) {
             sb.append(col.toString()).append(",");
-            if (i++ % 3 == 0) {
+            if (i++ % 3 == 0 && i < col.size() - 1) {
                 sb.append("\\n");
             }
         }

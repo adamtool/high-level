@@ -9,4 +9,6 @@ import uniolunisaar.adam.ds.highlevel.predicate.IPredicateType;
  */
 public interface IColorClassType extends IPredicateType, IArcType {
 
+    public String getId();
+
 }

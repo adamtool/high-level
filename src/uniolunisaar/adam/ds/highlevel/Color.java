@@ -16,6 +16,7 @@ public class Color implements IColorType, IArcTupleElementType {
         this.id = id;
     }
 
+    @Override
     public String getId() {
         return id;
     }

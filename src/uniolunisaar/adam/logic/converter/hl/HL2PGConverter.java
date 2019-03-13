@@ -27,6 +27,8 @@ import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTerm;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTupleElement;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTupleElementType;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcType;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.SetMinusTerm;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.SetMinusType;
 import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
 import uniolunisaar.adam.ds.highlevel.terms.ColorClassType;
 import uniolunisaar.adam.ds.highlevel.terms.SuccessorTerm;
@@ -193,7 +195,10 @@ public class HL2PGConverter {
                 case SUCCESSOR:
                     var2CClass.put(((SuccessorTerm) expresssion.getSecond()).getVariable(), bcs[0].getColors());
                     break;
-                case TUPLE:
+                case SETMINUS:
+                    var2CClass.put(((SetMinusTerm) expresssion.getSecond()).getVariable(), bcs[0].getColors());
+                    break;
+                case TUPLE: {
                     ArcTuple tuple = (ArcTuple) expresssion.getSecond();
                     int component = 0;
                     for (Iterator<Pair<IArcTupleElement.Sort, IArcTupleElement<? extends IArcTupleElementType>>> iterator = tuple.getValues().iterator(); iterator.hasNext();) {
@@ -205,9 +210,14 @@ public class HL2PGConverter {
                             case SUCCESSOR:
                                 var2CClass.put(((SuccessorTerm) value.getSecond()).getVariable(), bcs[component].getColors());
                                 break;
+                            case SETMINUS:
+                                var2CClass.put(((SetMinusTerm) value.getSecond()).getVariable(), bcs[component].getColors());
+                                break;
                         }
                         ++component;
                     }
+                    break;
+                }
             }
         }
     }
@@ -241,6 +251,21 @@ public class HL2PGConverter {
                     }
                     break;
                 }
+                case SETMINUS: {
+                    SetMinusType setminusType = (SetMinusType) expression.getSecond().getValue(val);
+                    BasicColorClass bc = hlgame.getBasicColorClass(setminusType.getColorClass().getId());
+                    List<Color> cls = new ArrayList<>(bc.getColors());
+                    cls.remove((Color) setminusType.getColor());
+                    for (Color color : cls) {
+                        Place place = pg.getPlace(getPlaceID(origID, color));
+                        if (pre) {
+                            createFlow(place, tLL, pg);
+                        } else {
+                            createFlow(tLL, place, pg);
+                        }
+                    }
+                    break;
+                }
                 case TUPLE: {
                     ArcTuple tuple = (ArcTuple) expression.getSecond();
                     List<Color> colors = new ArrayList<>();
@@ -259,6 +284,15 @@ public class HL2PGConverter {
                                 ColorClassType colorsSet = (ColorClassType) value.getSecond().getValue(val);
                                 BasicColorClass bc = hlgame.getBasicColorClass(colorsSet.getId());
                                 colorClasses.add(bc.getColors());
+                                idxs.add(component);
+                                break;
+                            }
+                            case SETMINUS: {
+                                SetMinusType setminusType = (SetMinusType) value.getSecond().getValue(val);
+                                BasicColorClass bc = hlgame.getBasicColorClass(setminusType.getColorClass().getId());
+                                List<Color> cls = new ArrayList<>(bc.getColors());
+                                cls.remove((Color) setminusType.getColor());
+                                colorClasses.add(cls);
                                 idxs.add(component);
                                 break;
                             }

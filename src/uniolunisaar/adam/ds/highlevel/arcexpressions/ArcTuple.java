@@ -44,6 +44,13 @@ public class ArcTuple implements IArcTerm<IArcTupleType> {
         }
     }
 
+    public ArcTuple(SetMinusTerm... setminusTerms) {
+        this();
+        for (int i = 0; i < setminusTerms.length; i++) {
+            tuple.add(new Pair<>(IArcTupleElement.Sort.SETMINUS, setminusTerms[i]));
+        }
+    }
+
     public Collection<Pair<IArcTupleElement.Sort, IArcTupleElement<? extends IArcTupleElementType>>> getValues() {
         return Collections.unmodifiableCollection(tuple);
     }
@@ -77,6 +84,14 @@ public class ArcTuple implements IArcTerm<IArcTupleType> {
         boolean ret = true;
         for (int i = 0; i < colorClasses.length; i++) {
             ret &= tuple.add(new Pair<>(IArcTupleElement.Sort.COLORCLASS, colorClasses[i]));
+        }
+        return ret;
+    }
+
+    public boolean add(SetMinusTerm... setminusTerms) {
+        boolean ret = true;
+        for (int i = 0; i < setminusTerms.length; i++) {
+            ret &= tuple.add(new Pair<>(IArcTupleElement.Sort.SETMINUS, setminusTerms[i]));
         }
         return ret;
     }

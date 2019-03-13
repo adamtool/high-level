@@ -12,7 +12,7 @@ import uniolunisaar.adam.ds.highlevel.terms.Variable;
 
 /**
  * Currently still the same class as ArcExpressionDifferentArguments
- * 
+ *
  * @author Manuel Gieseking
  */
 public class ArcExpression {
@@ -38,6 +38,11 @@ public class ArcExpression {
         expressions.add(new Pair<>(IArcTerm.Sort.COLORCLASS, colorClass));
     }
 
+    public ArcExpression(SetMinusTerm setMinusTerm) {
+        this();
+        expressions.add(new Pair<>(IArcTerm.Sort.SETMINUS, setMinusTerm));
+    }
+
     public ArcExpression(ArcTuple tuple) {
         this();
         expressions.add(new Pair<>(IArcTerm.Sort.TUPLE, tuple));
@@ -53,6 +58,10 @@ public class ArcExpression {
 
     public boolean add(ColorClassTerm colorClass) {
         return expressions.add(new Pair<>(IArcTerm.Sort.COLORCLASS, colorClass));
+    }
+
+    public boolean add(SetMinusTerm setMinusTerm) {
+        return expressions.add(new Pair<>(IArcTerm.Sort.SETMINUS, setMinusTerm));
     }
 
     public boolean add(ArcTuple tuple) {
