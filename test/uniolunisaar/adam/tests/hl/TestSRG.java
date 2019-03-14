@@ -1,6 +1,8 @@
 package uniolunisaar.adam.tests.hl;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -10,6 +12,7 @@ import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.highlevel.Valuation;
+import uniolunisaar.adam.ds.highlevel.symmetries.RotationIterator;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 
 /**
@@ -66,5 +69,25 @@ public class TestSRG {
         ct3 = new ColoredTransition(game, game.getTransition("asdf2"), valt3);
         CommitmentSet c7 = new CommitmentSet(ct3, ct2, ct1);
         Assert.assertEquals(c6, c7);
+    }
+
+    @Test
+    public void testRotation() {
+        List<Color> colors = new ArrayList<>();
+        colors.add(new Color("0"));
+        colors.add(new Color("1"));
+        colors.add(new Color("2"));
+        colors.add(new Color("3"));
+        colors.add(new Color("4"));
+        List<List<Color>> rotations = new ArrayList<>();
+        for (RotationIterator it = new RotationIterator(colors); it.hasNext();) {
+            List<Color> rot = it.next();
+            rotations.add(rot);
+        }
+        Assert.assertEquals(rotations.toString(), "[[0, 1, 2, 3, 4], "
+                + "[1, 2, 3, 4, 0], "
+                + "[2, 3, 4, 0, 1], "
+                + "[3, 4, 0, 1, 2], "
+                + "[4, 0, 1, 2, 3]]");
     }
 }

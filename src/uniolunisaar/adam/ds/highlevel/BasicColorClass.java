@@ -68,12 +68,24 @@ public class BasicColorClass {
         return allIncluded;
     }
 
+    public int nbStaticSubclasses() {
+        return staticSubclasses.size();
+    }
+
     public boolean hasStaticSubclasses() {
         return !staticSubclasses.isEmpty();
     }
 
     public boolean hasStaticSubclass(String id) {
         return staticSubclasses.containsKey(id);
+    }
+
+    public List<List<Color>> getStaticSubclassesColors() {
+        List<List<Color>> statColors = new ArrayList<>();
+        for (StaticColorClass value : staticSubclasses.values()) {
+            statColors.add(value.getColors());
+        }
+        return statColors;
     }
 
     /**

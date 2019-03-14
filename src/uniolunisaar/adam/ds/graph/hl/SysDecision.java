@@ -1,5 +1,6 @@
 package uniolunisaar.adam.ds.graph.hl;
 
+import java.util.Objects;
 import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.highlevel.ColorToken;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
@@ -55,6 +56,35 @@ public class SysDecision implements IDecision {
 //    }
     public CommitmentSet getC() {
         return c;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 29 * hash + Objects.hashCode(this.place);
+        hash = 29 * hash + Objects.hashCode(this.c);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final SysDecision other = (SysDecision) obj;
+        if (!Objects.equals(this.place, other.place)) {
+            return false;
+        }
+        if (!Objects.equals(this.c, other.c)) {
+            return false;
+        }
+        return true;
     }
 
 }

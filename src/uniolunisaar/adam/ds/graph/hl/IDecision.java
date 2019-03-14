@@ -16,4 +16,5 @@ public interface IDecision {
     public boolean isChoosen(ColoredTransition t);
     
     public boolean isTop();
+    
 }

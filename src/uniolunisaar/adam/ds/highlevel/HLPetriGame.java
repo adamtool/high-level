@@ -5,17 +5,27 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import uniol.apt.adt.IGraphListener;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Node;
+import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.util.Pair;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcExpression;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcTuple;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTerm;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTupleElement;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTupleElementType;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcType;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.SetMinusTerm;
 import uniolunisaar.adam.ds.highlevel.predicate.Constants;
 import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
+import uniolunisaar.adam.ds.highlevel.terms.SuccessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.exceptions.highlevel.IdentifierAlreadyExistentException;
@@ -290,6 +300,60 @@ public class HLPetriGame {
         throw new NoSuchColorException("The color " + color.getId() + " is not existent in the Petri game '" + getName() + "'.");
     }
 
+    public Valuations getValuations(Transition t) {
+        // Get variable to color domain
+        Map<Variable, List<Color>> var2CClass = new HashMap<>();
+        for (Flow presetEdge : t.getPresetEdges()) {
+            Place pre = presetEdge.getPlace();
+            BasicColorClass[] bcs = getBasicColorClasses(pre);
+            ArcExpression expr = getArcExpression(presetEdge);
+            addVariableColorClassMapping(var2CClass, expr, bcs);
+        }
+        for (Flow postsetEdge : t.getPostsetEdges()) {
+            Place post = postsetEdge.getPlace();
+            BasicColorClass[] bcs = getBasicColorClasses(post);
+            ArcExpression expr = getArcExpression(postsetEdge);
+            addVariableColorClassMapping(var2CClass, expr, bcs);
+        }
+        return new Valuations(var2CClass);
+    }
+
+    private void addVariableColorClassMapping(Map<Variable, List<Color>> var2CClass, ArcExpression expr, BasicColorClass[] bcs) {
+        for (Pair<IArcTerm.Sort, IArcTerm<? extends IArcType>> expresssion : expr.getExpresssions()) {
+            switch (expresssion.getFirst()) {
+                case VARIABLE:
+                    var2CClass.put((Variable) expresssion.getSecond(), bcs[0].getColors());
+                    break;
+                case SUCCESSOR:
+                    var2CClass.put(((SuccessorTerm) expresssion.getSecond()).getVariable(), bcs[0].getColors());
+                    break;
+                case SETMINUS:
+                    var2CClass.put(((SetMinusTerm) expresssion.getSecond()).getVariable(), bcs[0].getColors());
+                    break;
+                case TUPLE: {
+                    ArcTuple tuple = (ArcTuple) expresssion.getSecond();
+                    int component = 0;
+                    for (Iterator<Pair<IArcTupleElement.Sort, IArcTupleElement<? extends IArcTupleElementType>>> iterator = tuple.getValues().iterator(); iterator.hasNext();) {
+                        Pair<IArcTupleElement.Sort, IArcTupleElement<? extends IArcTupleElementType>> value = iterator.next();
+                        switch (value.getFirst()) {
+                            case VARIABLE:
+                                var2CClass.put((Variable) value.getSecond(), bcs[component].getColors());
+                                break;
+                            case SUCCESSOR:
+                                var2CClass.put(((SuccessorTerm) value.getSecond()).getVariable(), bcs[component].getColors());
+                                break;
+                            case SETMINUS:
+                                var2CClass.put(((SetMinusTerm) value.getSecond()).getVariable(), bcs[component].getColors());
+                                break;
+                        }
+                        ++component;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
     // %%%%%%%%%%%%%%%%%%%%%%%% DELEGATES
     public double getXCoord(Node node) {
         return game.getXCoord(node);
@@ -346,6 +410,7 @@ public class HLPetriGame {
     public Transition getTransition(String id) {
         return game.getTransition(id);
     }
+// TODO: not directly allow users to modify the sets!
 
     public Set<Place> getPlaces() {
         return game.getPlaces();
@@ -405,6 +470,10 @@ public class HLPetriGame {
 
     public void setBad(Place place) {
         game.setBad(place);
+    }
+
+    protected boolean addListener(IGraphListener<PetriNet, Flow, Node> listener) {
+        return game.addListener(listener);
     }
 
 }
