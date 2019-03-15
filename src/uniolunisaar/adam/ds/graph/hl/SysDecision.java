@@ -23,12 +23,11 @@ public class SysDecision implements IDecision {
 //        this.type = type;
 //        this.c = c;
 //    }
-    
     public SysDecision(SysDecision dcs) {
         place = new ColoredPlace(dcs.place);
         c = new CommitmentSet(dcs.c);
     }
-    
+
     public SysDecision(ColoredPlace place, CommitmentSet c) {
         this.place = place;
         this.c = c;
@@ -61,7 +60,7 @@ public class SysDecision implements IDecision {
 
     @Override
     public boolean isTop() {
-        return c.isTop;
+        return c.isTop();
     }
 
 //    public boolean isType() {
@@ -69,6 +68,14 @@ public class SysDecision implements IDecision {
 //    }
     public CommitmentSet getC() {
         return c;
+    }
+
+    public String toDot() {
+        StringBuilder sb = new StringBuilder("(");
+        sb.append(place.toString()).append(", ");
+        sb.append(c.toDot());
+        sb.append(")");
+        return sb.toString();
     }
 
     @Override

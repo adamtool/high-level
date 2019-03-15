@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 
 /**
@@ -51,6 +52,31 @@ public class ColorToken {
 
     public Color get(int arg0) {
         return tuple.get(arg0);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 67 * hash + Objects.hashCode(this.tuple);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ColorToken other = (ColorToken) obj;
+        if (!Objects.equals(this.tuple, other.tuple)) {
+            return false;
+        }
+        return true;
     }
 
     @Override

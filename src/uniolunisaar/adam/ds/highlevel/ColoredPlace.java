@@ -1,5 +1,6 @@
 package uniolunisaar.adam.ds.highlevel;
 
+import java.util.Objects;
 import uniol.apt.adt.pn.Place;
 
 /**
@@ -29,4 +30,39 @@ public class ColoredPlace {
         return color;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final ColoredPlace other = (ColoredPlace) obj;
+        if (!Objects.equals(this.place, other.place)) {
+            return false;
+        }
+        if (!Objects.equals(this.color, other.color)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 37 * hash + Objects.hashCode(this.place);
+        hash = 37 * hash + Objects.hashCode(this.color);
+        return hash;
+    }
+
+    
+    
+    @Override
+    public String toString() {
+        return place.getId() + "." + color.toString();
+    }
 }

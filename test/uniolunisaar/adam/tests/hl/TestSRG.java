@@ -1,6 +1,7 @@
 package uniolunisaar.adam.tests.hl;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.testng.Assert;
@@ -8,12 +9,19 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.hl.CommitmentSet;
+import uniolunisaar.adam.ds.graph.hl.DecisionSet;
+import uniolunisaar.adam.ds.graph.hl.SRGFlow;
+import uniolunisaar.adam.ds.graph.hl.SymbolicReachabilityGraph;
 import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.highlevel.Valuation;
+import uniolunisaar.adam.ds.highlevel.oneenv.OneEnvHLPG;
 import uniolunisaar.adam.ds.highlevel.symmetries.RotationIterator;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
+import uniolunisaar.adam.generators.hl.ConcurrentMachinesHL;
+import uniolunisaar.adam.logic.hl.SRGBuilder;
+import uniolunisaar.adam.util.HLTools;
 
 /**
  *
@@ -22,7 +30,7 @@ import uniolunisaar.adam.ds.highlevel.terms.Variable;
 @Test
 public class TestSRG {
 
-    private static final String outputDir = System.getProperty("testoutputfolder") + "/converter/";
+    private static final String outputDir = System.getProperty("testoutputfolder") + "/srg/";
 
     @BeforeClass
     public void createFolder() {
@@ -89,5 +97,20 @@ public class TestSRG {
                 + "[2, 3, 4, 0, 1], "
                 + "[3, 4, 0, 1, 2], "
                 + "[4, 0, 1, 2, 3]]");
+    }
+    
+    @Test
+    public void testChoosen() {
+//        CommitmentSet c = new CommitmentSet(new ColoredTransition(t))
+    }
+
+    @Test
+    public void testSRG() throws IOException, InterruptedException {
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1);
+        HLTools.saveHLPG2PDF(outputDir + "CM21", hlgame);
+        OneEnvHLPG game = new OneEnvHLPG(hlgame);
+        SymbolicReachabilityGraph<DecisionSet, SRGFlow> graph = SRGBuilder.create(game);
+        HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
+        System.out.println("SIZE: " + graph.getStates().size());
     }
 }

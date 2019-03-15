@@ -21,6 +21,11 @@ public class OneEnvHLPG extends HLPetriGame implements IGraphListener<PetriNet, 
 
     private List<Transition> sysTransitions = null;
 
+    public OneEnvHLPG(HLPetriGame game) {
+        super(game, true);
+        addListener(this);
+    }
+
     public OneEnvHLPG(String name) {
         super(name);
         addListener(this);

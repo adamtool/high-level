@@ -42,6 +42,36 @@ public class HLPetriGame {
     private final Map<String, BasicColorClass> colorClasses;
     private final PetriGame game;
 
+    public HLPetriGame(HLPetriGame hlgame) {
+        this.colorClasses = copyColorClasses(hlgame);
+        this.game = new PetriGame(hlgame.game);
+    }
+
+    public HLPetriGame(HLPetriGame hlgame, boolean byReference) {
+        if (byReference) {
+            this.colorClasses = hlgame.colorClasses;
+            this.game = hlgame.game;
+        } else {
+            this.colorClasses = copyColorClasses(hlgame);
+            this.game = new PetriGame(hlgame.game);
+        }
+    }
+
+    private Map<String, BasicColorClass> copyColorClasses(HLPetriGame hlgame) {
+        Map<String, BasicColorClass> cclasses = new HashMap<>();
+        for (Map.Entry<String, BasicColorClass> entry : hlgame.colorClasses.entrySet()) {
+            String key = entry.getKey();
+            BasicColorClass value = entry.getValue();
+            cclasses.put(new String(key), new BasicColorClass(value));
+        }
+        return cclasses;
+    }
+
+    public HLPetriGame(Map<String, BasicColorClass> colorClasses, PetriGame game) {
+        this.colorClasses = colorClasses;
+        this.game = game;
+    }
+
     public HLPetriGame(String name) {
         game = new PetriGame(name);
         colorClasses = new HashMap<>();
@@ -153,7 +183,11 @@ public class HLPetriGame {
     }
 
     public ColorTokens getColorTokens(Place p) {
-        return HLPetriGameExtensionHandler.getColorTokens(p);
+        if (HLPetriGameExtensionHandler.hasColorTokens(p)) {
+            return HLPetriGameExtensionHandler.getColorTokens(p);
+        } else {
+            return null;
+        }
     }
 
     public ColorDomain getColorDomain(Place p) {
@@ -474,6 +508,14 @@ public class HLPetriGame {
 
     protected boolean addListener(IGraphListener<PetriNet, Flow, Node> listener) {
         return game.addListener(listener);
+    }
+
+    protected Map<String, BasicColorClass> getColorClasses() {
+        return colorClasses;
+    }
+
+    protected PetriGame getGame() {
+        return game;
     }
 
 }

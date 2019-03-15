@@ -9,7 +9,11 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.graph.hl.DecisionSet;
+import uniolunisaar.adam.ds.graph.hl.SRGFlow;
+import uniolunisaar.adam.ds.graph.hl.SymbolicReachabilityGraph;
 import uniolunisaar.adam.ds.highlevel.BasicColorClass;
+import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.tools.ExternalProcessHandler;
 import uniolunisaar.adam.tools.Logger;
@@ -248,4 +252,73 @@ public class HLTools {
         return mvPdf;
     }
 
+    public static String hlGraph2Dot(SymbolicReachabilityGraph<DecisionSet, ? extends SRGFlow> graph) {
+        final String mcutColor = "white";
+        final String sysColor = "gray";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("digraph hlGraphGame {\n");
+
+        // States
+        sb.append("#states\n");
+        for (DecisionSet state : graph.getStates()) {
+            // mcut?
+//            String shape = (state.isMcut()) ? mcutShape : sysShape;
+            String color = (state.isMcut()) ? mcutColor : sysColor;
+//            int penwidth = (state.isBad()) ? 8 : 1;
+            int penwidth = 1;
+//            String shape = (state.isGood()) ? "doubleoctagon" : "box";
+            String shape = "box";
+            // Drawing
+            sb.append(state.getId()).append("[shape=").append(shape).append(", style=filled, fillcolor=").append(color);
+            sb.append(", height=0.5, width=0.5, fixedsize=false,  penwidth=").append(penwidth);
+
+            String value = state.toDot();
+            sb.append(", label=\"").append(value).append("\"");
+            sb.append(", xlabel=\"").append(state.getId()).append("\"");
+            sb.append("];\n");
+        }
+
+        // Flows
+        sb.append("\n#flows\n");
+        for (SRGFlow f : graph.getFlows()) {
+            sb.append(f.getSourceid()).append("->").append(f.getTargetid());
+            ColoredTransition t = f.getTransition();
+            String label = (t == null) ? "T" : t.toString();
+            sb.append("[label=\"").append(label).append("\"]");
+            sb.append("\n");
+        }
+        sb.append("overlap=false\n");
+        sb.append("label=\"").append(graph.getName()).append("\"\n");
+        sb.append("fontsize=12\n\n");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    public static void saveGraph2Dot(String path, SymbolicReachabilityGraph<DecisionSet, ? extends SRGFlow> graph) throws FileNotFoundException {
+        try (PrintStream out = new PrintStream(path + ".dot")) {
+            out.println(hlGraph2Dot(graph));
+        }
+        Logger.getInstance().addMessage("Saved to: " + path + ".dot", true);
+    }
+
+    public static void saveGraph2DotAndPDF(String path, SymbolicReachabilityGraph<DecisionSet, ? extends SRGFlow> graph) throws IOException, InterruptedException {
+        saveGraph2Dot(path, graph);
+        Runtime rt = Runtime.getRuntime();
+        String exString = "dot -Tpdf " + path + ".dot -o " + path + ".pdf";
+        Process p = rt.exec(exString);
+        p.waitFor();
+        Logger.getInstance().addMessage("Saved to: " + path + ".pdf", true);
+    }
+
+    public static void saveGraph2PDF(String path, SymbolicReachabilityGraph<DecisionSet, ? extends SRGFlow> graph) throws IOException, InterruptedException {
+        String bufferpath = path + System.currentTimeMillis();
+        saveGraph2DotAndPDF(bufferpath, graph);
+        // Delete dot file
+        new File(bufferpath + ".dot").delete();
+        Logger.getInstance().addMessage("Deleted: " + bufferpath + ".dot", true);
+        // move to original name
+        Files.move(new File(bufferpath + ".pdf").toPath(), new File(path + ".pdf").toPath(), REPLACE_EXISTING);
+        Logger.getInstance().addMessage("Moved: " + bufferpath + ".pdf --> " + path + ".pdf", true);
+    }
 }

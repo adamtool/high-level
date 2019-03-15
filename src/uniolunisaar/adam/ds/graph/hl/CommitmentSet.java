@@ -1,5 +1,6 @@
 package uniolunisaar.adam.ds.graph.hl;
 
+import com.sun.tools.javac.jvm.ByteCodes;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
@@ -13,14 +14,18 @@ import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
  */
 public class CommitmentSet {
 
-    public final boolean isTop;
-    public final Set<ColoredTransition> transitions;
+    private final boolean isTop;
+    private final Set<ColoredTransition> transitions;
 
     public CommitmentSet(CommitmentSet c) {
         isTop = c.isTop;
-        transitions = new HashSet<>();
-        for (ColoredTransition transition : c.transitions) {
-            transitions.add(new ColoredTransition(transition));
+        if (isTop) {
+            transitions = null;
+        } else {
+            transitions = new HashSet<>();
+            for (ColoredTransition transition : c.transitions) {
+                transitions.add(new ColoredTransition(transition));
+            }
         }
     }
 
@@ -44,9 +49,33 @@ public class CommitmentSet {
     }
 
     public void apply(Symmetry sym) {
+        if (isTop) {
+            return;
+        }
         for (ColoredTransition transition : transitions) {
             transition.apply(sym);
         }
+    }
+
+    public String toDot() {
+        StringBuilder sb = new StringBuilder();
+        if (isTop) {
+            sb.append("T");
+        } else {
+            sb.append("{");
+            for (ColoredTransition transition : transitions) {
+                sb.append(transition.toString()).append(",");
+            }
+            if (transitions.size() >= 1) {
+                sb.delete(sb.length() - 1, sb.length());
+            }
+            sb.append("}");
+        }
+        return sb.toString();
+    }
+
+    public boolean isTop() {
+        return isTop;
     }
 
     @Override

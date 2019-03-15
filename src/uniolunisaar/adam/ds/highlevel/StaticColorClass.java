@@ -1,5 +1,6 @@
 package uniolunisaar.adam.ds.highlevel;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,6 +12,14 @@ public class StaticColorClass {
 
     private final String id;
     private final List<Color> colors;
+
+    StaticColorClass(StaticColorClass sclass) {
+        this.id = sclass.id;
+        this.colors = new ArrayList<>(sclass.colors.size());
+        for (Color color : sclass.colors) {
+            colors.add(new Color(color));
+        }
+    }
 //
 //    StaticColorClass(String id) {
 //        this.id = id;

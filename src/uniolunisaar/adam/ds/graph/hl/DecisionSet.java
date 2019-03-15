@@ -111,9 +111,14 @@ public class DecisionSet extends SRGState {
      * @return
      */
     public Set<DecisionSet> fire(ColoredTransition t) {
-        if (!t.isValid()) {
+        if (!t.isValid()) { // only if the predicate is fullfilled
             return null;
         }
+        // for each colored place in the preset of t look if the place
+        // is contained in any decision set where t is chosen
+        // iff there is one place for which we cannot find any decision set
+        // the transition is not firable (we return null), otherwise collect
+        // the decision set which are taken by firing this transition
         Set<IDecision> dcs = new HashSet<>();
         for (ColoredPlace coloredPlace : t.getPreset()) { // no problem to check the same decision more than once, because of safe net
             boolean found = false;
@@ -124,13 +129,20 @@ public class DecisionSet extends SRGState {
                     break; // one is enough
                 }
             }
-            if (!found) {
-                return null;
+            if (!found) { // there was no decision set with this colored place where t was chosen
+                return null; // not firable
             }
         }
+        System.out.println("did it");
+        // Take the old dcs an remove those which are taken by this transition
         Set<IDecision> ret = new HashSet<>(decisions);
         ret.removeAll(dcs);
 
+        // Add the colored place for the postset
+        // if it is an mcut this is just one successor where 
+        // the commitments are set to top
+        // Otherwise these are many successors (for all combinations of the 
+        // powersets for all the commitments)
         List<List<Set<ColoredTransition>>> commitments = new ArrayList<>();
         List<ColoredPlace> places = new ArrayList<>();
         boolean hasTop = false;
@@ -149,10 +161,10 @@ public class DecisionSet extends SRGState {
         }
         if (mcut) {
             Set<DecisionSet> decisionsets = new HashSet<>();
-            decisionsets.add(new DecisionSet(dcs, !hasTop || checkMcut(dcs), hlgame));
+            decisionsets.add(new DecisionSet(ret, !(hasTop || !checkMcut(ret)), hlgame));
             return decisionsets;
         } else {
-            return createDecisionSets(places, commitments, dcs);
+            return createDecisionSets(places, commitments, ret);
         }
     }
 
@@ -248,6 +260,17 @@ public class DecisionSet extends SRGState {
             return false;
         }
         return true;
+    }
+
+    public String toDot() {
+        StringBuilder sb = new StringBuilder();
+        for (IDecision dc : decisions) {
+            sb.append(dc.toDot()).append("\\n");
+        }
+        if (decisions.size() >= 1) {
+            sb.delete(sb.length() - 2, sb.length());
+        }
+        return sb.toString();
     }
 
 }

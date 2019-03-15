@@ -20,4 +20,6 @@ public interface IDecision {
 
     public void apply(Symmetry sym);
     
+    public String toDot();
+    
 }

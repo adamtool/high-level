@@ -1,5 +1,7 @@
 package uniolunisaar.adam.ds.graph.hl;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -23,6 +25,7 @@ public class SymbolicReachabilityGraph<S extends SRGState, F extends SRGFlow> {
         this.states = new HashMap<>();
         this.flows = new HashSet<>();
         this.initial = initial;
+        this.states.put(initial.getId(), initial);
     }
 
     public boolean contains(S state) {
@@ -39,6 +42,14 @@ public class SymbolicReachabilityGraph<S extends SRGState, F extends SRGFlow> {
 
     public S getState(int id) {
         return states.get(id);
+    }
+
+    public Collection<S> getStates() {
+        return Collections.unmodifiableCollection(states.values());
+    }
+
+    public Collection<F> getFlows() {
+        return Collections.unmodifiableCollection(flows);
     }
 
     public String getName() {

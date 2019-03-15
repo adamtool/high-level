@@ -27,8 +27,7 @@ import uniolunisaar.adam.ds.highlevel.symmetries.SymmetryIterator;
 
 /**
  *
- * @author Manuel Gimport
- * uniolunisaar.adam.ds.highlevel.symmetries.SymmetryIterator; ieseking
+ * @author Manuel Gieseking
  */
 public class SRGBuilder {
 
@@ -45,6 +44,9 @@ public class SRGBuilder {
         Set<IDecision> inits = new HashSet<>();
         for (Place place : hlgame.getPlaces()) {
             ColorTokens tokens = hlgame.getColorTokens(place);
+            if (tokens == null) {
+                continue;
+            }
             if (hlgame.isEnvironment(place)) {
                 for (ColorToken token : tokens) {
                     inits.add(new EnvDecision(place, token));
@@ -61,7 +63,7 @@ public class SRGBuilder {
         SymbolicReachabilityGraph<DecisionSet, SRGFlow> srg = new SymbolicReachabilityGraph<>(hlgame.getName() + "_SRG", init);
         Stack<Integer> todo = new Stack<>();
         todo.push(init.getId());
-        while (!todo.isEmpty()) { // as long as new states had been added
+        while (!todo.isEmpty()) { // as long as new states had been added            
             DecisionSet state = srg.getState(todo.pop());
             // if the current state contains tops, resolve them 
             if (!state.isMcut() && state.hasTop()) {
@@ -87,9 +89,19 @@ public class SRGBuilder {
                     Valuation val = it.next();
                     ColoredTransition t = new ColoredTransition(hlgame, transition, val);
                     Set<DecisionSet> succs = state.fire(t);
-                    // add only the not to any existing state equivalent decision sets
-                    // otherwise only the flows are added to the belonging equivalent class
-                    addSuccessors(state, t, succs, syms, todo, srg);
+                    if(!state.isMcut()) {
+                        System.out.println("liko to fire"+t);
+                        }
+                    if (succs != null) { // had been firable
+                        if(!state.isMcut()) {
+                        System.out.println("can fire");
+                        }
+                        // add only the not to any existing state equivalent decision sets
+                        // otherwise only the flows are added to the belonging equivalent class
+                        addSuccessors(state, t, succs, syms, todo, srg);
+                    } else {
+                        System.out.println("haven't");
+                    }
                 }
             }
         }

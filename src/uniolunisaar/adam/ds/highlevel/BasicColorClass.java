@@ -26,6 +26,21 @@ public class BasicColorClass {
 //    }
 //
 
+    BasicColorClass(BasicColorClass cclass) {
+        this.id = cclass.id;
+        this.ordered = cclass.ordered;
+        this.colors = new ArrayList<>(cclass.colors.size());
+        for (Color color : cclass.colors) {
+            colors.add(new Color(color));
+        }
+        this.staticSubclasses = new HashMap<>();
+        for (Map.Entry<String, StaticColorClass> entry : staticSubclasses.entrySet()) {
+            String key = entry.getKey();
+            StaticColorClass value = entry.getValue();
+            this.staticSubclasses.put(key, new StaticColorClass(value));
+        }
+    }
+
     BasicColorClass(String id, boolean ordered) {
         this.id = id;
         this.ordered = ordered;
