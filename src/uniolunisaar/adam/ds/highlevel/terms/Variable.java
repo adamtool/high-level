@@ -17,6 +17,10 @@ public class Variable implements IPredicateTerm<Color>, IArcTerm<Color>, IArcTup
 
     private final String name;
 
+    public Variable(Variable var) {
+        name = var.name;
+    }
+
     public Variable(String name) {
         this.name = name;
     }

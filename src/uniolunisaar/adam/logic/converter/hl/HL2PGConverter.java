@@ -58,6 +58,18 @@ public class HL2PGConverter {
         return sb.toString();
     }
 
+    public static String getPlaceID(String origID, ColorToken token) {
+        StringBuilder sb = new StringBuilder(origID);
+        sb.append(ID_DELIM);
+        for (int i = 0; i < token.size() - 1; i++) {
+            sb.append(token.get(i)).append(COLOR_DELIM);
+        }
+        if (token.size() >= 1) {
+            sb.append(token.get(token.size() - 1));
+        }
+        return sb.toString();
+    }
+
     public static String getTransitionID(String origID, Valuation val) {
         return origID + ID_DELIM + val.toTransitionIdentifier();
     }

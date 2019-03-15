@@ -24,6 +24,15 @@ public class Valuation extends HashMap<Variable, Color> {
         super(m);
     }
 
+    public Valuation(Valuation v) {
+        super(v.size());
+        for (Entry<Variable, Color> entry : v.entrySet()) {
+            Variable key = entry.getKey();
+            Color value = entry.getValue();
+            put(new Variable(key), new Color(value));
+        }
+    }
+
     public Valuation() {
     }
 

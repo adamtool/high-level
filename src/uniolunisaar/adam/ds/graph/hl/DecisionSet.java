@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.graph.State;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.Valuation;
 import uniolunisaar.adam.ds.highlevel.ValuationIterator;
 import uniolunisaar.adam.ds.highlevel.oneenv.OneEnvHLPG;
+import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.tools.CartesianProduct;
 import uniolunisaar.adam.tools.Tools;
 
@@ -20,7 +20,7 @@ import uniolunisaar.adam.tools.Tools;
  *
  * @author Manuel Gieseking
  */
-public class DecisionSet extends State {
+public class DecisionSet extends SRGState {
 
     private final Set<IDecision> decisions;
     private final boolean mcut;
@@ -30,6 +30,19 @@ public class DecisionSet extends State {
 //        this.decisions = decisions;
 //        this.mcut = false;
 //    }
+
+    public DecisionSet(DecisionSet dcs) {
+        this.mcut = dcs.mcut;
+        this.hlgame = dcs.hlgame;
+        this.decisions = new HashSet<>();
+        for (IDecision decision : dcs.decisions) {
+            if (decision.isEnvDecision()) {
+                this.decisions.add(new EnvDecision((EnvDecision) decision));
+            } else {
+                this.decisions.add(new SysDecision((SysDecision) decision));
+            }
+        }
+    }
 
     public DecisionSet(Set<IDecision> decisions, boolean mcut, OneEnvHLPG hlgame) {
         this.decisions = decisions;
@@ -192,8 +205,19 @@ public class DecisionSet extends State {
         return true;
     }
 
+    public void apply(Symmetry sym) {
+        for (IDecision decision : decisions) {
+            decision.apply(sym);
+        }
+    }
+
     public boolean isMcut() {
         return mcut;
+    }
+
+    @Override
+    public int getId() {
+        return hashCode();
     }
 
     @Override

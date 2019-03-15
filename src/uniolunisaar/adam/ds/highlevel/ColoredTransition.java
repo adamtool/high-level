@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import uniol.apt.adt.pn.Flow;
@@ -16,7 +17,9 @@ import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTupleElement;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTupleElementType;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcType;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.SetMinusType;
+import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.highlevel.terms.ColorClassType;
+import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.tools.CartesianProduct;
 
 /**
@@ -29,10 +32,24 @@ public class ColoredTransition {
     private final Valuation val;
     private final HLPetriGame hlgame;
 
+    public ColoredTransition(ColoredTransition t) {
+        hlgame = t.hlgame;
+        transition = t.transition;
+        val = new Valuation(t.val);
+    }
+
     public ColoredTransition(HLPetriGame hlgame, Transition transition, Valuation val) {
         this.hlgame = hlgame;
         this.transition = transition;
         this.val = val;
+    }
+
+    public void apply(Symmetry sym) {
+        for (Map.Entry<Variable, Color> entry : val.entrySet()) {
+            Variable var = entry.getKey();
+            Color c = entry.getValue();
+            val.put(var, sym.get(c));
+        }
     }
 
     public Transition getTransition() {
@@ -186,7 +203,7 @@ public class ColoredTransition {
 
     @Override
     public String toString() {
-        return "ColoredTransition{" + "transition=" + transition.toString() + ", val=" + val.toString() + '}';
+        return transition.toString() + "." + val.toString();
     }
 
 }

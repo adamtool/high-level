@@ -1,17 +1,13 @@
 package uniolunisaar.adam.ds.highlevel.symmetries;
 
-import java.util.Map;
-import org.apache.commons.collections4.iterators.PermutationIterator;
+import java.util.HashMap;
 import uniolunisaar.adam.ds.highlevel.Color;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class Symmetry {
+public class Symmetry extends HashMap<Color, Color> {
 
-    private Map<Color, Color> mapping;
-    
-    public PermutationIterator perm;
     
 }

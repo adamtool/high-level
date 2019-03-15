@@ -12,6 +12,10 @@ public class Color implements IColorType, IArcTupleElementType {
 
     private final String id;
 
+    public Color(Color c) {
+        id = c.id;
+    }
+
     public Color(String id) {
         this.id = id;
     }

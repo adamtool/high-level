@@ -5,6 +5,7 @@ import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.highlevel.ColorToken;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
+import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 
 /**
  *
@@ -22,6 +23,12 @@ public class SysDecision implements IDecision {
 //        this.type = type;
 //        this.c = c;
 //    }
+    
+    public SysDecision(SysDecision dcs) {
+        place = new ColoredPlace(dcs.place);
+        c = new CommitmentSet(dcs.c);
+    }
+    
     public SysDecision(ColoredPlace place, CommitmentSet c) {
         this.place = place;
         this.c = c;
@@ -29,6 +36,12 @@ public class SysDecision implements IDecision {
 
     public SysDecision(Place place, ColorToken color, CommitmentSet c) {
         this(new ColoredPlace(place, color), c);
+    }
+
+    @Override
+    public void apply(Symmetry sym) {
+        place.getColor().apply(sym);
+        c.apply(sym);
     }
 
     @Override

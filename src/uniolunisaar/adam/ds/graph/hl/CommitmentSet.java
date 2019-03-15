@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
+import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 
 /**
  *
@@ -14,6 +15,14 @@ public class CommitmentSet {
 
     public final boolean isTop;
     public final Set<ColoredTransition> transitions;
+
+    public CommitmentSet(CommitmentSet c) {
+        isTop = c.isTop;
+        transitions = new HashSet<>();
+        for (ColoredTransition transition : c.transitions) {
+            transitions.add(new ColoredTransition(transition));
+        }
+    }
 
     public CommitmentSet(boolean isTop) {
         this.isTop = isTop;
@@ -32,6 +41,12 @@ public class CommitmentSet {
 
     public boolean isChoosen(ColoredTransition t) {
         return transitions.contains(t);
+    }
+
+    public void apply(Symmetry sym) {
+        for (ColoredTransition transition : transitions) {
+            transition.apply(sym);
+        }
     }
 
     @Override
