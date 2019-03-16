@@ -1,6 +1,5 @@
 package uniolunisaar.adam.ds.graph.hl;
 
-import com.sun.tools.javac.jvm.ByteCodes;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
@@ -45,6 +44,9 @@ public class CommitmentSet {
     }
 
     public boolean isChoosen(ColoredTransition t) {
+        if (isTop) {
+            return false;
+        }
         return transitions.contains(t);
     }
 

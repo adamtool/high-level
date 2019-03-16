@@ -98,10 +98,36 @@ public class TestSRG {
                 + "[3, 4, 0, 1, 2], "
                 + "[4, 0, 1, 2, 3]]");
     }
-    
+
     @Test
     public void testChoosen() {
-//        CommitmentSet c = new CommitmentSet(new ColoredTransition(t))
+        HLPetriGame game = new HLPetriGame("tesing");
+        Transition t1 = game.createTransition();
+        ColoredTransition ct1 = new ColoredTransition(game, t1, new Valuation());
+
+        Transition t2 = game.createTransition("asdf");
+        Valuation valt2 = new Valuation();
+        valt2.put(new Variable("x"), new Color("c"));
+        ColoredTransition ct2 = new ColoredTransition(game, t2, valt2);
+
+        Transition t3 = game.createTransition("asdf2");
+        Valuation valt3 = new Valuation();
+        valt3.put(new Variable("y"), new Color("c3"));
+        ColoredTransition ct3 = new ColoredTransition(game, t3, valt3);
+
+        CommitmentSet c1 = new CommitmentSet(ct1, ct2, ct3);
+        Assert.assertTrue(c1.isChoosen(ct1));
+        Assert.assertTrue(c1.isChoosen(ct2));
+        Assert.assertTrue(c1.isChoosen(ct3));
+        CommitmentSet c2 = new CommitmentSet(ct1, ct3);        
+        Assert.assertTrue(c2.isChoosen(ct1));
+        Assert.assertTrue(!c2.isChoosen(ct2));
+        Assert.assertTrue(c2.isChoosen(ct3));
+
+        Valuation valt2Equal = new Valuation();
+        valt2Equal.put(new Variable("x"), new Color("c"));
+        Assert.assertEquals(valt2, valt2Equal);
+
     }
 
     @Test

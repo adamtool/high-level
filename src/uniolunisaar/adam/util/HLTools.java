@@ -265,9 +265,8 @@ public class HLTools {
             // mcut?
 //            String shape = (state.isMcut()) ? mcutShape : sysShape;
             String color = (state.isMcut()) ? mcutColor : sysColor;
-//            int penwidth = (state.isBad()) ? 8 : 1;
-            int penwidth = 1;
-//            String shape = (state.isGood()) ? "doubleoctagon" : "box";
+            int penwidth = (state.isBad()) ? 8 : 1;
+            //            String shape = (state.isGood()) ? "doubleoctagon" : "box";
             String shape = "box";
             // Drawing
             sb.append(state.getId()).append("[shape=").append(shape).append(", style=filled, fillcolor=").append(color);

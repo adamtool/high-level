@@ -57,7 +57,7 @@ public class SRGBuilder {
                 }
             }
         }
-        DecisionSet init = new DecisionSet(inits, false, hlgame);
+        DecisionSet init = new DecisionSet(inits, false, false, hlgame);
 
         // Create the graph iteratively
         SymbolicReachabilityGraph<DecisionSet, SRGFlow> srg = new SymbolicReachabilityGraph<>(hlgame.getName() + "_SRG", init);

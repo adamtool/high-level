@@ -93,7 +93,7 @@ public class ColoredTransition {
                 }
                 case COLORCLASS: {
                     ColorClassType colors = (ColorClassType) expression.getSecond().getValue(val);
-                    BasicColorClass bc = hlgame.getBasicColorClass(colors.getId());
+                    BasicColorClass bc = hlgame.getBasicColorClass(colors.getId());// yodo: here possibly also static subclass
                     for (Color color : bc.getColors()) {
                         ret.add(new ColoredPlace(f.getPlace(), new ColorToken(color)));
                     }
