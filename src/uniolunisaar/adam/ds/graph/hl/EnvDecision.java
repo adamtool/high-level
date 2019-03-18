@@ -1,35 +1,19 @@
 package uniolunisaar.adam.ds.graph.hl;
 
 import java.util.Objects;
-import uniol.apt.adt.pn.Place;
-import uniolunisaar.adam.ds.highlevel.ColorToken;
-import uniolunisaar.adam.ds.highlevel.ColoredPlace;
-import uniolunisaar.adam.ds.highlevel.ColoredTransition;
-import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 
 /**
  *
  * @author Manuel Gieseking
+ * @param <P>
+ * @param <T>
  */
-public class EnvDecision implements IDecision {
+public abstract class EnvDecision<P, T> implements IDecision<P, T> {
 
-    private final ColoredPlace place;
+    protected P place;
 
-    public EnvDecision(EnvDecision dc) {
-        place = new ColoredPlace(dc.getPlace());
-    }
-
-    public EnvDecision(ColoredPlace place) {
+    public EnvDecision(P place) {
         this.place = place;
-    }
-
-    public EnvDecision(Place place, ColorToken color) {
-        this(new ColoredPlace(place, color));
-    }
-
-    @Override
-    public void apply(Symmetry sym) {
-        place.getColor().apply(sym);
     }
 
     @Override
@@ -38,12 +22,12 @@ public class EnvDecision implements IDecision {
     }
 
     @Override
-    public ColoredPlace getPlace() {
+    public P getPlace() {
         return place;
     }
 
     @Override
-    public boolean isChoosen(ColoredTransition t) {
+    public boolean isChoosen(T t) {
         return true;
     }
 

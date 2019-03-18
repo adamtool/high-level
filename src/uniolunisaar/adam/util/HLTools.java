@@ -9,11 +9,11 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.graph.hl.DecisionSet;
+import uniolunisaar.adam.ds.graph.hl.approachHL.HLDecisionSet;
 import uniolunisaar.adam.ds.graph.hl.SRGFlow;
-import uniolunisaar.adam.ds.graph.hl.SymbolicReachabilityGraph;
+import uniolunisaar.adam.ds.graph.hl.SymbolicGameGraph;
+import uniolunisaar.adam.ds.graph.hl.approachLL.LLDecisionSet;
 import uniolunisaar.adam.ds.highlevel.BasicColorClass;
-import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.tools.ExternalProcessHandler;
 import uniolunisaar.adam.tools.Logger;
@@ -252,7 +252,7 @@ public class HLTools {
         return mvPdf;
     }
 
-    public static String hlGraph2Dot(SymbolicReachabilityGraph<DecisionSet, ? extends SRGFlow> graph) {
+    public static String hlGraph2Dot(SymbolicGameGraph<LLDecisionSet, ? extends SRGFlow> graph) {
         final String mcutColor = "white";
         final String sysColor = "gray";
 
@@ -261,7 +261,7 @@ public class HLTools {
 
         // States
         sb.append("#states\n");
-        for (DecisionSet state : graph.getStates()) {
+        for (LLDecisionSet state : graph.getStates()) {
             // mcut?
 //            String shape = (state.isMcut()) ? mcutShape : sysShape;
             String color = (state.isMcut()) ? mcutColor : sysColor;
@@ -282,7 +282,7 @@ public class HLTools {
         sb.append("\n#flows\n");
         for (SRGFlow f : graph.getFlows()) {
             sb.append(f.getSourceid()).append("->").append(f.getTargetid());
-            ColoredTransition t = f.getTransition();
+            Object t = f.getTransition();
             String label = (t == null) ? "T" : t.toString();
             sb.append("[label=\"").append(label).append("\"]");
             sb.append("\n");
@@ -294,14 +294,14 @@ public class HLTools {
         return sb.toString();
     }
 
-    public static void saveGraph2Dot(String path, SymbolicReachabilityGraph<DecisionSet, ? extends SRGFlow> graph) throws FileNotFoundException {
+    public static void saveGraph2Dot(String path, SymbolicGameGraph<LLDecisionSet, ? extends SRGFlow> graph) throws FileNotFoundException {
         try (PrintStream out = new PrintStream(path + ".dot")) {
             out.println(hlGraph2Dot(graph));
         }
         Logger.getInstance().addMessage("Saved to: " + path + ".dot", true);
     }
 
-    public static void saveGraph2DotAndPDF(String path, SymbolicReachabilityGraph<DecisionSet, ? extends SRGFlow> graph) throws IOException, InterruptedException {
+    public static void saveGraph2DotAndPDF(String path, SymbolicGameGraph<LLDecisionSet, ? extends SRGFlow> graph) throws IOException, InterruptedException {
         saveGraph2Dot(path, graph);
         Runtime rt = Runtime.getRuntime();
         String exString = "dot -Tpdf " + path + ".dot -o " + path + ".pdf";
@@ -310,7 +310,7 @@ public class HLTools {
         Logger.getInstance().addMessage("Saved to: " + path + ".pdf", true);
     }
 
-    public static void saveGraph2PDF(String path, SymbolicReachabilityGraph<DecisionSet, ? extends SRGFlow> graph) throws IOException, InterruptedException {
+    public static void saveGraph2PDF(String path, SymbolicGameGraph<LLDecisionSet, ? extends SRGFlow> graph) throws IOException, InterruptedException {
         String bufferpath = path + System.currentTimeMillis();
         saveGraph2DotAndPDF(bufferpath, graph);
         // Delete dot file

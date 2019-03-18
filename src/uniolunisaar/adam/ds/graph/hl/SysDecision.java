@@ -1,21 +1,19 @@
 package uniolunisaar.adam.ds.graph.hl;
 
 import java.util.Objects;
-import uniol.apt.adt.pn.Place;
-import uniolunisaar.adam.ds.highlevel.ColorToken;
-import uniolunisaar.adam.ds.highlevel.ColoredPlace;
-import uniolunisaar.adam.ds.highlevel.ColoredTransition;
-import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 
 /**
  *
  * @author Manuel Gieseking
+ * @param <P>
+ * @param <T>
+ * @param <C>
  */
-public class SysDecision implements IDecision {
+public abstract class SysDecision<P, T, C extends CommitmentSet<T>> implements IDecision<P, T> {
 
-    private final ColoredPlace place;
+    protected P place;
 //    private final boolean type;
-    private final CommitmentSet c;
+    protected C c;
 
 //    public SysDecision(Place place, ColorToken color, boolean type, CommitmentSet c) {
 //        this.place = place;
@@ -23,24 +21,9 @@ public class SysDecision implements IDecision {
 //        this.type = type;
 //        this.c = c;
 //    }
-    public SysDecision(SysDecision dcs) {
-        place = new ColoredPlace(dcs.place);
-        c = new CommitmentSet(dcs.c);
-    }
-
-    public SysDecision(ColoredPlace place, CommitmentSet c) {
+    public SysDecision(P place, C c) {
         this.place = place;
         this.c = c;
-    }
-
-    public SysDecision(Place place, ColorToken color, CommitmentSet c) {
-        this(new ColoredPlace(place, color), c);
-    }
-
-    @Override
-    public void apply(Symmetry sym) {
-        place.getColor().apply(sym);
-        c.apply(sym);
     }
 
     @Override
@@ -49,12 +32,12 @@ public class SysDecision implements IDecision {
     }
 
     @Override
-    public ColoredPlace getPlace() {
+    public P getPlace() {
         return place;
     }
 
     @Override
-    public boolean isChoosen(ColoredTransition t) {
+    public boolean isChoosen(T t) {
         return c.isChoosen(t);
     }
 
@@ -66,10 +49,11 @@ public class SysDecision implements IDecision {
 //    public boolean isType() {
 //        return type;
 //    }
-    public CommitmentSet getC() {
+    public C getC() {
         return c;
     }
 
+    @Override
     public String toDot() {
         StringBuilder sb = new StringBuilder("(");
         sb.append(place.toString()).append(", ");

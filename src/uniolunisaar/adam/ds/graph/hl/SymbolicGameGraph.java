@@ -13,14 +13,14 @@ import java.util.Set;
  * @param <S>
  * @param <F>
  */
-public class SymbolicReachabilityGraph<S extends SRGState, F extends SRGFlow> {
+public class SymbolicGameGraph<S extends SRGState, F extends SRGFlow> {
 
     private String name;
     private final Map<Integer, S> states;
     private final Set<F> flows;
     private final S initial;
 
-    public SymbolicReachabilityGraph(String name, S initial) {
+    public SymbolicGameGraph(String name, S initial) {
         this.name = name;
         this.states = new HashMap<>();
         this.flows = new HashSet<>();

@@ -36,16 +36,4 @@ public class Valuation extends HashMap<Variable, Color> {
     public Valuation() {
     }
 
-    public String toTransitionIdentifier() {
-        StringBuilder sb = new StringBuilder();
-        for (Entry<Variable, Color> entry : this.entrySet()) {
-            Variable key = entry.getKey();
-            Color value = entry.getValue();
-            sb.append(key.toString()).append("_").append(value.toString());
-        }
-        return sb.toString();
-    }
-    
-    
-
 }

@@ -2,19 +2,18 @@ package uniolunisaar.adam.ds.graph.hl;
 
 import java.util.Objects;
 import uniol.apt.adt.extension.Extensible;
-import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class SRGFlow extends Extensible {
+public class SRGFlow<T> extends Extensible {
 
     private final int sourceid;
     private final int targetid;
-    private final ColoredTransition transition;
+    private final T transition;
 
-    public SRGFlow(int sourceid, ColoredTransition transition, int targetid) {
+    public SRGFlow(int sourceid, T transition, int targetid) {
         this.sourceid = sourceid;
         this.targetid = targetid;
         this.transition = transition;
@@ -28,7 +27,7 @@ public class SRGFlow extends Extensible {
         return targetid;
     }
 
-    public ColoredTransition getTransition() {
+    public T getTransition() {
         return transition;
     }
 

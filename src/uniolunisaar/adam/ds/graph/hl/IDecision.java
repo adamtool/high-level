@@ -1,25 +1,25 @@
 package uniolunisaar.adam.ds.graph.hl;
 
-import uniolunisaar.adam.ds.highlevel.ColoredPlace;
-import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 
 /**
  *
  * @author Manuel Gieseking
+ * @param <P>
+ * @param <T>
  */
-public interface IDecision {
+public interface IDecision<P, T> {
 
     public boolean isEnvDecision();
 
-    public ColoredPlace getPlace();
+    public P getPlace();
 
-    public boolean isChoosen(ColoredTransition t);
+    public boolean isChoosen(T t);
 
     public boolean isTop();
 
     public void apply(Symmetry sym);
-    
+
     public String toDot();
-    
+
 }

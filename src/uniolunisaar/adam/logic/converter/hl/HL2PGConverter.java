@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import uniol.apt.adt.exception.FlowExistsException;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Node;
@@ -28,9 +29,11 @@ import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcType;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.SetMinusType;
 import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
 import uniolunisaar.adam.ds.highlevel.terms.ColorClassType;
+import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.tools.CartesianProduct;
+import uniolunisaar.adam.util.AdamExtensions;
 import uniolunisaar.adam.util.PNWTTools;
 
 /**
@@ -41,6 +44,43 @@ public class HL2PGConverter {
 
     private static final String ID_DELIM = "_"; // TODO: think of s.th. better on the one hand readable by APT on the other not already existing?
     private static final String COLOR_DELIM = "x";
+    private static final String VALUATION_DELIM = "_";
+
+    /**
+     * Could have problems iff ID_DELIM is also used for other things in the
+     * llPlaceID.
+     *
+     * @param llPlaceID
+     * @return
+     */
+    @Deprecated
+    public static String getHLPlaceID(String llPlaceID) {
+        return llPlaceID.substring(0, llPlaceID.indexOf(ID_DELIM) - 1);
+    }
+
+    /**
+     * Could have problems iff ID_DELIM or COLOR_DELIM is also used for other
+     * things in the llPlaceID.
+     *
+     * @param llPlaceID
+     * @return
+     */
+    @Deprecated
+    public static String[] getPlaceColorIDs(String llPlaceID) {
+        return llPlaceID.substring(llPlaceID.indexOf(ID_DELIM) + 1).split(COLOR_DELIM);
+    }
+
+    /**
+     * Could have problems iff ID_DELIM is also used for other things in the
+     * llTransitionID.
+     *
+     * @param llTransitionID
+     * @return
+     */
+    @Deprecated
+    public static String getHLTransitionID(String llTransitionID) {
+        return llTransitionID.substring(0, llTransitionID.indexOf(ID_DELIM) - 1);
+    }
 
     public static String getPlaceID(String origID, Color... colors) {
         return getPlaceID(origID, Arrays.asList(colors));
@@ -70,23 +110,64 @@ public class HL2PGConverter {
         return sb.toString();
     }
 
+    public static String valToTransitionIdentifier(Valuation val) {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<Variable, Color> entry : val.entrySet()) {
+            Variable key = entry.getKey();
+            Color value = entry.getValue();
+            //todo: this is not the nicest output, but allows the get it read by APT after rendering...
+            sb.append(key.toString()).append(VALUATION_DELIM).append(value.toString());
+        }
+        return sb.toString();
+    }
+
     public static String getTransitionID(String origID, Valuation val) {
-        return origID + ID_DELIM + val.toTransitionIdentifier();
+        return origID + ID_DELIM + valToTransitionIdentifier(val);
+    }
+
+    public static void setColorsAndID2Extension(Place llPlace, String origID, List<Color> colors) {
+        llPlace.putExtension(AdamExtensions.convOrigID.name(), origID);
+        llPlace.putExtension(AdamExtensions.convColors.name(), colors);
+    }
+
+    public static String getOrigID(Place llPlace) {
+        return (String) llPlace.getExtension(AdamExtensions.convOrigID.name());
+    }
+
+    public static List<Color> getColors(Place llPlace) {
+        return (List<Color>) llPlace.getExtension(AdamExtensions.convColors.name());
+    }
+
+    public static void setValuationAndID2Extension(Transition lltransition, String origID, Valuation val) {
+        lltransition.putExtension(AdamExtensions.convOrigID.name(), origID);
+        lltransition.putExtension(AdamExtensions.convValuation.name(), val);
+    }
+
+    public static String getOrigID(Transition llTransition) {
+        return (String) llTransition.getExtension(AdamExtensions.convOrigID.name());
+    }
+
+    public static Valuation getValuation(Transition llTransition) {
+        return (Valuation) llTransition.getExtension(AdamExtensions.convValuation.name());
     }
 
     public static PetriGame convert(HLPetriGame hlgame) {
+        return convert(hlgame, false);
+    }
+
+    public static PetriGame convert(HLPetriGame hlgame, boolean save2Extension) {
         PetriGame pg = new PetriGame(hlgame.getName() + " - LL-Version");
         PNWTTools.setConditionAnnotation(pg, Condition.Objective.A_SAFETY); // TODO: do it properly
         // Places
-        addPlaces(hlgame, pg);
+        addPlaces(hlgame, pg, save2Extension);
         // set initial marking
         setInitialMarking(hlgame, pg);
         // transitions
-        addTransitions(hlgame, pg);
+        addTransitions(hlgame, pg, save2Extension);
         return pg;
     }
 
-    private static void addPlaces(HLPetriGame hlgame, PetriGame pg) {
+    private static void addPlaces(HLPetriGame hlgame, PetriGame pg, boolean save2Extension) {
         for (Place place : hlgame.getPlaces()) {
             ColorDomain dom = hlgame.getColorDomain(place);
             boolean env = hlgame.isEnvironment(place);
@@ -132,7 +213,11 @@ public class HL2PGConverter {
             }
             CartesianProduct<Color> prod = new CartesianProduct<>(colorClasses);
             for (Iterator<List<Color>> it = prod.iterator(); it.hasNext();) {
-                Place p = pg.createPlace(getPlaceID(place.getId(), it.next()));
+                List<Color> colors = it.next();
+                Place p = pg.createPlace(getPlaceID(place.getId(), colors));
+                if (save2Extension) {
+                    setColorsAndID2Extension(p, place.getId(), colors);
+                }
                 if (env) {
                     pg.setEnvironment(p);
                 } else {
@@ -157,7 +242,7 @@ public class HL2PGConverter {
         }
     }
 
-    private static void addTransitions(HLPetriGame hlgame, PetriGame pg) {
+    private static void addTransitions(HLPetriGame hlgame, PetriGame pg, boolean save2Extension) {
         for (Transition t : hlgame.getTransitions()) {
             // For every valuation create a transition
             Valuations vals = hlgame.getValuations(t);
@@ -167,6 +252,9 @@ public class HL2PGConverter {
                 if (pred.check(val)) { // only when the valuation satisfies the predicate                        
                     // Create the transition
                     Transition tLL = pg.createTransition(getTransitionID(t.getId(), val));
+                    if (save2Extension) {
+                        setValuationAndID2Extension(tLL, t.getId(), val);
+                    }
                     // create the flows
                     for (Flow presetEdge : t.getPresetEdges()) {
                         createFlows(tLL, presetEdge, val, hlgame, pg, true);

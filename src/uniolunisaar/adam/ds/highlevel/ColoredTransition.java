@@ -203,7 +203,7 @@ public class ColoredTransition {
 
     @Override
     public String toString() {
-        return transition.getId()+ "." + val.toString();
+        return transition.getId() + "." + val.toString();
     }
 
 }

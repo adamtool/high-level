@@ -4,60 +4,52 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 
 /**
  *
  * @author Manuel Gieseking
+ * @param <T>
  */
-public class CommitmentSet {
+public abstract class CommitmentSet<T> {
 
-    private final boolean isTop;
-    private final Set<ColoredTransition> transitions;
-
-    public CommitmentSet(CommitmentSet c) {
-        isTop = c.isTop;
-        if (isTop) {
-            transitions = null;
-        } else {
-            transitions = new HashSet<>();
-            for (ColoredTransition transition : c.transitions) {
-                transitions.add(new ColoredTransition(transition));
-            }
-        }
-    }
+    protected boolean isTop;
+    protected Set<T> transitions;
 
     public CommitmentSet(boolean isTop) {
         this.isTop = isTop;
         transitions = null;
     }
 
-    public CommitmentSet(ColoredTransition... transitions) {
+    public CommitmentSet(T... transitions) {
         isTop = false;
         this.transitions = new HashSet<>(Arrays.asList(transitions));
     }
 
-    public CommitmentSet(Set<ColoredTransition> transitions) {
+    public CommitmentSet(Set<T> transitions) {
         isTop = false;
         this.transitions = transitions;
     }
 
-    public boolean isChoosen(ColoredTransition t) {
+    public boolean isChoosen(T t) {
         if (isTop) {
             return false;
         }
+//        System.out.println(transitions.toString());
+//        System.out.println(t.toString());
+//        System.out.println("contains" + transitions.contains(t));
+//        for (ColoredTransition transition : transitions) {
+//            if (transition.equals(t)) {
+//                System.out.println(transition.hashCode());
+//                System.out.println(t.hashCode());
+//            } else {
+//                System.out.println("false");
+//            }
+//        }
         return transitions.contains(t);
     }
 
-    public void apply(Symmetry sym) {
-        if (isTop) {
-            return;
-        }
-        for (ColoredTransition transition : transitions) {
-            transition.apply(sym);
-        }
-    }
+    public abstract void apply(Symmetry sym);
 
     public String toDot() {
         StringBuilder sb = new StringBuilder();
@@ -65,7 +57,7 @@ public class CommitmentSet {
             sb.append("T");
         } else {
             sb.append("{");
-            for (ColoredTransition transition : transitions) {
+            for (T transition : transitions) {
                 sb.append(transition.toString()).append(",");
             }
             if (transitions.size() >= 1) {
@@ -99,7 +91,7 @@ public class CommitmentSet {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final CommitmentSet other = (CommitmentSet) obj;
+        final CommitmentSet<T> other = (CommitmentSet<T>) obj;
         if (this.isTop != other.isTop) {
             return false;
         }
@@ -110,12 +102,12 @@ public class CommitmentSet {
         if ((this.transitions != null && other.transitions == null) || (this.transitions == null && other.transitions != null)) {
             return false;
         }
-        for (ColoredTransition transition : this.transitions) {
+        for (T transition : this.transitions) {
             if (!other.transitions.contains(transition)) {
                 return false;
             }
         }
-        for (ColoredTransition transition : other.transitions) {
+        for (T transition : other.transitions) {
             if (!this.transitions.contains(transition)) {
                 return false;
             }
