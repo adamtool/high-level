@@ -66,4 +66,22 @@ public class LLCommitmentSet extends CommitmentSet<Transition> {
         }
         transitions = tr;
     }
+
+    @Override
+    public String toDot() {
+        StringBuilder sb = new StringBuilder();
+        if (isTop) {
+            sb.append("T");
+        } else {
+            sb.append("{");
+            for (Transition transition : transitions) {
+                sb.append(transition.getId()).append(",");
+            }
+            if (transitions.size() >= 1) {
+                sb.delete(sb.length() - 1, sb.length());
+            }
+            sb.append("}");
+        }
+        return sb.toString();
+    }
 }

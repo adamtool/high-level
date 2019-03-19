@@ -49,4 +49,18 @@ public class LLSysDecision extends SysDecision<Place, Transition, LLCommitmentSe
         c.apply(sym);
     }
 
+    @Override
+    public String toDot() {
+        StringBuilder sb = new StringBuilder("(");
+        sb.append(place.getId()).append(", ");
+        sb.append(c.toDot());
+        sb.append(")");
+        return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return toDot();
+    }
+
 }

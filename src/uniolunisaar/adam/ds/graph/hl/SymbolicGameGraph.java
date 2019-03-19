@@ -10,10 +10,13 @@ import java.util.Set;
 /**
  *
  * @author Manuel Gieseking
+ * @param <P>
  * @param <S>
+ * @param <DC>
+ * @param <T>
  * @param <F>
  */
-public class SymbolicGameGraph<S extends SRGState, F extends SRGFlow> {
+public class SymbolicGameGraph<P, T, DC extends IDecision<P, T>, S extends DecisionSet<P, T, DC>, F extends SRGFlow<T>> {
 
     private String name;
     private final Map<Integer, S> states;

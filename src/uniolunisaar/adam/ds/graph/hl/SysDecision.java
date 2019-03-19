@@ -1,6 +1,7 @@
 package uniolunisaar.adam.ds.graph.hl;
 
 import java.util.Objects;
+import uniolunisaar.adam.logic.hl.SGGBuilder;
 
 /**
  *
@@ -66,27 +67,45 @@ public abstract class SysDecision<P, T, C extends CommitmentSet<T>> implements I
     public int hashCode() {
         int hash = 5;
         hash = 29 * hash + Objects.hashCode(this.place);
-        hash = 29 * hash + Objects.hashCode(this.c);
+        hash = 29 * hash * Objects.hashCode(this.c);
         return hash;
     }
 
     @Override
     public boolean equals(Object obj) {
+        if (SGGBuilder.depth < 10) {
+            System.out.println("used sys equals");
+        }
         if (this == obj) {
             return true;
         }
         if (obj == null) {
+            if (SGGBuilder.depth < 10) {
+                System.out.println("used");
+            }
             return false;
         }
         if (getClass() != obj.getClass()) {
+            if (SGGBuilder.depth < 10) {
+                System.out.println("COMMITMENT");
+            }
             return false;
         }
         final SysDecision other = (SysDecision) obj;
         if (!Objects.equals(this.place, other.place)) {
+            if (SGGBuilder.depth < 10) {
+                System.out.println(this.place);
+            }
             return false;
         }
         if (!Objects.equals(this.c, other.c)) {
+            if (SGGBuilder.depth < 10) {
+                System.out.println("COMMITMENT");
+            }
             return false;
+        }
+        if (SGGBuilder.depth < 10) {
+            System.out.println("out is true");
         }
         return true;
     }

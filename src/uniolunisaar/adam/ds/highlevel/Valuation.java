@@ -1,7 +1,9 @@
 package uniolunisaar.adam.ds.highlevel;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 
 /**
@@ -36,4 +38,14 @@ public class Valuation extends HashMap<Variable, Color> {
     public Valuation() {
     }
 
+    public TreeMap<Variable, Color> getSorted() {
+        TreeMap<Variable, Color> sorted = new TreeMap<>(new Comparator<Variable>() {
+            @Override
+            public int compare(Variable arg0, Variable arg1) {
+                return arg0.getName().compareTo(arg1.getName());
+            }
+        });
+        sorted.putAll(this);
+        return sorted;
+    }
 }

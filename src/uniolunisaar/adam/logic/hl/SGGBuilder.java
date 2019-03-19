@@ -29,6 +29,7 @@ import uniolunisaar.adam.ds.graph.hl.approachLL.LLCommitmentSet;
 import uniolunisaar.adam.ds.graph.hl.approachLL.LLDecisionSet;
 import uniolunisaar.adam.ds.graph.hl.approachLL.LLEnvDecision;
 import uniolunisaar.adam.ds.graph.hl.approachLL.LLSysDecision;
+import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
@@ -38,6 +39,8 @@ import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
  * @author Manuel Gieseking
  */
 public class SGGBuilder {
+
+    public static int depth = 0;
 
     /**
      * Exploits the symmetries of the given wellformed Petri net to create a
@@ -51,13 +54,14 @@ public class SGGBuilder {
      * @param hlgame
      * @return
      */
-    public static SymbolicGameGraph<LLDecisionSet, SRGFlow<Transition>> createByLLGame(HLPetriGame hlgame) {
+    public static SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> createByLLGame(HLPetriGame hlgame) {
         // Create the iterator for the symmetries
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
         // Convert the high-level game to its low-level version
         PetriGame pgame = HL2PGConverter.convert(hlgame, true);
         // calculate the system transitions
         Collection<Transition> sysTransitions = new ArrayList<>();
+        Collection<Transition> singlePresetTransitions = new ArrayList<>();
         for (Transition transition : pgame.getTransitions()) {
             boolean isSystem = true;
             for (Place place : transition.getPreset()) {
@@ -68,8 +72,12 @@ public class SGGBuilder {
             if (isSystem) {
                 sysTransitions.add(transition);
             }
+            if (transition.getPreset().size() == 1) {
+                singlePresetTransitions.add(transition);
+            }
         }
         pgame.putExtension("sysTransitions", sysTransitions);// todo: just a quick hack to not calculate them too often
+        pgame.putExtension("singlePresetTransitions", singlePresetTransitions);// todo: just a quick hack to not calculate them too often
         // create initial decision set
         Set<ILLDecision> inits = new HashSet<>();
         for (Place place : pgame.getPlaces()) {
@@ -84,10 +92,11 @@ public class SGGBuilder {
         LLDecisionSet init = new LLDecisionSet(inits, false, false, pgame);
 
         // Create the graph iteratively
-        SymbolicGameGraph<LLDecisionSet, SRGFlow<Transition>> srg = new SymbolicGameGraph<>(hlgame.getName() + "_SRG", init);
+        SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> srg = new SymbolicGameGraph<>(hlgame.getName() + "_SRG", init);
         Stack<Integer> todo = new Stack<>();
         todo.push(init.getId());
-        while (!todo.isEmpty()) { // as long as new states had been added            
+        while (!todo.isEmpty()) { // as long as new states had been added        
+            depth++;
             LLDecisionSet state = srg.getState(todo.pop());
             // if the current state contains tops, resolve them 
             if (!state.isMcut() && state.hasTop()) {
@@ -137,7 +146,7 @@ public class SGGBuilder {
      * @param hlgame
      * @return
      */
-    public static SymbolicGameGraph<HLDecisionSet, SRGFlow<ColoredTransition>> createByHLGame(OneEnvHLPG hlgame) {
+    public static SymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> createByHLGame(OneEnvHLPG hlgame) {
         // Create the iterator for the symmetries
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
         // create initial decision set
@@ -160,7 +169,7 @@ public class SGGBuilder {
         HLDecisionSet init = new HLDecisionSet(inits, false, false, hlgame);
 
         // Create the graph iteratively
-        SymbolicGameGraph<HLDecisionSet, SRGFlow<ColoredTransition>> srg = new SymbolicGameGraph<>(hlgame.getName() + "_SRG", init);
+        SymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> srg = new SymbolicGameGraph<>(hlgame.getName() + "_SRG", init);
         Stack<Integer> todo = new Stack<>();
         todo.push(init.getId());
         while (!todo.isEmpty()) { // as long as new states had been added            
@@ -218,7 +227,7 @@ public class SGGBuilder {
      * @param todo
      * @param srg
      */
-    private static void addSuccessors(HLDecisionSet pre, ColoredTransition t, Set<HLDecisionSet> succs, Symmetries syms, Stack<Integer> todo, SymbolicGameGraph<HLDecisionSet, SRGFlow<ColoredTransition>> srg) {
+    private static void addSuccessors(HLDecisionSet pre, ColoredTransition t, Set<HLDecisionSet> succs, Symmetries syms, Stack<Integer> todo, SymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> srg) {
         for (HLDecisionSet succ : succs) {
             boolean newOne = true;
             // todo: could think of creating a copy of succ, to create really the succ state and not the one which is the last application of the
@@ -244,6 +253,17 @@ public class SGGBuilder {
         }
     }
 
+    private static boolean contains(Collection<LLDecisionSet> states, LLDecisionSet state) {
+        for (LLDecisionSet state1 : states) {
+//            if (state.equals(state1)) {
+            if (state.hashCode() == state1.hashCode()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+
     /**
      * Adds a successor only if there is not already any equivalence class
      * (regarding the symmetries) containing the successor. The corresponding
@@ -254,29 +274,55 @@ public class SGGBuilder {
      * @param todo
      * @param srg
      */
-    private static void addSuccessors(LLDecisionSet pre, Transition t, Set<LLDecisionSet> succs, Symmetries syms, Stack<Integer> todo, SymbolicGameGraph<LLDecisionSet, SRGFlow<Transition>> srg) {
+    private static void addSuccessors(LLDecisionSet pre, Transition t, Set<LLDecisionSet> succs, Symmetries syms, Stack<Integer> todo, SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> srg) {
         for (LLDecisionSet succ : succs) {
             boolean newOne = true;
             // todo: could think of creating a copy of succ, to create really the succ state and not the one which is the last application of the
             // symmetry. Don't know if this leads to not checking so much symmetries during the search of existing ones?            
-//            DecisionSet copySucc = new DecisionSet(succ); // did this thing now, so test which version is better. Could make the copy cheaper since we put new colors and variables anyways
-            LLDecisionSet copySucc = succ;
+            int id = succ.getId();
+//            LLDecisionSet copySucc = succ;
+            LLDecisionSet copySucc = new LLDecisionSet(succ); // did this thing now, so test which version is better. Could make the copy cheaper since we put new colors and variables anyways
+            int cunt = 0;
+//            System.out.println("%%%%%%%%%%%%%%%%%%%%%");
+//            System.out.println(copySucc.toString());
             for (SymmetryIterator iti = syms.iterator(); iti.hasNext();) {
                 Symmetry sym = iti.next(); // todo: get rid of the identity symmetry, just do it in this case before looping
                 copySucc.apply(sym);
+                if (cunt > 0 && depth < 5) {
+                    System.out.println("%%%%%%%");
+                    System.out.println(copySucc.toString() + " -> " + copySucc.hashCode());
+                    System.out.println("-");
+                    for (LLDecisionSet state : srg.getStates()) {
+                        System.out.println(state.toString() + " -> " + state.hashCode());
+                        
+                    if(copySucc.hashCode() == state.hashCode()) {
+                        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                        copySucc.equals(state);
+                        System.out.println("aaaaaaaaaaaa");
+                    }
+                    }
+                    if (contains(srg.getStates(), copySucc)) {
+                        System.out.println("CONTAINS");
+                    }
+                }
+//                System.out.println(copySucc.toString());
+                cunt++;
+                if (contains(srg.getStates(), copySucc)) {
+//                    System.out.println(srg.contains(copySucc));
+                }
                 if (srg.contains(copySucc)) {
+//                    System.out.println("contains!!!" + cunt);
                     newOne = false;
                     break;
                 }
             }
-
             if (newOne) {
-                srg.addState(copySucc);
-                todo.add(copySucc.getId());
+                srg.addState(succ);
+                todo.add(id);
             } else {
-                copySucc = succ; // replace it with the initial one, since we hope this is cheaper for finding the equivalent marking in the symmetry loop
+                id = copySucc.getId();
             }
-            srg.addFlow(new SRGFlow(pre.getId(), t, copySucc.getId()));
+            srg.addFlow(new SRGFlow(pre.getId(), t, id));
         }
     }
 }

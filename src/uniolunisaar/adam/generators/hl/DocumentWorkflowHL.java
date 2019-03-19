@@ -51,7 +51,7 @@ public class DocumentWorkflowHL {
         Place cl = net.createSysPlace("cl", nc);
         net.setColorTokens(cl, c);
         Place vote = net.createSysPlace("vote", nc);
-        Place first = net.createSysPlace("first", nc);
+        Place first = net.createEnvPlace("first", nc);
         Place yes = net.createSysPlace("Y", nc);
         Place no = net.createSysPlace("N", nc);
         Place end = net.createSysPlace("end", nc);

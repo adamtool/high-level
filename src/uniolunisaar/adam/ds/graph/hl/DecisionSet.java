@@ -19,4 +19,12 @@ public interface DecisionSet<P, T, DC extends IDecision<P, T>> {
     public Set<? extends DecisionSet> fire(T t);
 
     public void apply(Symmetry sym);
+
+    public boolean isMcut();
+
+    public boolean isBad();
+
+    public String toDot();
+
+    public int getId();
 }

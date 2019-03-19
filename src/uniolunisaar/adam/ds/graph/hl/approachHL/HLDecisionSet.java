@@ -6,8 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import uniol.apt.adt.extension.Extensible;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.graph.hl.SRGState;
+import uniolunisaar.adam.ds.graph.hl.DecisionSet;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.Valuation;
@@ -21,7 +22,7 @@ import uniolunisaar.adam.tools.Tools;
  *
  * @author Manuel Gieseking
  */
-public class HLDecisionSet extends SRGState {
+public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlace, ColoredTransition, IHLDecision> {
 
     private final Set<IHLDecision> decisions;
     private final boolean mcut;
@@ -54,6 +55,7 @@ public class HLDecisionSet extends SRGState {
         this.bad = bad;
     }
 
+    @Override
     public boolean hasTop(Set<IHLDecision> dcs) {
         for (IHLDecision decision : dcs) {
             if (decision.isTop()) {
@@ -63,10 +65,12 @@ public class HLDecisionSet extends SRGState {
         return false;
     }
 
+    @Override
     public boolean hasTop() {
         return hasTop(decisions);
     }
 
+    @Override
     public Set<HLDecisionSet> resolveTop() {
         Set<IHLDecision> dcs = new HashSet<>(decisions);
         List<List<Set<ColoredTransition>>> commitments = new ArrayList<>();
@@ -118,6 +122,7 @@ public class HLDecisionSet extends SRGState {
      * @param t
      * @return
      */
+    @Override
     public Set<HLDecisionSet> fire(ColoredTransition t) {
         if (bad) {
             return null;

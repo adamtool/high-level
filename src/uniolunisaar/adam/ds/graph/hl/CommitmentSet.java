@@ -96,21 +96,24 @@ public abstract class CommitmentSet<T> {
             return false;
         }
         // todo: do it better?
-        if (this.transitions == null && other.transitions == null) {
-            return true;
-        }
-        if ((this.transitions != null && other.transitions == null) || (this.transitions == null && other.transitions != null)) {
+//        if (this.transitions == null && other.transitions == null) {
+//            return true;
+//        }
+//        if ((this.transitions != null && other.transitions == null) || (this.transitions == null && other.transitions != null)) {
+//            return false;
+//        }
+//        for (T transition : this.transitions) {
+//            if (!other.transitions.contains(transition)) {
+//                return false;
+//            }
+//        }
+//        for (T transition : other.transitions) {
+//            if (!this.transitions.contains(transition)) {
+//                return false;
+//            }
+//        }
+        if (!Objects.equals(this.transitions, other.transitions)) {
             return false;
-        }
-        for (T transition : this.transitions) {
-            if (!other.transitions.contains(transition)) {
-                return false;
-            }
-        }
-        for (T transition : other.transitions) {
-            if (!this.transitions.contains(transition)) {
-                return false;
-            }
         }
 
         return true;

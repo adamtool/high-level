@@ -48,4 +48,19 @@ public class LLEnvDecision extends EnvDecision<Place, Transition> implements ILL
         place = game.getPlace(HL2PGConverter.getPlaceID(id, colors));
     }
 
+    @Override
+    public boolean isChoosen(Transition t) {
+        return place.getPostset().contains(t);
+    }
+
+    @Override
+    public String toDot() {
+        return getPlace().getId();
+    }
+
+    @Override
+    public String toString() {
+        return toDot();
+    }
+
 }

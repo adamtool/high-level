@@ -55,12 +55,10 @@ public class ColoredPlace {
     public int hashCode() {
         int hash = 7;
         hash = 37 * hash + Objects.hashCode(this.place);
-        hash = 37 * hash + Objects.hashCode(this.color);
+        hash = 37 * hash * Objects.hashCode(this.color);
         return hash;
     }
 
-    
-    
     @Override
     public String toString() {
         return place.getId() + "." + color.toString();

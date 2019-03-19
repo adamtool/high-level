@@ -7,12 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import uniol.apt.adt.extension.Extensible;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.hl.DecisionSet;
-import uniolunisaar.adam.ds.graph.hl.SRGState;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.logic.hl.SGGBuilder;
 import uniolunisaar.adam.tools.CartesianProduct;
 import uniolunisaar.adam.tools.Tools;
 
@@ -20,7 +21,7 @@ import uniolunisaar.adam.tools.Tools;
  *
  * @author Manuel Gieseking
  */
-public class LLDecisionSet extends SRGState implements DecisionSet<Place, Transition, ILLDecision> {
+public class LLDecisionSet extends Extensible implements DecisionSet<Place, Transition, ILLDecision> {
 
     private final Set<ILLDecision> decisions;
     private final boolean mcut;
@@ -53,6 +54,7 @@ public class LLDecisionSet extends SRGState implements DecisionSet<Place, Transi
         this.bad = bad;
     }
 
+    @Override
     public boolean hasTop(Set<ILLDecision> dcs) {
         for (ILLDecision decision : dcs) {
             if (decision.isTop()) {
@@ -62,10 +64,12 @@ public class LLDecisionSet extends SRGState implements DecisionSet<Place, Transi
         return false;
     }
 
+    @Override
     public boolean hasTop() {
         return hasTop(decisions);
     }
 
+    @Override
     public Set<LLDecisionSet> resolveTop() {
         Set<ILLDecision> dcs = new HashSet<>(decisions);
         List<List<Set<Transition>>> commitments = new ArrayList<>();
@@ -114,6 +118,7 @@ public class LLDecisionSet extends SRGState implements DecisionSet<Place, Transi
      * @param t
      * @return
      */
+    @Override
     public Set<LLDecisionSet> fire(Transition t) {
         if (bad) {
             return null;
@@ -167,18 +172,27 @@ public class LLDecisionSet extends SRGState implements DecisionSet<Place, Transi
             decisionsets.add(new LLDecisionSet(ret, !(hasTop || !checkMcut(ret)), calcBad(ret), game));
             return decisionsets;
         } else {
+            if (places.isEmpty()) {
+                Set<LLDecisionSet> decisionsets = new HashSet<>();
+                decisionsets.add(new LLDecisionSet(ret, checkMcut(ret), calcBad(ret), game));
+                return decisionsets;
+            }
             return createDecisionSets(places, commitments, ret);
         }
     }
 
     private List<Set<Transition>> getCommitments(Place p) {
         Set<Set<Transition>> powerset = Tools.powerSet(p.getPostset());
-        // since we use these commitments for the cartesian product
-        // and this is only implemented for Lists, we convert the 
-        // outer set
         List<Set<Transition>> converted = new ArrayList<>();
         for (Set<Transition> set : powerset) {
-            converted.add(set);
+            // Reduction technique of the MA of Valentin Spreckels:
+            // When there is a transition with only one place in the preset
+            // this transition is only allowed to appear solely in the commitment sets
+            Collection<Transition> single = new ArrayList(set);
+            single.retainAll((Collection<Transition>) game.getExtension("singlePresetTransitions"));
+            if (single.isEmpty() || set.size() == 1) {
+                converted.add(set);
+            }
         }
         return converted;
     }
@@ -213,42 +227,54 @@ public class LLDecisionSet extends SRGState implements DecisionSet<Place, Transi
         return true;
     }
 
+    private Set<Place> getMarking(Set<ILLDecision> dcs) {
+        Set<Place> marking = new HashSet<>();
+        for (ILLDecision dc : dcs) {
+            marking.add(dc.getPlace());
+        }
+        return marking;
+    }
+
     private boolean calcNdet(Set<ILLDecision> dcs) {
+        Set<Place> marking = getMarking(dcs);
         Set<Transition> trans = game.getTransitions();
-        for (Transition t1 : trans) { // create low-level transition
+        Set<Transition> choosenTrans = new HashSet<>();
+        for (Transition t : trans) {
             // check if it is choosen in dcs
-            Set<Place> preT1 = t1.getPreset();
+            Set<Place> preT1 = t.getPreset();
             boolean choosen = true;
             for (ILLDecision decision : dcs) {
-                if (!(!preT1.contains(decision.getPlace()) || decision.isChoosen(t1))) {
+                if (!(!preT1.contains(decision.getPlace()) || decision.isChoosen(t))) {
                     choosen = false;
                 }
             }
-            if (!choosen) {
-                continue;
+            if (choosen) {
+                choosenTrans.add(t);
             }
-            for (Transition t2 : trans) {
-                // check if it is choosen in dcs
-                Set<Place> preT2 = t2.getPreset();
-                choosen = true;
-                for (ILLDecision decision : dcs) {
-                    if (!(!preT2.contains(decision.getPlace()) || decision.isChoosen(t2))) {
-                        choosen = false;
-                    }
-                }
-                if (!choosen) {
-                    continue;
-                }
-                if (!t1.equals(t2)) {
+        }
+//        System.out.println("$$$$$$$$$$$$$$$$$$$");
+//        System.out.println(dcs.toString());
+//        System.out.println(choosenTrans.toString());
+        for (Transition t1 : choosenTrans) { // create low-level transition
+            for (Transition t2 : choosenTrans) {
+                if (!t1.getId().equals(t2.getId())) {
                     // sharing a system place?
+                    Set<Place> preT1 = t1.getPreset();
+                    Set<Place> preT2 = t2.getPreset();
                     Set<Place> intersect = new HashSet<>(preT1);
                     intersect.retainAll(preT2);
                     boolean shared = false;
                     for (Place place : intersect) {
-                        if (!game.isEnvironment(place)) {
+                        if (!game.isEnvironment(place) && marking.contains(place)) {
                             shared = true;
                         }
                     }
+//                    if (shared) {
+//                        System.out.println("%%%%");
+//                        System.out.println(t1.getId());
+//                        System.out.println(t2.getId());
+//                        System.out.println(intersect.toString());
+//                    }
                     if (shared && game.eventuallyEnabled(t1, t2)) { // here check added for firing in the original game
                         return true;
                     }
@@ -309,18 +335,22 @@ public class LLDecisionSet extends SRGState implements DecisionSet<Place, Transi
 
     private boolean calcBad(Set<ILLDecision> dcs) {
         return calcBadPlace(dcs) || calcDeadlock(dcs) || calcNdet(dcs);
+//        return calcNdet(dcs);
     }
 
+    @Override
     public void apply(Symmetry sym) {
         for (ILLDecision decision : decisions) {
             decision.apply(sym);
         }
     }
 
+    @Override
     public boolean isMcut() {
         return mcut;
     }
 
+    @Override
     public boolean isBad() {
         return bad;
     }
@@ -334,13 +364,12 @@ public class LLDecisionSet extends SRGState implements DecisionSet<Place, Transi
     public int hashCode() {
         int hash = 7;
         hash = 31 * hash + Objects.hashCode(this.decisions);
-        hash = 31 * hash + (this.mcut ? 1 : 0);
+        hash = 31 * hash * (this.mcut ? 2 : 1);
         return hash;
     }
 
     @Override
-    public boolean equals(Object obj
-    ) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }
@@ -354,12 +383,29 @@ public class LLDecisionSet extends SRGState implements DecisionSet<Place, Transi
         if (this.mcut != other.mcut) {
             return false;
         }
+        for (ILLDecision decision : this.decisions) {
+            if (!other.decisions.contains(decision)) {                
+                return false;
+            }
+        }
+//        for (ILLDecision decision : other.decisions) {
+//            if (!this.decisions.contains(decision)) {
+//                if (SGGBuilder.depth < 10) {
+//                    System.out.println(decision);
+//                }
+//                return false;
+//            }
+//        }
         if (!Objects.equals(this.decisions, other.decisions)) {
+             if (SGGBuilder.depth < 10) {
+                    System.out.println("here");
+                }
             return false;
         }
         return true;
     }
 
+    @Override
     public String toDot() {
         StringBuilder sb = new StringBuilder();
         for (ILLDecision dc : decisions) {
@@ -371,4 +417,8 @@ public class LLDecisionSet extends SRGState implements DecisionSet<Place, Transi
         return sb.toString();
     }
 
+    @Override
+    public String toString() {
+        return toDot();
+    }
 }

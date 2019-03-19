@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import uniol.apt.adt.exception.FlowExistsException;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Node;
@@ -112,7 +113,9 @@ public class HL2PGConverter {
 
     public static String valToTransitionIdentifier(Valuation val) {
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<Variable, Color> entry : val.entrySet()) {
+        // sort the valuation first
+        TreeMap<Variable, Color> sorted = val.getSorted(); // todo: maybe think of s.th. better? Could be quite expensive. Possibly better to let Valuation directly be sorted?
+        for (Map.Entry<Variable, Color> entry : sorted.entrySet()) {
             Variable key = entry.getKey();
             Color value = entry.getValue();
             //todo: this is not the nicest output, but allows the get it read by APT after rendering...
@@ -216,7 +219,7 @@ public class HL2PGConverter {
                 List<Color> colors = it.next();
                 Place p = pg.createPlace(getPlaceID(place.getId(), colors));
                 if (save2Extension) {
-                    setColorsAndID2Extension(p, place.getId(), colors);
+                    setColorsAndID2Extension(p, place.getId(), new ArrayList<>(colors));
                 }
                 if (env) {
                     pg.setEnvironment(p);
@@ -253,7 +256,7 @@ public class HL2PGConverter {
                     // Create the transition
                     Transition tLL = pg.createTransition(getTransitionID(t.getId(), val));
                     if (save2Extension) {
-                        setValuationAndID2Extension(tLL, t.getId(), val);
+                        setValuationAndID2Extension(tLL, t.getId(), new Valuation(val));
                     }
                     // create the flows
                     for (Flow presetEdge : t.getPresetEdges()) {

@@ -172,7 +172,7 @@ public class ColoredTransition {
     public int hashCode() {
         int hash = 5;
         hash = 59 * hash + Objects.hashCode(this.transition);
-        hash = 59 * hash + Objects.hashCode(this.val);
+        hash = 59 * hash * Objects.hashCode(this.val);
         return hash;
     }
 
