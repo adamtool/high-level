@@ -260,9 +260,6 @@ public class LLDecisionSet extends Extensible implements DecisionSet<Place, Tran
                 choosenTrans.add(t);
             }
         }
-//        System.out.println("$$$$$$$$$$$$$$$$$$$");
-//        System.out.println(dcs.toString());
-//        System.out.println(choosenTrans.toString());
         for (Transition t1 : choosenTrans) { // create low-level transition
             for (Transition t2 : choosenTrans) {
                 if (!t1.getId().equals(t2.getId())) {
@@ -277,12 +274,6 @@ public class LLDecisionSet extends Extensible implements DecisionSet<Place, Tran
                             shared = true;
                         }
                     }
-//                    if (shared) {
-//                        System.out.println("%%%%");
-//                        System.out.println(t1.getId());
-//                        System.out.println(t2.getId());
-//                        System.out.println(intersect.toString());
-//                    }
                     if (shared && game.eventuallyEnabled(t1, t2)) { // here check added for firing in the original game
                         return true;
                     }

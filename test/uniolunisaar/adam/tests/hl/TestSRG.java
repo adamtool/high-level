@@ -386,6 +386,9 @@ public class TestSRG {
         SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
         System.out.println("SIZE: " + graph.getStates().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "DWs" + size + "_gg", graph);
+        // convert
+        PetriGame gameConv = HL2PGConverter.convert(hlgame);
+        PGTools.savePG2PDF(outputDir + "DWs" + size + "_ll_conv", gameConv, false);
 
         // Test  the old graph game
         PetriGame game = Clerks.generateCP(size, true, true);
