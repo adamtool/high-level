@@ -54,7 +54,6 @@ import uniolunisaar.adam.symbolic.bddapproach.graph.BDDGraph;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolver;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolverFactory;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolverOptions;
-import uniolunisaar.adam.symbolic.bddapproach.util.BDDTools;
 import uniolunisaar.adam.util.HLTools;
 import uniolunisaar.adam.util.PGTools;
 
@@ -353,51 +352,55 @@ public class TestSRG {
 
     @Test
     public void testDocumentWorkflow() throws IOException, InterruptedException, CalculationInterruptedException, NotSupportedGameException, ParseException, CouldNotCalculateException, CouldNotFindSuitableConditionException, SolvingException {
-//        //%%%%%%%%%%%%%%%%%% DW
-//        int size = 1;
-//        HLPetriGame hlgame = DocumentWorkflowHL.generateDW(size);
-////        Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
-////        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
-////            Symmetry next = iterator.next();
-////            System.out.println(next.toString());
-////        }
-////        HLTools.saveHLPG2PDF(outputDir + "DW" + size, hlgame);
-////        game = Clerks.generateNonCP(size, true, true);
-////        PGTools.savePG2PDF(outputDir + "DW" + size + "_ll", game, false);
-////        PetriGame gameConv = HL2PGConverter.convert(hlgame);
-////        PGTools.savePG2PDF(outputDir + "DW" + size + "_ll_conv", gameConv, false);
-//
-////        // Test  the old graph game
-////        opt = new BDDSolverOptions();
-////        opt.setNoType2(true);
-////        sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), true, opt);
-////        bddgraph = sol.getGraphGame();
-//////        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
-////        BDDTools.saveGraph2PDF(outputDir + "DW" + size + "_bdd_gg", bddgraph, sol);
-//        SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
-//
-//        System.out.println("SIZE: " + graph.getStates().size());
-////        HLTools.saveGraph2DotAndPDF(outputDir + "DW" + size + "_gg", graph);
-////        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
+        //%%%%%%%%%%%%%%%%%% DW
+//        for (int i = 1; i < 5; i++) {
+//            int size = i;
+        int size = 2;
+        HLPetriGame hlgame = DocumentWorkflowHL.generateDW(size);
+//        Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
+//        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+//            Symmetry next = iterator.next();
+//            System.out.println(next.toString());
+//        }
+//        HLTools.saveHLPG2PDF(outputDir + "DW" + size, hlgame);
+//        game = Clerks.generateNonCP(size, true, true);
+//        PGTools.savePG2PDF(outputDir + "DW" + size + "_ll", game, false);
+//        PetriGame gameConv = HL2PGConverter.convert(hlgame);
+//        PGTools.savePG2PDF(outputDir + "DW" + size + "_ll_conv", gameConv, false);
 
-        //%%%%%%%%%%%%%%%%%% DWs
-        int size = 1;
-        HLPetriGame hlgame = DocumentWorkflowHL.generateDWs(size);
+//        // Test  the old graph game
+//        opt = new BDDSolverOptions();
+//        opt.setNoType2(true);
+//        sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), true, opt);
+//        bddgraph = sol.getGraphGame();
+////        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
+//        BDDTools.saveGraph2PDF(outputDir + "DW" + size + "_bdd_gg", bddgraph, sol);
         SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
-        System.out.println("SIZE: " + graph.getStates().size());
-        HLTools.saveGraph2DotAndPDF(outputDir + "DWs" + size + "_gg", graph);
-        // convert
-        PetriGame gameConv = HL2PGConverter.convert(hlgame);
-        PGTools.savePG2PDF(outputDir + "DWs" + size + "_ll_conv", gameConv, false);
 
-        // Test  the old graph game
-        PetriGame game = Clerks.generateCP(size, true, true);
-        PGTools.savePG2PDF(outputDir + "DWs" + size + "_ll", game, false, 5); // 1->3, 2->5
-        BDDSolverOptions opt = new BDDSolverOptions();
-        opt.setNoType2(true);
-        BDDSolver<? extends Condition> sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, false, false), false, opt);
-        BDDGraph bddgraph = sol.getGraphGame();
-        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
-        BDDTools.saveGraph2PDF(outputDir + "DWs" + size + "_bdd_gg", bddgraph, sol);
+        System.out.println("SIZE: " + graph.getStates().size());
+        HLTools.saveGraph2DotAndPDF(outputDir + "DW" + size + "_gg", graph);
+//        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
+//        }
+
+//        //%%%%%%%%%%%%%%%%%% DWs
+//        int size = 3;
+//        HLPetriGame hlgame = DocumentWorkflowHL.generateDWs(size);
+//        SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
+//        System.out.println("SIZE: " + graph.getStates().size());
+////        HLTools.saveGraph2DotAndPDF(outputDir + "DWs" + size + "_gg", graph);
+//        // convert
+//        PetriGame gameConv = HL2PGConverter.convert(hlgame);
+//        PGTools.savePG2PDF(outputDir + "DWs" + size + "_ll_conv", gameConv, false);
+//
+//        // Test  the old graph game
+//        PetriGame game = Clerks.generateCP(size, true, true);
+//        PGTools.savePG2PDF(outputDir + "DWs" + size + "_ll", game, false, 5); // 1->3, 2->5
+//        BDDSolverOptions opt = new BDDSolverOptions();
+//        opt.setNoType2(true);
+//        BDDSolver<? extends Condition> sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, false, false), false, opt);
+//        BDDGraph bddgraph = sol.getGraphGame();
+//        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
+////        BDDTools.saveGraph2PDF(outputDir + "DWs" + size + "_bdd_gg", bddgraph, sol);
+////        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
     }
 }

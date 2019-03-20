@@ -371,7 +371,7 @@ public class LLDecisionSet extends Extensible implements DecisionSet<Place, Tran
     public int hashCode() {
         int hash = 7;
         hash = 31 * hash + Objects.hashCode(this.decisions);
-        hash = 31 * hash * (this.mcut ? 2 : 1);
+//        hash = 31 * hash * (this.mcut ? 2 : 1);
         return hash;
     }
 
@@ -388,6 +388,9 @@ public class LLDecisionSet extends Extensible implements DecisionSet<Place, Tran
         }
         final LLDecisionSet other = (LLDecisionSet) obj;
         if (this.mcut != other.mcut) {
+            return false;
+        }
+        if (this.bad != other.bad) {
             return false;
         }
 //        for (ILLDecision decision : this.decisions) {
