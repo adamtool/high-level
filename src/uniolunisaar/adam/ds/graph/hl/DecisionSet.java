@@ -17,8 +17,17 @@ public interface DecisionSet<P, T, DC extends IDecision<P, T>> {
     public Set<? extends DecisionSet> resolveTop();
 
     public Set<? extends DecisionSet> fire(T t);
+//    /**
+//     * Changing the decision set is nice for not creating so much copies but using
+//     * objects in sets which hashcode can change are evil.
+//     *
+//     * @param sym
+//     * @deprecated
+//     */
+//    @Deprecated
+//    public void apply(Symmetry sym);
 
-    public void apply(Symmetry sym);
+    public DecisionSet<P, T, DC> apply(Symmetry sym);
 
     public boolean isMcut();
 

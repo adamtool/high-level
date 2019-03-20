@@ -10,7 +10,7 @@ import java.util.Objects;
  */
 public abstract class EnvDecision<P, T> implements IDecision<P, T> {
 
-    protected P place;
+    private final P place;
 
     public EnvDecision(P place) {
         this.place = place;

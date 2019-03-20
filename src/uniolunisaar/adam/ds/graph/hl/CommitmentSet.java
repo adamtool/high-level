@@ -13,22 +13,53 @@ import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
  */
 public abstract class CommitmentSet<T> {
 
-    protected boolean isTop;
-    protected Set<T> transitions;
+    private final boolean isTop;
+    private final Set<T> transitions;
 
     public CommitmentSet(boolean isTop) {
         this.isTop = isTop;
         transitions = null;
     }
 
+    /**
+     * Attention this uses just the references of the transitions of the given
+     * list and the list itself. Don't change them afterward, they are saved as
+     * HashSet and thus contains would not longer work!
+     *
+     * @param transitions
+     */
     public CommitmentSet(T... transitions) {
         isTop = false;
         this.transitions = new HashSet<>(Arrays.asList(transitions));
     }
 
+    /**
+     * Attention this uses just the references of the transitions of the given
+     * list and the list itself. Don't change them afterward, they are saved as
+     * HashSet and thus contains would not longer work!
+     *
+     * @param transitions
+     */
     public CommitmentSet(Set<T> transitions) {
         isTop = false;
         this.transitions = transitions;
+    }
+
+    /**
+     * The pendant of the copying constructor.
+     *
+     * @param isTop
+     * @param transitions
+     */
+    protected CommitmentSet(boolean isTop, Set<T> transitions) {
+        this.isTop = isTop;
+        if (isTop) {
+            this.transitions = null;
+        } else {
+            // here is a copy of the references OK
+            // (as long as no one uses the extensions such that it is not OK)
+            this.transitions = new HashSet<>(transitions);
+        }
     }
 
     public boolean isChoosen(T t) {
@@ -49,7 +80,9 @@ public abstract class CommitmentSet<T> {
         return transitions.contains(t);
     }
 
-    public abstract void apply(Symmetry sym);
+//    @Deprecated
+//    public abstract void apply(Symmetry sym);
+    public abstract CommitmentSet<T> apply(Symmetry sym);
 
     public String toDot() {
         StringBuilder sb = new StringBuilder();
@@ -70,6 +103,16 @@ public abstract class CommitmentSet<T> {
 
     public boolean isTop() {
         return isTop;
+    }
+
+    /**
+     * Attention this returns the references of the transitions. Don't change
+     * the elements, since contains won't longer work!
+     *
+     * @return
+     */
+    protected Set<T> getTransitions() {
+        return transitions;
     }
 
     @Override

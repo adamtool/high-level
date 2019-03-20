@@ -352,13 +352,13 @@ public class TestSRG {
 
     @Test
     public void testDocumentWorkflow() throws IOException, InterruptedException {
-        int size = 2;
+        int size = 1;
         HLPetriGame hlgame = DocumentWorkflowHL.generateDW(size);
-        Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
-        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
-            Symmetry next = iterator.next();
-            System.out.println(next.toString());
-        }
+//        Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
+//        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+//            Symmetry next = iterator.next();
+//            System.out.println(next.toString());
+//        }
 //        HLTools.saveHLPG2PDF(outputDir + "DW" + size, hlgame);
 //        game = Clerks.generateNonCP(size, true, true);
 //        PGTools.savePG2PDF(outputDir + "DW" + size + "_ll", game, false);
@@ -375,7 +375,7 @@ public class TestSRG {
         SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
 
         System.out.println("SIZE: " + graph.getStates().size());
-        HLTools.saveGraph2DotAndPDF(outputDir + "DW" + size + "_gg", graph);
+//        HLTools.saveGraph2DotAndPDF(outputDir + "DW" + size + "_gg", graph);
 //        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
     }
 }

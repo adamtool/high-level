@@ -18,7 +18,16 @@ public interface IDecision<P, T> {
 
     public boolean isTop();
 
-    public void apply(Symmetry sym);
+//    /**
+//     * Changing the decision is nice for not creating so much copies but using
+//     * objects in sets which hashcode can change are evil.
+//     *
+//     * @param sym
+//     * @deprecated
+//     */
+//    @Deprecated
+//    public void apply(Symmetry sym);
+    public IDecision<P, T> apply(Symmetry sym);
 
     public String toDot();
 

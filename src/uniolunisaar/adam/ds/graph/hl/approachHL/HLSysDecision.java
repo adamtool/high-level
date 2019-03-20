@@ -13,8 +13,13 @@ import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
  */
 public class HLSysDecision extends SysDecision<ColoredPlace, ColoredTransition, HLCommitmentSet> implements IHLDecision {
 
+    /**
+     * Copy-Constructor
+     *
+     * @param dcs
+     */
     public HLSysDecision(HLSysDecision dcs) {
-        super(new ColoredPlace(dcs.place), new HLCommitmentSet(dcs.c));
+        super(new ColoredPlace(dcs.getPlace()), new HLCommitmentSet(dcs.getC()));
     }
 
     public HLSysDecision(Place place, ColorToken color, HLCommitmentSet c) {
@@ -25,10 +30,16 @@ public class HLSysDecision extends SysDecision<ColoredPlace, ColoredTransition, 
         super(place, c);
     }
 
+//    @Override
+//    public void apply(Symmetry sym) {
+//        place.getColor().apply(sym);
+//        c.apply(sym);
+//    }
     @Override
-    public void apply(Symmetry sym) {
-        place.getColor().apply(sym);
-        c.apply(sym);
+    public HLSysDecision apply(Symmetry sym) {
+        ColoredPlace place = getPlace().apply(sym);
+        HLCommitmentSet c = getC().apply(sym);
+        return new HLSysDecision(place, c);
     }
 
 }

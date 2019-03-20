@@ -25,9 +25,12 @@ public class HLEnvDecision extends EnvDecision<ColoredPlace, ColoredTransition> 
         this(new ColoredPlace(place, color));
     }
 
+//    @Override
+//    public void apply(Symmetry sym) {
+//        getPlace().getColor().apply(sym);
+//    }
     @Override
-    public void apply(Symmetry sym) {
-        getPlace().getColor().apply(sym);
+    public HLEnvDecision apply(Symmetry sym) {
+        return new HLEnvDecision(getPlace().apply(sym));
     }
-
 }

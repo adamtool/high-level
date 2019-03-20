@@ -40,8 +40,6 @@ import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
  */
 public class SGGBuilder {
 
-    public static int depth = 0;
-
     /**
      * Exploits the symmetries of the given wellformed Petri net to create a
      * symbolic game graph.
@@ -96,7 +94,6 @@ public class SGGBuilder {
         Stack<Integer> todo = new Stack<>();
         todo.push(init.getId());
         while (!todo.isEmpty()) { // as long as new states had been added        
-            depth++;
             LLDecisionSet state = srg.getState(todo.pop());
             // if the current state contains tops, resolve them 
             if (!state.isMcut() && state.hasTop()) {
@@ -262,7 +259,6 @@ public class SGGBuilder {
         }
         return false;
     }
-    
 
     /**
      * Adds a successor only if there is not already any equivalence class
@@ -280,38 +276,12 @@ public class SGGBuilder {
             // todo: could think of creating a copy of succ, to create really the succ state and not the one which is the last application of the
             // symmetry. Don't know if this leads to not checking so much symmetries during the search of existing ones?            
             int id = succ.getId();
-//            LLDecisionSet copySucc = succ;
-            LLDecisionSet copySucc = new LLDecisionSet(succ); // did this thing now, so test which version is better. Could make the copy cheaper since we put new colors and variables anyways
-            int cunt = 0;
-//            System.out.println("%%%%%%%%%%%%%%%%%%%%%");
-//            System.out.println(copySucc.toString());
+            LLDecisionSet copySucc = succ;
+//            LLDecisionSet copySucc = new LLDecisionSet(succ); // did this thing now, so test which version is better. Could make the copy cheaper since we put new colors and variables anyways
             for (SymmetryIterator iti = syms.iterator(); iti.hasNext();) {
                 Symmetry sym = iti.next(); // todo: get rid of the identity symmetry, just do it in this case before looping
-                copySucc.apply(sym);
-                if (cunt > 0 && depth < 5) {
-                    System.out.println("%%%%%%%");
-                    System.out.println(copySucc.toString() + " -> " + copySucc.hashCode());
-                    System.out.println("-");
-                    for (LLDecisionSet state : srg.getStates()) {
-                        System.out.println(state.toString() + " -> " + state.hashCode());
-                        
-                    if(copySucc.hashCode() == state.hashCode()) {
-                        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                        copySucc.equals(state);
-                        System.out.println("aaaaaaaaaaaa");
-                    }
-                    }
-                    if (contains(srg.getStates(), copySucc)) {
-                        System.out.println("CONTAINS");
-                    }
-                }
-//                System.out.println(copySucc.toString());
-                cunt++;
-                if (contains(srg.getStates(), copySucc)) {
-//                    System.out.println(srg.contains(copySucc));
-                }
+                copySucc = copySucc.apply(sym);
                 if (srg.contains(copySucc)) {
-//                    System.out.println("contains!!!" + cunt);
                     newOne = false;
                     break;
                 }

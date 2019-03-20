@@ -2,6 +2,7 @@ package uniolunisaar.adam.ds.highlevel;
 
 import java.util.Objects;
 import uniol.apt.adt.pn.Place;
+import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 
 /**
  *
@@ -20,6 +21,10 @@ public class ColoredPlace {
     public ColoredPlace(Place place, ColorToken color) {
         this.place = place;
         this.color = color;
+    }
+
+    public ColoredPlace apply(Symmetry sym) {
+        return new ColoredPlace(place, color.apply(sym));
     }
 
     public Place getPlace() {

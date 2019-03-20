@@ -16,33 +16,51 @@ public class HLCommitmentSet extends CommitmentSet<ColoredTransition> {
         super(isTop);
     }
 
+    /**
+     * Attention this uses just the references of the transitions of the given
+     * list and the list itself. Don't change them afterward, they are saved as
+     * HashSet and thus contains would not longer work!
+     *
+     * @param transitions
+     */
     public HLCommitmentSet(ColoredTransition... transitions) {
         super(transitions);
     }
 
+    /**
+     * Attention this uses just the references of the transitions of the given
+     * list and the list itself. Don't change them afterward, they are saved as
+     * HashSet and thus contains would not longer work!
+     *
+     * @param transitions
+     */
     public HLCommitmentSet(Set<ColoredTransition> transitions) {
         super(transitions);
     }
 
     public HLCommitmentSet(HLCommitmentSet c) {
-        isTop = c.isTop;
-        if (isTop) {
-            transitions = null;
-        } else {
-            transitions = new HashSet<>();
-            for (ColoredTransition transition : c.transitions) {
-                transitions.add(new ColoredTransition(transition));
-            }
-        }
+        super(c.isTop(), c.getTransitions());
     }
 
+//    @Override
+//    public void apply(Symmetry sym) {
+//        if (isTop()) {
+//            return;
+//        }
+//        for (ColoredTransition transition : transitions) {
+//            transition.apply(sym);
+//        }
+//    }
     @Override
-    public void apply(Symmetry sym) {
+    public HLCommitmentSet apply(Symmetry sym) {
         if (isTop()) {
-            return;
+            return new HLCommitmentSet(true);
         }
-        for (ColoredTransition transition : transitions) {
-            transition.apply(sym);
+        Set<ColoredTransition> c = new HashSet<>();
+        for (ColoredTransition transition : getTransitions()) {
+            c.add(transition.apply(sym));
         }
+        return new HLCommitmentSet(c);
     }
+
 }

@@ -23,34 +23,44 @@ public class LLEnvDecision extends EnvDecision<Place, Transition> implements ILL
         this.game = game;
     }
 
-    public LLEnvDecision(PetriGame game, LLEnvDecision dc) {
+    public LLEnvDecision(LLEnvDecision dc) {
         // here is a copy of the references OK
         // (as long as no one uses the extensions such that it is not OK)
         super(dc.getPlace());
-        this.game = game;
+        this.game = dc.game;
     }
 
-    @Override
-    public void apply(Symmetry sym) {
-//        String id = HL2PGConverter.getHLPlaceID(place.getId());
-//        String[] col = HL2PGConverter.getPlaceColorIDs(place.getId());
+//    @Override
+//    public void apply(Symmetry sym) {
+////        String id = HL2PGConverter.getHLPlaceID(place.getId());
+////        String[] col = HL2PGConverter.getPlaceColorIDs(place.getId());
+////        List<Color> colors = new ArrayList<>();
+////        for (int i = 0; i < col.length - 1; i++) {
+////            colors.add(sym.get(new Color(col[i])));
+////        }
+////        place = game.getPlace(HL2PGConverter.getPlaceID(id, colors));
+//        String id = HL2PGConverter.getOrigID(place);
+//        List<Color> col = HL2PGConverter.getColors(place);
 //        List<Color> colors = new ArrayList<>();
-//        for (int i = 0; i < col.length - 1; i++) {
-//            colors.add(sym.get(new Color(col[i])));
+//        for (int i = 0; i < col.size(); i++) {
+//            colors.add(sym.get(col.get(i)));
 //        }
 //        place = game.getPlace(HL2PGConverter.getPlaceID(id, colors));
-        String id = HL2PGConverter.getOrigID(place);
-        List<Color> col = HL2PGConverter.getColors(place);
+//    }
+    @Override
+    public LLEnvDecision apply(Symmetry sym) {
+        String id = HL2PGConverter.getOrigID(getPlace());
+        List<Color> col = HL2PGConverter.getColors(getPlace());
         List<Color> colors = new ArrayList<>();
         for (int i = 0; i < col.size(); i++) {
             colors.add(sym.get(col.get(i)));
         }
-        place = game.getPlace(HL2PGConverter.getPlaceID(id, colors));
+        return new LLEnvDecision(game, game.getPlace(HL2PGConverter.getPlaceID(id, colors)));
     }
 
     @Override
     public boolean isChoosen(Transition t) {
-        return place.getPostset().contains(t);
+        return getPlace().getPostset().contains(t);
     }
 
     @Override

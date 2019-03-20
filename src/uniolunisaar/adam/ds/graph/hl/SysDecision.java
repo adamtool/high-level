@@ -1,7 +1,6 @@
 package uniolunisaar.adam.ds.graph.hl;
 
 import java.util.Objects;
-import uniolunisaar.adam.logic.hl.SGGBuilder;
 
 /**
  *
@@ -12,9 +11,9 @@ import uniolunisaar.adam.logic.hl.SGGBuilder;
  */
 public abstract class SysDecision<P, T, C extends CommitmentSet<T>> implements IDecision<P, T> {
 
-    protected P place;
+    private final P place;
 //    private final boolean type;
-    protected C c;
+    private final C c;
 
 //    public SysDecision(Place place, ColorToken color, boolean type, CommitmentSet c) {
 //        this.place = place;
@@ -50,7 +49,7 @@ public abstract class SysDecision<P, T, C extends CommitmentSet<T>> implements I
 //    public boolean isType() {
 //        return type;
 //    }
-    public C getC() {
+    protected C getC() {
         return c;
     }
 
@@ -73,39 +72,21 @@ public abstract class SysDecision<P, T, C extends CommitmentSet<T>> implements I
 
     @Override
     public boolean equals(Object obj) {
-        if (SGGBuilder.depth < 10) {
-            System.out.println("used sys equals");
-        }
         if (this == obj) {
             return true;
         }
         if (obj == null) {
-            if (SGGBuilder.depth < 10) {
-                System.out.println("used");
-            }
             return false;
         }
         if (getClass() != obj.getClass()) {
-            if (SGGBuilder.depth < 10) {
-                System.out.println("COMMITMENT");
-            }
             return false;
         }
         final SysDecision other = (SysDecision) obj;
         if (!Objects.equals(this.place, other.place)) {
-            if (SGGBuilder.depth < 10) {
-                System.out.println(this.place);
-            }
             return false;
         }
         if (!Objects.equals(this.c, other.c)) {
-            if (SGGBuilder.depth < 10) {
-                System.out.println("COMMITMENT");
-            }
             return false;
-        }
-        if (SGGBuilder.depth < 10) {
-            System.out.println("out is true");
         }
         return true;
     }

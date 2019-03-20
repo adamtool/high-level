@@ -13,7 +13,6 @@ import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.hl.DecisionSet;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
-import uniolunisaar.adam.logic.hl.SGGBuilder;
 import uniolunisaar.adam.tools.CartesianProduct;
 import uniolunisaar.adam.tools.Tools;
 
@@ -39,14 +38,23 @@ public class LLDecisionSet extends Extensible implements DecisionSet<Place, Tran
         this.decisions = new HashSet<>();
         for (ILLDecision decision : dcs.decisions) {
             if (decision.isEnvDecision()) {
-                this.decisions.add(new LLEnvDecision(game, (LLEnvDecision) decision));
+                this.decisions.add(new LLEnvDecision((LLEnvDecision) decision));
             } else {
-                this.decisions.add(new LLSysDecision(game, (LLSysDecision) decision));
+                this.decisions.add(new LLSysDecision((LLSysDecision) decision));
             }
         }
         this.bad = dcs.bad;
     }
 
+    /**
+     * ATTENTION: don't change the elements of the set afterwards, otherwise
+     * contains won't work anymore
+     *
+     * @param decisions
+     * @param mcut
+     * @param bad
+     * @param game
+     */
     public LLDecisionSet(Set<ILLDecision> decisions, boolean mcut, boolean bad, PetriGame game) {
         this.decisions = decisions;
         this.mcut = mcut;
@@ -338,11 +346,19 @@ public class LLDecisionSet extends Extensible implements DecisionSet<Place, Tran
 //        return calcNdet(dcs);
     }
 
+//    @Override
+//    public void apply(Symmetry sym) {
+//        for (ILLDecision decision : decisions) {
+//            decision.apply(sym);
+//        }
+//    }
     @Override
-    public void apply(Symmetry sym) {
+    public LLDecisionSet apply(Symmetry sym) {
+        Set<ILLDecision> decs = new HashSet<>();
         for (ILLDecision decision : decisions) {
-            decision.apply(sym);
+            decs.add((ILLDecision) decision.apply(sym));
         }
+        return new LLDecisionSet(decs, mcut, bad, game);
     }
 
     @Override
@@ -383,11 +399,11 @@ public class LLDecisionSet extends Extensible implements DecisionSet<Place, Tran
         if (this.mcut != other.mcut) {
             return false;
         }
-        for (ILLDecision decision : this.decisions) {
-            if (!other.decisions.contains(decision)) {                
-                return false;
-            }
-        }
+//        for (ILLDecision decision : this.decisions) {
+//            if (!other.decisions.contains(decision)) {
+//                return false;
+//            }
+//        }
 //        for (ILLDecision decision : other.decisions) {
 //            if (!this.decisions.contains(decision)) {
 //                if (SGGBuilder.depth < 10) {
@@ -397,9 +413,6 @@ public class LLDecisionSet extends Extensible implements DecisionSet<Place, Tran
 //            }
 //        }
         if (!Objects.equals(this.decisions, other.decisions)) {
-             if (SGGBuilder.depth < 10) {
-                    System.out.println("here");
-                }
             return false;
         }
         return true;

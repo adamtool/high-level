@@ -359,16 +359,26 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
         return calcBadPlace(dcs) || calcDeadlock(dcs) || calcNdet(dcs);
     }
 
-    public void apply(Symmetry sym) {
+//    public void apply(Symmetry sym) {
+//        for (IHLDecision decision : decisions) {
+//            decision.apply(sym);
+//        }
+//    }
+    @Override
+    public HLDecisionSet apply(Symmetry sym) {
+        Set<IHLDecision> decs = new HashSet<>();
         for (IHLDecision decision : decisions) {
-            decision.apply(sym);
+            decs.add((IHLDecision) decision.apply(sym));
         }
+        return new HLDecisionSet(decs, mcut, bad, hlgame);
     }
 
+    @Override
     public boolean isMcut() {
         return mcut;
     }
 
+    @Override
     public boolean isBad() {
         return bad;
     }
@@ -408,6 +418,7 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
         return true;
     }
 
+    @Override
     public String toDot() {
         StringBuilder sb = new StringBuilder();
         for (IHLDecision dc : decisions) {

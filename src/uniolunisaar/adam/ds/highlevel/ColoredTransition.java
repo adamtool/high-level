@@ -44,12 +44,21 @@ public class ColoredTransition {
         this.val = val;
     }
 
-    public void apply(Symmetry sym) {
+//    public void apply(Symmetry sym) {
+//        for (Map.Entry<Variable, Color> entry : val.entrySet()) {
+//            Variable var = entry.getKey();
+//            Color c = entry.getValue();
+//            val.put(var, sym.get(c));
+//        }
+//    }
+    public ColoredTransition apply(Symmetry sym) {
+        Valuation newVal = new Valuation();
         for (Map.Entry<Variable, Color> entry : val.entrySet()) {
             Variable var = entry.getKey();
             Color c = entry.getValue();
-            val.put(var, sym.get(c));
+            newVal.put(var, sym.get(c));
         }
+        return new ColoredTransition(hlgame, transition, newVal);
     }
 
     public Transition getTransition() {

@@ -32,13 +32,21 @@ public class ColorToken {
     public ColorToken(Collection<? extends Color> c) {
         tuple = new ArrayList<>(c);
     }
+//
+//    public void apply(Symmetry sym) {
+//        List<Color> newTuple = new ArrayList<>(tuple.size());
+//        for (int i = 0; i < tuple.size(); i++) {
+//            newTuple.add(sym.get(tuple.get(i)));
+//        }
+//        tuple = newTuple;
+//    }
 
-    public void apply(Symmetry sym) {
+    public ColorToken apply(Symmetry sym) {
         List<Color> newTuple = new ArrayList<>(tuple.size());
         for (int i = 0; i < tuple.size(); i++) {
             newTuple.add(sym.get(tuple.get(i)));
         }
-        tuple = newTuple;
+        return new ColorToken(newTuple);
     }
 
     // DELEGATES

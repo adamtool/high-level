@@ -18,9 +18,14 @@ public class LLSysDecision extends SysDecision<Place, Transition, LLCommitmentSe
 
     private final PetriGame game;
 
-    public LLSysDecision(PetriGame game, LLSysDecision dcs) {
-        super(dcs.place, new LLCommitmentSet(game, dcs.c));
-        this.game = game;
+    /**
+     * Copy-Constructor
+     *
+     * @param dcs
+     */
+    public LLSysDecision(LLSysDecision dcs) {
+        super(dcs.getPlace(), new LLCommitmentSet(dcs.getC()));
+        this.game = dcs.game;
     }
 
     public LLSysDecision(PetriGame game, Place place, LLCommitmentSet c) {
@@ -28,32 +33,46 @@ public class LLSysDecision extends SysDecision<Place, Transition, LLCommitmentSe
         this.game = game;
     }
 
-    @Override
-    public void apply(Symmetry sym) {
-        // apply it to the place
-// old version        
-//        String id = HL2PGConverter.getHLPlaceID(place.getId());
-//        String[] col = HL2PGConverter.getPlaceColorIDs(place.getId());
+//    @Override
+//    public void apply(Symmetry sym) {
+//        // apply it to the place
+//// old version        
+////        String id = HL2PGConverter.getHLPlaceID(place.getId());
+////        String[] col = HL2PGConverter.getPlaceColorIDs(place.getId());
+////        List<Color> colors = new ArrayList<>();
+////        for (int i = 0; i < col.length - 1; i++) {
+////            colors.add(sym.get(new Color(col[i])));
+////        }
+//        String id = HL2PGConverter.getOrigID(place);
+//        List<Color> col = HL2PGConverter.getColors(place);
 //        List<Color> colors = new ArrayList<>();
-//        for (int i = 0; i < col.length - 1; i++) {
-//            colors.add(sym.get(new Color(col[i])));
+//        for (int i = 0; i < col.size(); i++) {
+//            colors.add(sym.get(col.get(i)));
 //        }
-        String id = HL2PGConverter.getOrigID(place);
-        List<Color> col = HL2PGConverter.getColors(place);
+//        place = game.getPlace(HL2PGConverter.getPlaceID(id, colors));
+//        // apply it to the commitment set
+//        c.apply(sym);
+//    }
+    @Override
+    public LLSysDecision apply(Symmetry sym) {
+        // apply it to the place
+        String id = HL2PGConverter.getOrigID(getPlace());
+        List<Color> col = HL2PGConverter.getColors(getPlace());
         List<Color> colors = new ArrayList<>();
         for (int i = 0; i < col.size(); i++) {
             colors.add(sym.get(col.get(i)));
         }
-        place = game.getPlace(HL2PGConverter.getPlaceID(id, colors));
+        Place place = game.getPlace(HL2PGConverter.getPlaceID(id, colors));
         // apply it to the commitment set
-        c.apply(sym);
+        LLCommitmentSet c = getC().apply(sym);
+        return new LLSysDecision(game, place, c);
     }
 
     @Override
     public String toDot() {
         StringBuilder sb = new StringBuilder("(");
-        sb.append(place.getId()).append(", ");
-        sb.append(c.toDot());
+        sb.append(getPlace().getId()).append(", ");
+        sb.append(getC().toDot());
         sb.append(")");
         return sb.toString();
     }
