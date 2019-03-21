@@ -13,6 +13,7 @@ import org.testng.annotations.Test;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.io.parser.ParseException;
+import uniol.apt.module.exception.ModuleException;
 import uniolunisaar.adam.ds.graph.hl.CommitmentSet;
 import uniolunisaar.adam.ds.graph.hl.SRGFlow;
 import uniolunisaar.adam.ds.graph.hl.SymbolicGameGraph;
@@ -44,6 +45,7 @@ import uniolunisaar.adam.exceptions.pg.CouldNotCalculateException;
 import uniolunisaar.adam.exceptions.pg.NotSupportedGameException;
 import uniolunisaar.adam.exceptions.pg.SolvingException;
 import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
+import uniolunisaar.adam.generators.hl.AlarmSystemHL;
 import uniolunisaar.adam.generators.hl.ConcurrentMachinesHL;
 import uniolunisaar.adam.generators.hl.DocumentWorkflowHL;
 import uniolunisaar.adam.generators.pg.Clerks;
@@ -54,6 +56,7 @@ import uniolunisaar.adam.symbolic.bddapproach.graph.BDDGraph;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolver;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolverFactory;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolverOptions;
+import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.HLTools;
 import uniolunisaar.adam.util.PGTools;
 
@@ -402,5 +405,39 @@ public class TestSRG {
 //        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
 ////        BDDTools.saveGraph2PDF(outputDir + "DWs" + size + "_bdd_gg", bddgraph, sol);
 ////        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
+    }
+
+    @Test
+    public void testDifferentSizes() throws ModuleException {
+        Logger.getInstance().setVerbose(false);
+        Logger.getInstance().setVerboseMessageStream(null);
+        String idInput = "031519_DW_GS/2_DW";
+        String id = idInput.substring(idInput.lastIndexOf("/") + 1);
+        String[] elem = id.split("_");
+        int[] para = new int[elem.length - 1];
+        for (int i = 0; i < elem.length - 1; i++) {
+            para[i] = Integer.parseInt(elem[i]);
+        }
+        HLPetriGame hlgame = getHLGame(elem[elem.length - 1], para);
+
+        SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
+
+        int size = graph.getStates().size();
+        System.out.println("Number of states of the HL two-player game over a finite graph explizit: " + size); // todo: fix the logger...
+    }
+
+    private HLPetriGame getHLGame(String id, int[] paras) throws ModuleException {
+        switch (id) {
+            case "AS":
+                return AlarmSystemHL.createSafetyVersionForHLRepWithSetMinus(paras[0]);
+            case "CM":
+                return ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(paras[0], paras[1]);
+            case "DW":
+                return DocumentWorkflowHL.generateDW(paras[0]);
+            case "DWs":
+                return DocumentWorkflowHL.generateDWs(paras[0]);
+            default:
+                throw new ModuleException("Benchmark " + id + " not yet implemented.");
+        }
     }
 }
