@@ -172,21 +172,25 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
 //            succs = getRepresentatives(getSuccs(succs.and(Q))); // this seems to be very expensive
 //            BDD symQ = getSuccs(getSymmetries().and(Q)); // symmetries saves the symmetric states in the successor           
 //            succs.andWith(symQ.not());
-            Q_ = Q.orWith(succs);
+            Q_ = Q.or(succs);
         }
 
         return getRepresentatives(Q.and(getWellformed()));
     }
 
     private BDD getRepresentatives(BDD states) {
+        System.out.println("IN REPRI");
         BDD reps = getZero();
         BDD state = states.satOne(getFirstBDDVariables(), false);
+//            BDDTools.printDecodedDecisionSets(state, this, true);
         while (!state.isZero()) {
             reps = reps.or(state);
             BDD syms = getSuccs(getSymmetries().and(state)); // with andWith uses very less memory, but takes significant longer (test it with DW3) 1:36 against over 3 minutes
+//            BDDTools.printDecodedDecisionSets(syms, this, true);
             states.andWith(syms.not());
             state = states.satOne(getFirstBDDVariables(), false);
         }
+        System.out.println("finish REPRI");
         return reps;
     }
 

@@ -35,6 +35,7 @@ import uniolunisaar.adam.generators.pg.Clerks;
 import uniolunisaar.adam.generators.pg.Workflow;
 import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.logic.hl.SGGBuilder;
+import uniolunisaar.adam.logic.pg.partitioning.Partitioner;
 import uniolunisaar.adam.logic.solver.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.symbolic.bddapproach.graph.BDDGraph;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolver;
@@ -158,10 +159,17 @@ public class TestSGGBDD {
         //%%%%%%%%%%%%%%%%%% DW
 //        for (int i = 1; i < 5; i++) {
 //            int size = i;
+
         int size = 3;
         HLPetriGame hlgame = DocumentWorkflowHL.generateDW(size, true);
 
         PetriGame game = HL2PGConverter.convert(hlgame, true, true);
+//        Partitioner.doIt(game);
+//        PGTools.savePG2PDF(outputDir + "DW" + size + "_conv", game, false, 5);
+//
+//        HLPetriGame hlgame2 = DocumentWorkflowHL.generateDW(size, true);
+//        PetriGame game2 = HL2PGConverter.convert(hlgame2, true, true);
+//        PGTools.savePG2PDF(outputDir + "DW" + size + "_convP", game2, false, 5);
 
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
 
