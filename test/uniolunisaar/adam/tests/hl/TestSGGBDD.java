@@ -8,6 +8,7 @@ import org.testng.annotations.Test;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.io.parser.ParseException;
+import uniol.apt.io.renderer.RenderException;
 import uniolunisaar.adam.ds.graph.hl.SRGFlow;
 import uniolunisaar.adam.ds.graph.hl.SymbolicGameGraph;
 import uniolunisaar.adam.ds.graph.hl.approachLL.ILLDecision;
@@ -44,6 +45,7 @@ import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolverOptions;
 import uniolunisaar.adam.symbolic.bddapproach.util.BDDTools;
 import uniolunisaar.adam.util.HLTools;
 import uniolunisaar.adam.util.PGTools;
+import uniolunisaar.adam.util.PNWTTools;
 
 /**
  *
@@ -85,7 +87,7 @@ public class TestSGGBDD {
     @Test
     public void testSGGLL() throws IOException, InterruptedException, CouldNotFindSuitableConditionException, SolvingException, CalculationInterruptedException, NotSupportedGameException, ParseException {
         //%%%%%%%%%%%%%%%%%%% CM 21
-        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, false);
 //        HLTools.saveHLPG2PDF(outputDir + "CM21", hlgame);
 //        PetriGame game = HL2PGConverter.convert(hlgame);
         PetriGame game = Workflow.generateBJVersion(2, 1, true, false);
@@ -95,14 +97,14 @@ public class TestSGGBDD {
         opt.setNoType2(true);
         BDDSolver<? extends Condition> sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), true, opt);
         BDDGraph bddgraph = sol.getGraphGame();
-//        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
-//        BDDTools.saveGraph2PDF(outputDir + "CM21_bdd_gg", bddgraph, sol);
+        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
+        BDDTools.saveGraph2PDF(outputDir + "CM21_bdd_gg", bddgraph, sol);
 
         // Test the new version
         SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
-//        System.out.println("SIZE: " + graph.getStates().size());
-//        HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
-        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
+        System.out.println("SIZE: " + graph.getStates().size());
+        HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
+//        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
 
         //%%%%%%%%%%%%%%%%%%% CM 22
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 2, true);
@@ -147,7 +149,7 @@ public class TestSGGBDD {
 
     @Test
     public void testCM() throws IOException, InterruptedException {
-        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 2, true);
         SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
 
         System.out.println("SIZE: " + graph.getStates().size());
@@ -155,17 +157,18 @@ public class TestSGGBDD {
     }
 
     @Test
-    public void testDocumentWorkflow() throws IOException, InterruptedException, CalculationInterruptedException, NotSupportedGameException, ParseException, CouldNotCalculateException, CouldNotFindSuitableConditionException, SolvingException {
+    public void testDocumentWorkflow() throws IOException, InterruptedException, CalculationInterruptedException, NotSupportedGameException, ParseException, CouldNotCalculateException, CouldNotFindSuitableConditionException, SolvingException, RenderException {
         //%%%%%%%%%%%%%%%%%% DW
 //        for (int i = 1; i < 5; i++) {
 //            int size = i;
 
         int size = 3;
-        HLPetriGame hlgame = DocumentWorkflowHL.generateDW(size, true);
+        HLPetriGame hlgame = DocumentWorkflowHL.generateDW(size, false);
 
         PetriGame game = HL2PGConverter.convert(hlgame, true, true);
+//        PNWTTools.saveAPT(outputDir+"DW"+size, game, true);
 //        Partitioner.doIt(game);
-//        PGTools.savePG2PDF(outputDir + "DW" + size + "_conv", game, false, 5);
+        PGTools.savePG2PDF(outputDir + "DW" + size + "_conv", game, false, 5);
 //
 //        HLPetriGame hlgame2 = DocumentWorkflowHL.generateDW(size, true);
 //        PetriGame game2 = HL2PGConverter.convert(hlgame2, true, true);

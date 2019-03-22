@@ -172,7 +172,7 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
 //            succs = getRepresentatives(getSuccs(succs.and(Q))); // this seems to be very expensive
 //            BDD symQ = getSuccs(getSymmetries().and(Q)); // symmetries saves the symmetric states in the successor           
 //            succs.andWith(symQ.not());
-            Q_ = Q.or(succs);
+            Q_ = Q.orWith(succs);
         }
 
         return getRepresentatives(Q.and(getWellformed()));
