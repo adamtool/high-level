@@ -181,7 +181,7 @@ public class TestSRG {
 
     @Test
     public void testSymmetries() throws FileNotFoundException {
-        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1);
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
         HLTools.saveHLPG2PDF(outputDir + "CM21", hlgame);
 
         PetriGame game = HL2PGConverter.convert(hlgame, true);
@@ -273,7 +273,7 @@ public class TestSRG {
 
     @Test
     public void testSGG() throws IOException, InterruptedException {
-        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1);
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
         HLTools.saveHLPG2PDF(outputDir + "CM21", hlgame);
         OneEnvHLPG game = new OneEnvHLPG(hlgame);
         SymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> graph = SGGBuilder.createByHLGame(game);
@@ -284,7 +284,7 @@ public class TestSRG {
     @Test
     public void testSGGLL() throws IOException, InterruptedException, CouldNotFindSuitableConditionException, SolvingException, CalculationInterruptedException, NotSupportedGameException, ParseException {
         //%%%%%%%%%%%%%%%%%%% CM 21
-        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1);
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM21", hlgame);
 //        PetriGame game = HL2PGConverter.convert(hlgame);
         PetriGame game = Workflow.generateBJVersion(2, 1, true, false);
@@ -304,7 +304,7 @@ public class TestSRG {
         Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
 
         //%%%%%%%%%%%%%%%%%%% CM 22
-        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 2);
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 2, true);
         HLTools.saveHLPG2PDF(outputDir + "CM22", hlgame);
         game = Workflow.generateBJVersion(2, 2, true, false);
 //        PGTools.savePG2PDF(outputDir + "CM22_ll", game, false);
@@ -322,7 +322,7 @@ public class TestSRG {
 
         //%%%%%%%%%%%%%%%%%%% DW 
         int size = 2;
-        hlgame = DocumentWorkflowHL.generateDW(size);
+        hlgame = DocumentWorkflowHL.generateDW(size, true);
 //        HLTools.saveHLPG2PDF(outputDir + "DW" + size, hlgame);
         game = Clerks.generateNonCP(size, true, true);
 //        PGTools.savePG2PDF(outputDir + "DW" + size + "_ll", game, false);
@@ -346,7 +346,7 @@ public class TestSRG {
 
     @Test
     public void testCM() throws IOException, InterruptedException {
-        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1);
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
         SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
 
         System.out.println("SIZE: " + graph.getStates().size());
@@ -359,7 +359,7 @@ public class TestSRG {
 //        for (int i = 1; i < 5; i++) {
 //            int size = i;
         int size = 2;
-        HLPetriGame hlgame = DocumentWorkflowHL.generateDW(size);
+        HLPetriGame hlgame = DocumentWorkflowHL.generateDW(size, true);
 //        Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
 //        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
 //            Symmetry next = iterator.next();
@@ -429,13 +429,13 @@ public class TestSRG {
     private HLPetriGame getHLGame(String id, int[] paras) throws ModuleException {
         switch (id) {
             case "AS":
-                return AlarmSystemHL.createSafetyVersionForHLRepWithSetMinus(paras[0]);
+                return AlarmSystemHL.createSafetyVersionForHLRepWithSetMinus(paras[0], true);
             case "CM":
-                return ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(paras[0], paras[1]);
+                return ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(paras[0], paras[1], true);
             case "DW":
-                return DocumentWorkflowHL.generateDW(paras[0]);
+                return DocumentWorkflowHL.generateDW(paras[0], true);
             case "DWs":
-                return DocumentWorkflowHL.generateDWs(paras[0]);
+                return DocumentWorkflowHL.generateDWs(paras[0], true);
             default:
                 throw new ModuleException("Benchmark " + id + " not yet implemented.");
         }

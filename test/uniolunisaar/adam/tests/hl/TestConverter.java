@@ -54,7 +54,7 @@ public class TestConverter {
 
     @Test
     public void alarmSystem() throws IOException, InterruptedException {
-        HLPetriGame hlgame = AlarmSystemHL.createSafetyVersionForHLRep(3);
+        HLPetriGame hlgame = AlarmSystemHL.createSafetyVersionForHLRep(3, true);
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
         PetriGame pg = HL2PGConverter.convert(hlgame);
         PGTools.savePG2PDF(outputDir + pg.getName(), pg, false);

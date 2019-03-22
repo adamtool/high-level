@@ -64,7 +64,7 @@ public class TestSGGBDD {
 
     @Test
     public void testSGG() throws IOException, InterruptedException, NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException, CalculationInterruptedException {
-        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1);
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
         HLTools.saveHLPG2PDF(outputDir + "CM21", hlgame);
 
         PetriGame game = HL2PGConverter.convert(hlgame, true, true);
@@ -84,7 +84,7 @@ public class TestSGGBDD {
     @Test
     public void testSGGLL() throws IOException, InterruptedException, CouldNotFindSuitableConditionException, SolvingException, CalculationInterruptedException, NotSupportedGameException, ParseException {
         //%%%%%%%%%%%%%%%%%%% CM 21
-        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1);
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM21", hlgame);
 //        PetriGame game = HL2PGConverter.convert(hlgame);
         PetriGame game = Workflow.generateBJVersion(2, 1, true, false);
@@ -104,7 +104,7 @@ public class TestSGGBDD {
         Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
 
         //%%%%%%%%%%%%%%%%%%% CM 22
-        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 2);
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 2, true);
         HLTools.saveHLPG2PDF(outputDir + "CM22", hlgame);
         game = Workflow.generateBJVersion(2, 2, true, false);
 //        PGTools.savePG2PDF(outputDir + "CM22_ll", game, false);
@@ -122,7 +122,7 @@ public class TestSGGBDD {
 
         //%%%%%%%%%%%%%%%%%%% DW 
         int size = 2;
-        hlgame = DocumentWorkflowHL.generateDW(size);
+        hlgame = DocumentWorkflowHL.generateDW(size, true);
 //        HLTools.saveHLPG2PDF(outputDir + "DW" + size, hlgame);
         game = Clerks.generateNonCP(size, true, true);
 //        PGTools.savePG2PDF(outputDir + "DW" + size + "_ll", game, false);
@@ -146,7 +146,7 @@ public class TestSGGBDD {
 
     @Test
     public void testCM() throws IOException, InterruptedException {
-        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1);
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
         SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
 
         System.out.println("SIZE: " + graph.getStates().size());
@@ -159,7 +159,7 @@ public class TestSGGBDD {
 //        for (int i = 1; i < 5; i++) {
 //            int size = i;
         int size = 3;
-        HLPetriGame hlgame = DocumentWorkflowHL.generateDW(size);
+        HLPetriGame hlgame = DocumentWorkflowHL.generateDW(size, true);
 
         PetriGame game = HL2PGConverter.convert(hlgame, true, true);
 

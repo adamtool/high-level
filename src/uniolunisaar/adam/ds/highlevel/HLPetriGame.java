@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import uniol.apt.adt.IGraphListener;
+import uniol.apt.adt.extension.Extensible;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Node;
 import uniol.apt.adt.pn.PetriNet;
@@ -37,7 +38,7 @@ import uniolunisaar.adam.exceptions.highlevel.NoSuchColorException;
  *
  * @author Manuel Gieseking
  */
-public class HLPetriGame {
+public class HLPetriGame extends Extensible {
 
     private final Map<String, BasicColorClass> colorClasses;
     private final PetriGame game;

@@ -1,7 +1,9 @@
 package uniolunisaar.adam.generators.hl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
@@ -30,10 +32,11 @@ public class ConcurrentMachinesHL {
      *
      * @param machines
      * @param orders
+     * @param withPartition
      * @return
      */
-    public static HLPetriGame generateImprovedVersionWithSetMinus(int machines, int orders) {
-        HLPetriGame game = generateImprovedVersion(machines, orders);
+    public static HLPetriGame generateImprovedVersionWithSetMinus(int machines, int orders, boolean withPartition) {
+        HLPetriGame game = generateImprovedVersion(machines, orders, withPartition);
         Transition d = game.getTransition("d");
         game.setPredicate(d, Constants.TRUE);
         Flow f = game.getFlow(d, game.getPlace("OK"));
@@ -49,15 +52,34 @@ public class ConcurrentMachinesHL {
      *
      * @param machines
      * @param orders
+     * @param withPartition
      * @return
      */
-    public static HLPetriGame generateImprovedVersion(int machines, int orders) {
+    public static HLPetriGame generateImprovedVersion(int machines, int orders, boolean withPartition) {
         if (machines < 2 || orders < 1) {
             throw new RuntimeException("less than 2 machines or 1 order does not make any sense!");
         }
 
         HLPetriGame net = new HLPetriGame("High-Level Concurrent Machines with " + machines + " machines and " + orders + " orders. (Safety)");
 //        PNWTTools.setConditionAnnotation(net, Condition.Objective.A_SAFETY);
+
+        if (withPartition) {
+            Map<String, Integer> partitions = new HashMap<>();
+            for (int i = 0; i < machines; i++) {
+                partitions.put("OK_m" + i, orders + 1 + i);
+                partitions.put("ERR_m" + i, orders + 1 + i);
+            }
+
+            for (int i = 0; i < orders; i++) {
+                partitions.put("Sys_o" + i, (i + 1));
+                for (int j = 0; j < machines; j++) {
+                    partitions.put("M_o" + i + "xm" + j, (i + 1));
+                    partitions.put("G_o" + i + "xm" + j, (i + 1));
+                    partitions.put("B_o" + i + "xm" + j, (i + 1));
+                }
+            }
+            net.putExtension("partitions", partitions);
+        }
 
         // create the color classes
         Color[] m = new Color[machines];

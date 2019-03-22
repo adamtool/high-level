@@ -178,6 +178,17 @@ public class HL2PGConverter {
         setInitialMarking(hlgame, pg);
         // transitions
         addTransitions(hlgame, pg, save2Extension);
+        if (hlgame.hasExtension("partitions")) { // todo: do it better with the key
+            Map<String, Integer> partitions = (Map<String, Integer>) hlgame.getExtension("partitions");
+            for (Place place : pg.getPlaces()) {
+                if (pg.isEnvironment(place)) {
+                    pg.setPartition(place, 0);
+                }
+                if (partitions.containsKey(place.getId())) {
+                    pg.setPartition(place, partitions.get(place.getId()));
+                }
+            }
+        }
         return pg;
     }
 

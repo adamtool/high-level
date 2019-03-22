@@ -1,7 +1,9 @@
 package uniolunisaar.adam.generators.hl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
@@ -27,15 +29,16 @@ public class AlarmSystemHL {
 
     /**
      * Creates the example for the alarm system presented in the high-level
-     * representation paper for the festschrift of Bengt Jonsson.
+     * representation paper for the festschrift of Bengt Jonsson.Uses the new
+     * SetminusTerm for the arc expression
      *
-     * Uses the new SetminusTerm for the arc expression
      *
      * @param nb_alarmSystems
+     * @param withPartition
      * @return
      */
-    public static HLPetriGame createSafetyVersionForHLRepWithSetMinus(int nb_alarmSystems) {
-        HLPetriGame game = createSafetyVersionForHLRep(nb_alarmSystems);
+    public static HLPetriGame createSafetyVersionForHLRepWithSetMinus(int nb_alarmSystems, boolean withPartition) {
+        HLPetriGame game = createSafetyVersionForHLRep(nb_alarmSystems, withPartition);
         Transition info = game.getTransition("info");
         game.setPredicate(info, Constants.TRUE);
         Flow f = game.getFlow(game.getPlace("S"), info);
@@ -45,20 +48,36 @@ public class AlarmSystemHL {
 
     /**
      * Creates the example for the alarm system presented in the high-level
-     * representation paper for the festschrift of Bengt Jonsson.
+     * representation paper for the festschrift of Bengt Jonsson.This version
+     * uses the sum operator instead of C-{x}.
      *
-     * This version uses the sum operator instead of C-{x}.
      *
      * @param nb_alarmSystems
+     * @param withPartition
      * @return
      */
-    public static HLPetriGame createSafetyVersionForHLRep(int nb_alarmSystems) {
+    public static HLPetriGame createSafetyVersionForHLRep(int nb_alarmSystems, boolean withPartition) {
         if (nb_alarmSystems < 2) {
             throw new RuntimeException("less than 2 intruding points are not "
                     + "interesting for a security system");
         }
         HLPetriGame net = new HLPetriGame("High-Level Alarm system with " + nb_alarmSystems + " intruding points. (Safety)");
 //        PNWTTools.setConditionAnnotation(net, Condition.Objective.A_SAFETY);
+
+        if (withPartition) {
+            Map<String, Integer> partitions = new HashMap<>();
+            for (int i = 0; i < nb_alarmSystems; i++) {
+                partitions.put("S_a" + i, (i + 1));
+                partitions.put("P_a" + i, (i + 1));
+                partitions.put("D_a" + i, (i + 1));
+                for (int j = 0; j < nb_alarmSystems; j++) {
+                    partitions.put("Alarm_a" + i + "xa" + j, (i + 1));
+                }
+            }
+            partitions.put("Bad_e", nb_alarmSystems + 1);
+            partitions.put("Good_e", 1);
+            net.putExtension("partitions", partitions);
+        }
 
         // create the color classes
         Color[] colors = new Color[nb_alarmSystems];

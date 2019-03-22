@@ -1,5 +1,7 @@
 package uniolunisaar.adam.generators.hl;
 
+import java.util.HashMap;
+import java.util.Map;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.highlevel.Color;
@@ -21,14 +23,31 @@ public class DocumentWorkflowHL {
      * Festschrift.
      *
      * @param size
+     * @param withPartition
      * @return
      */
-    public static HLPetriGame generateDW(int size) {
+    public static HLPetriGame generateDW(int size, boolean withPartition) {
         if (size < 1) {
             throw new RuntimeException("There should at least be one Clerk to sign the document.");
         }
         HLPetriGame net = new HLPetriGame("High-Level Document Workflow with " + size + " clerks. (DW)");
 //        PNWTTools.setConditionAnnotation(net, Condition.Objective.A_SAFETY);
+
+        if (withPartition) {
+            Map<String, Integer> partitions = new HashMap<>();
+            for (int i = 0; i < size; i++) {
+                partitions.put("cl_c" + i, i + 2);
+                partitions.put("vote_c" + i, 1);
+                partitions.put("end_c" + i, 1);
+                partitions.put("Y_c" + i, i + 2);
+                partitions.put("N_c" + i, i + 2);
+            }
+            partitions.put("good_e", 2);
+            partitions.put("bad_e", 1);
+//            net.setPartition(goodReady, 1);
+            partitions.put("ready_e", 1);
+            net.putExtension("partitions", partitions);
+        }
 
         // create the color classes
         Color[] c = new Color[size];
@@ -119,12 +138,43 @@ public class DocumentWorkflowHL {
      * @param size
      * @return
      */
-    public static HLPetriGame generateDWs(int size) {
+    public static HLPetriGame generateDWs(int size, boolean withPartition) {
         if (size < 1) {
             throw new RuntimeException("There should be at least one Clerk to sign the document.");
         }
         HLPetriGame game = new HLPetriGame("High-Level Document Workflow with " + size + " clerks. (DW)");
 //        PNWTTools.setConditionAnnotation(net, Condition.Objective.A_SAFETY);
+
+        if (withPartition) {
+            Map<String, Integer> partitions = new HashMap<>();
+            for (int i = 0; i < size; i++) {
+                int startToken = i * 2;
+                partitions.put("cl_c" + i, (startToken + 1));
+                partitions.put("vote_c" + i, (startToken + 1));
+                if (size == 1) { // special case for the partitioning when we only have one clerk at all
+                    partitions.put("end_c" + i, (startToken + 2));
+                    partitions.put("Y_c" + i, (startToken + 1));
+                    partitions.put("N_c" + i, (startToken + 1));
+                    partitions.put("bad_c" + i, (startToken + 1));
+                } else {
+                    partitions.put("end_c" + i, (startToken + 1));
+                    partitions.put("Y_c" + i, (startToken + 2));
+                    partitions.put("N_c" + i, (startToken + 2));
+                    partitions.put("bad_c" + i, (startToken + 2));
+                }
+                if (i == 0) {
+                    if (size == 1) { // special case for the partitioning when we only have one clerk at all
+                        partitions.put("buf_c" + i, 2 * (size - 1) + 2);
+                    } else {
+                        partitions.put("buf_c" + i, 2 * (size - 1) + 1);
+                    }
+                } else {
+                    partitions.put("buf_c" + i, startToken - 1);
+                }
+                partitions.put("buff_c" + i, startToken + 2);
+            }
+            game.putExtension("partitions", partitions);
+        }
 
         // create the color classes
         Color[] c = new Color[size];
