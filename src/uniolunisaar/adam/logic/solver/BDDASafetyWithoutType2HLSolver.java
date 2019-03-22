@@ -52,7 +52,7 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
      * not annotated to which token each place belongs and the algorithm was not
      * able to detect it on its own.
      */
-    BDDASafetyWithoutType2HLSolver(PetriGame game, Symmetries syms, boolean skipTests, Safety win, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
+    public BDDASafetyWithoutType2HLSolver(PetriGame game, Symmetries syms, boolean skipTests, Safety win, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
         super(game, skipTests, win, opts);
         this.syms = syms;
     }
@@ -150,8 +150,16 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
 // %%%%%%%%%%%%%%%%%%%%%%%%% The relevant ability of the solver %%%%%%%%%%%%%%%%
     @Override
     protected BDD calcDCSs() throws CalculationInterruptedException {
+        BDD trans = getBufferedEnvTransitions().or(getBufferedSystemTransitions());
+
         BDD Q = getZero();
-        BDD Q_ = getInitialDCSs();
+        BDD Q_ = getInitialDCSs().andWith(getWellformed()); // seems to be the fastes only to add the getRepr completely at the end
+//        BDD Q_ = getRepresentatives(getInitialDCSs().andWith(getWellformed())); // seems to be faster than without wellformed
+//        BDD Q_ = getRepresentatives(getInitialDCSs());
+//        try {
+//            BDDTools.saveStates2Pdf("states", Q_.andWith(getWellformed()), this);
+//        } catch (Exception e) {
+//        }
         while (!Q_.equals(Q)) {
             if (Thread.currentThread().isInterrupted()) {
                 CalculationInterruptedException e = new CalculationInterruptedException();
@@ -160,17 +168,96 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
             }
             Q = Q_;
             // if it is an mcut or not is already coded in the transitions itself
-            BDD succs = getBufferedEnvTransitions().or(getBufferedSystemTransitions());
-            succs = succs.and(Q);
-            succs = getSuccs(succs);
-            BDD symQ = getSuccs(symmetries(syms).and(Q)); // symmetries saves the symmetric states in the successor
-            succs.andWith(symQ.not());
-            Q_ = Q.or(succs);
+            BDD succs = getSuccs(trans.and(Q));// seems to be faster than with representatives
+//            succs = getRepresentatives(getSuccs(succs.and(Q))); // this seems to be very expensive
+//            BDD symQ = getSuccs(getSymmetries().and(Q)); // symmetries saves the symmetric states in the successor           
+//            succs.andWith(symQ.not());
+            Q_ = Q.orWith(succs);
         }
-        return Q.and(getWellformed());
+
+        return getRepresentatives(Q.and(getWellformed()));
+    }
+
+    private BDD getRepresentatives(BDD states) {
+        BDD reps = getZero();
+        BDD state = states.satOne(getFirstBDDVariables(), false);
+        while (!state.isZero()) {
+            reps = reps.or(state);
+            BDD syms = getSuccs(getSymmetries().and(state)); // with andWith uses very less memory, but takes significant longer (test it with DW3) 1:36 against over 3 minutes
+            states.andWith(syms.not());
+            state = states.satOne(getFirstBDDVariables(), false);
+        }
+        return reps;
+    }
+
+    private BDD symmetries = null;
+
+    private BDD getSymmetries() {
+        if (symmetries == null) {
+            symmetries = symmetries(syms);
+        }
+        return symmetries;
     }
 
     private BDD symmetries(Symmetries syms) {
+        BDD symsBDD = getZero();
+        SymmetryIterator symit = syms.iterator();
+//        if (symit.hasNext()) {
+//            symit.next(); // jump over identity
+//        }
+        for (SymmetryIterator iti = symit; iti.hasNext();) {
+            Symmetry sym = iti.next();
+//            System.out.println(sym.toString());
+            BDD symm = getOne();
+            // the symmetries for all places
+            for (Place place : getGame().getPlaces()) {
+                int partition = getSolvingObject().getGame().getPartition(place);
+                // Calculate the symmetric place
+                String id = HL2PGConverter.getOrigID(place);
+                List<Color> col = HL2PGConverter.getColors(place);
+                List<Color> colors = new ArrayList<>();
+                for (int i = 0; i < col.size(); i++) {
+                    colors.add(sym.get(col.get(i)));
+                }
+                Place newPlace = getGame().getPlace(HL2PGConverter.getPlaceID(id, colors));
+                int newPartition = getSolvingObject().getGame().getPartition(newPlace);
+                symm.andWith(codePlace(place, 0, partition).biimpWith(codePlace(newPlace, 1, newPartition)));
+                if (partition != 0) { // no env place
+                    // the symmetries for all transitions            
+                    for (Transition t : place.getPostset()) {
+                        int transId = getSolvingObject().getDevidedTransitions()[partition - 1].indexOf(t);
+                        // Calculate the symmetric transition
+                        String hlID = HL2PGConverter.getOrigID(t);
+                        Valuation val = HL2PGConverter.getValuation(t);
+                        Valuation newVal = new Valuation();
+                        for (Map.Entry<Variable, Color> entry : val.entrySet()) {
+                            Variable var = entry.getKey();
+                            Color c = entry.getValue();
+                            newVal.put(var, sym.get(c));
+                        }
+                        Transition tNew = getGame().getTransition(HL2PGConverter.getTransitionID(hlID, newVal));
+                        int transIdNew = getSolvingObject().getDevidedTransitions()[newPartition - 1].indexOf(tNew);
+                        symm.andWith(getFactory().ithVar(getTransitionDomain(0, partition - 1).vars()[transId]).biimpWith(getFactory().ithVar(getTransitionDomain(1, newPartition - 1).vars()[transIdNew])));
+                    }
+                    // symmetries for the top
+                    symm.andWith(getTopDomain(0, partition - 1).buildEquals(getTopDomain(1, newPartition - 1)));
+                }
+            }
+            symsBDD.orWith(symm);
+        }
+        return symsBDD;
+    }
+
+    /**
+     * ATTENTION: This method can only be used if the places are devided into
+     * the partitions according their color classes. It is cheaper than the
+     * symmetries function because the places and transition loops are not
+     * nested
+     *
+     * @param syms
+     * @return
+     */
+    private BDD symmetriesProperlyPartitioned(Symmetries syms) {
         BDD symsBDD = getZero();
         for (SymmetryIterator iti = syms.iterator(); iti.hasNext();) {
             Symmetry sym = iti.next();

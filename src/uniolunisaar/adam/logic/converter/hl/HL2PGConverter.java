@@ -33,6 +33,8 @@ import uniolunisaar.adam.ds.highlevel.terms.ColorClassType;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.logic.pg.calculators.ConcurrencyPreservingCalculator;
+import uniolunisaar.adam.logic.pg.calculators.MaxTokenCountCalculator;
 import uniolunisaar.adam.tools.CartesianProduct;
 import uniolunisaar.adam.util.AdamExtensions;
 import uniolunisaar.adam.util.PNWTTools;
@@ -159,7 +161,16 @@ public class HL2PGConverter {
     }
 
     public static PetriGame convert(HLPetriGame hlgame, boolean save2Extension) {
-        PetriGame pg = new PetriGame(hlgame.getName() + " - LL-Version");
+        return convert(hlgame, save2Extension, false);
+    }
+
+    public static PetriGame convert(HLPetriGame hlgame, boolean save2Extension, boolean withCalculators) {
+        PetriGame pg;
+        if (withCalculators) {
+            pg = new PetriGame(hlgame.getName() + " - LL-Version", new ConcurrencyPreservingCalculator(), new MaxTokenCountCalculator());
+        } else {
+            pg = new PetriGame(hlgame.getName() + " - LL-Version");
+        }
         PNWTTools.setConditionAnnotation(pg, Condition.Objective.A_SAFETY); // TODO: do it properly
         // Places
         addPlaces(hlgame, pg, save2Extension);
