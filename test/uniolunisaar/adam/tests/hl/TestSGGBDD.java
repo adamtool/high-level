@@ -18,6 +18,8 @@ import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcExpression;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcTuple;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetries;
+import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
+import uniolunisaar.adam.ds.highlevel.symmetries.SymmetryIterator;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.ds.objectives.Safety;
@@ -36,7 +38,6 @@ import uniolunisaar.adam.generators.pg.Clerks;
 import uniolunisaar.adam.generators.pg.Workflow;
 import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.logic.hl.SGGBuilder;
-import uniolunisaar.adam.logic.pg.partitioning.Partitioner;
 import uniolunisaar.adam.logic.solver.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.symbolic.bddapproach.graph.BDDGraph;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolver;
@@ -45,12 +46,13 @@ import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolverOptions;
 import uniolunisaar.adam.symbolic.bddapproach.util.BDDTools;
 import uniolunisaar.adam.util.HLTools;
 import uniolunisaar.adam.util.PGTools;
-import uniolunisaar.adam.util.PNWTTools;
 
 /**
  *
  * @author Manuel Gieseking
  */
+
+
 @Test
 public class TestSGGBDD {
 
@@ -162,19 +164,24 @@ public class TestSGGBDD {
 //        for (int i = 1; i < 5; i++) {
 //            int size = i;
 
-        int size = 3;
+        int size = 1;
         HLPetriGame hlgame = DocumentWorkflowHL.generateDW(size, false);
 
         PetriGame game = HL2PGConverter.convert(hlgame, true, true);
 //        PNWTTools.saveAPT(outputDir+"DW"+size, game, true);
 //        Partitioner.doIt(game);
-        PGTools.savePG2PDF(outputDir + "DW" + size + "_conv", game, false, 5);
+        PGTools.savePG2PDF(outputDir + "DW" + size + "_conv", game, false);
 //
 //        HLPetriGame hlgame2 = DocumentWorkflowHL.generateDW(size, true);
 //        PetriGame game2 = HL2PGConverter.convert(hlgame2, true, true);
 //        PGTools.savePG2PDF(outputDir + "DW" + size + "_convP", game2, false, 5);
 
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
+        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+            Symmetry next = iterator.next();
+
+            System.out.println(next.toString());
+        }
 
         BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(game, syms, false, new Safety(), new BDDSolverOptions());
         sol.initialize();
@@ -182,8 +189,8 @@ public class TestSGGBDD {
         double sizeBDD = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
         System.out.println("size " + sizeBDD);
 
-//        BDDGraph graph = sol.getGraphGame();
-//        BDDTools.saveGraph2PDF(outputDir + "DW" + size + "_gg", graph, sol);
+        BDDGraph graph = sol.getGraphGame();
+        BDDTools.saveGraph2PDF(outputDir + "DW" + size + "_gg", graph, sol);
 //        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
 //        }
 //        //%%%%%%%%%%%%%%%%%% DWs
