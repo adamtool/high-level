@@ -164,7 +164,7 @@ public class TestSGGBDD {
 //        for (int i = 1; i < 5; i++) {
 //            int size = i;
 
-        int size = 1;
+        int size = 4;
         HLPetriGame hlgame = DocumentWorkflowHL.generateDW(size, false);
 
         PetriGame game = HL2PGConverter.convert(hlgame, true, true);
@@ -183,14 +183,16 @@ public class TestSGGBDD {
             System.out.println(next.toString());
         }
 
-        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(game, syms, false, new Safety(), new BDDSolverOptions());
+        BDDSolverOptions opt =new BDDSolverOptions();
+        opt.setLibraryName("buddy");
+        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(game, syms, false, new Safety(), opt);
         sol.initialize();
 
         double sizeBDD = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
         System.out.println("size " + sizeBDD);
 
-        BDDGraph graph = sol.getGraphGame();
-        BDDTools.saveGraph2PDF(outputDir + "DW" + size + "_gg", graph, sol);
+//        BDDGraph graph = sol.getGraphGame();
+//        BDDTools.saveGraph2PDF(outputDir + "DW" + size + "_gg", graph, sol);
 //        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
 //        }
 //        //%%%%%%%%%%%%%%%%%% DWs
