@@ -154,7 +154,7 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
         BDD trans = getBufferedEnvTransitions().or(getBufferedSystemTransitions());
 
         BDD Q = getZero();
-        BDD Q_ = getInitialDCSs().andWith(getWellformed()); // seems to be the fastes only to add the getRepr completely at the end
+        BDD Q_ = getInitialDCSs().andWith(getWellformed(0)); // seems to be the fastes only to add the getRepr completely at the end
 //        BDD Q_ = getRepresentatives(getInitialDCSs().andWith(getWellformed())); // seems to be faster than without wellformed
 //        BDD Q_ = getRepresentatives(getInitialDCSs());
 //        try {
@@ -176,7 +176,7 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
             Q_ = Q.or(succs);
         }
 
-        return getRepresentatives(Q.and(getWellformed()));
+        return getRepresentatives(Q.and(getWellformed(0))).andWith(getWellformed(0));
     }
 
     private BDD getRepresentatives(BDD states) {
@@ -211,7 +211,8 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
         for (SymmetryIterator iti = symit; iti.hasNext();) {
             Symmetry sym = iti.next();
 //            System.out.println(sym.toString());
-            BDD symm = getOne();
+//            BDD symm = getOne();
+            BDD symm = getWellformed(0).andWith(getWellformed(1)); // this seems to be faster then just getOne()
             // the symmetries for all places
             for (Place place : getGame().getPlaces()) {
                 int partition = getSolvingObject().getGame().getPartition(place);

@@ -79,6 +79,39 @@ public class TestSRG {
     }
 
     @Test
+    public void testHashCode() {
+        String a = "ERR_m1";
+        String b = "OK_m0";
+//        System.out.println(a.hashCode());
+//        System.out.println(b.hashCode());        
+        String c = "ERR_m0";
+        String d = "OK_m1";
+//        System.out.println(c.hashCode());
+//        System.out.println(d.hashCode());      
+        boolean equals = a.hashCode() + b.hashCode() == c.hashCode() + d.hashCode();
+        Assert.assertTrue(equals); // this is a problem when not using extra hashcode functions
+        PetriGame game = new PetriGame("test");
+        List<Color> col = new ArrayList<>();
+        col.add(new Color("m0"));
+        List<Color> col1 = new ArrayList<>();
+        col1.add(new Color("m1"));
+        Place pA = game.createPlace(a);
+        HL2PGConverter.setColorsAndID2Extension(pA, "ERR", col1);
+        Place pB = game.createPlace(b);
+        HL2PGConverter.setColorsAndID2Extension(pB, "OK", col);
+        Place pC = game.createPlace(c);
+        HL2PGConverter.setColorsAndID2Extension(pC, "ERR", col);
+        Place pD = game.createPlace(d);
+        HL2PGConverter.setColorsAndID2Extension(pD, "OK", col1);
+        equals = HL2PGConverter.getHashCode(pA) + HL2PGConverter.getHashCode(pB) == HL2PGConverter.getHashCode(pC) + HL2PGConverter.getHashCode(pD);
+        System.out.println(HL2PGConverter.getHashCode(pA));
+        System.out.println(HL2PGConverter.getHashCode(pB));
+        System.out.println(HL2PGConverter.getHashCode(pC));
+        System.out.println(HL2PGConverter.getHashCode(pD));
+        Assert.assertFalse(equals);
+    }
+
+    @Test
     public void testCommitmentSets() {
         CommitmentSet<ColoredTransition> c1 = new HLCommitmentSet(true);
         CommitmentSet<ColoredTransition> c2 = new HLCommitmentSet(true);

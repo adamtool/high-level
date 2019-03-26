@@ -51,8 +51,6 @@ import uniolunisaar.adam.util.PGTools;
  *
  * @author Manuel Gieseking
  */
-
-
 @Test
 public class TestSGGBDD {
 
@@ -150,12 +148,26 @@ public class TestSGGBDD {
     }
 
     @Test
-    public void testCM() throws IOException, InterruptedException {
-        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 2, true);
+    public void testCM() throws IOException, InterruptedException, CalculationInterruptedException, NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
         SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
 
         System.out.println("SIZE: " + graph.getStates().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
+
+//        PetriGame game = HL2PGConverter.convert(hlgame, true, true);
+//        Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
+//
+//        BDDSolverOptions opt = new BDDSolverOptions();
+//        opt.setLibraryName("buddy");
+//        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(game, syms, false, new Safety(), opt);
+//        sol.initialize();
+//
+//        double sizeBDD = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
+//        System.out.println("size " + sizeBDD);
+//
+//        BDDGraph graph = sol.getGraphGame();
+//        BDDTools.saveGraph2PDF(outputDir + "CM21" + "_bdd_gg", graph, sol);
     }
 
     @Test
@@ -164,7 +176,7 @@ public class TestSGGBDD {
 //        for (int i = 1; i < 5; i++) {
 //            int size = i;
 
-        int size = 4;
+        int size = 3;
         HLPetriGame hlgame = DocumentWorkflowHL.generateDW(size, false);
 
         PetriGame game = HL2PGConverter.convert(hlgame, true, true);
@@ -183,8 +195,8 @@ public class TestSGGBDD {
             System.out.println(next.toString());
         }
 
-        BDDSolverOptions opt =new BDDSolverOptions();
-        opt.setLibraryName("buddy");
+        BDDSolverOptions opt = new BDDSolverOptions();
+//        opt.setLibraryName("buddy");
         BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(game, syms, false, new Safety(), opt);
         sol.initialize();
 

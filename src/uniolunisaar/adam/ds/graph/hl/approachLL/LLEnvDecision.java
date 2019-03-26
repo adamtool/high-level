@@ -2,6 +2,7 @@ package uniolunisaar.adam.ds.graph.hl.approachLL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.hl.EnvDecision;
@@ -58,6 +59,13 @@ public class LLEnvDecision extends EnvDecision<Place, Transition> implements ILL
         return new LLEnvDecision(game, game.getPlace(HL2PGConverter.getPlaceID(id, colors)));
     }
 
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 31 * hash + HL2PGConverter.getHashCode(getPlace());
+        return hash;
+    }
+    
     @Override
     public boolean isChoosen(Transition t) {
         return getPlace().getPostset().contains(t);

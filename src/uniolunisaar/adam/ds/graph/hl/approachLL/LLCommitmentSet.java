@@ -2,6 +2,7 @@ package uniolunisaar.adam.ds.graph.hl.approachLL;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.hl.CommitmentSet;
@@ -93,6 +94,20 @@ public class LLCommitmentSet extends CommitmentSet<Transition> {
             tr.add(game.getTransition(HL2PGConverter.getTransitionID(hlID, newVal)));
         }
         return new LLCommitmentSet(game, tr);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 59 * hash + (isTop() ? 1 : 0);
+        int tr = 0;
+        if (getTransitions() != null) {
+            for (Transition transition : getTransitions()) {
+                tr += HL2PGConverter.getHashCode(transition);
+            }
+        }
+        hash = 59 * hash + tr;
+        return hash;
     }
 
     @Override

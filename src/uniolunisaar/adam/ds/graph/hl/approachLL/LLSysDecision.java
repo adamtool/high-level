@@ -2,6 +2,7 @@ package uniolunisaar.adam.ds.graph.hl.approachLL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.hl.SysDecision;
@@ -66,6 +67,14 @@ public class LLSysDecision extends SysDecision<Place, Transition, LLCommitmentSe
         // apply it to the commitment set
         LLCommitmentSet c = getC().apply(sym);
         return new LLSysDecision(game, place, c);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 29 * hash + HL2PGConverter.getHashCode(getPlace());
+        hash = 29 * hash * Objects.hashCode(getC());
+        return hash;
     }
 
     @Override

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TreeMap;
 import uniol.apt.adt.exception.FlowExistsException;
 import uniol.apt.adt.pn.Flow;
@@ -154,6 +155,18 @@ public class HL2PGConverter {
 
     public static Valuation getValuation(Transition llTransition) {
         return (Valuation) llTransition.getExtension(AdamExtensions.convValuation.name());
+    }
+
+    public static int getHashCode(Place llPlace) {
+        int result = getOrigID(llPlace).hashCode();
+        result = 31 * result * Objects.hashCode(getColors(llPlace));
+        return result;
+    }
+
+    public static int getHashCode(Transition llTransition) {
+        int result = getOrigID(llTransition).hashCode();
+        result = 31 * result * Objects.hashCode(getValuation(llTransition));
+        return result;
     }
 
     public static PetriGame convert(HLPetriGame hlgame) {
