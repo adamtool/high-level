@@ -1,6 +1,7 @@
 package uniolunisaar.adam.ds.highlevel;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,6 +31,11 @@ public class StaticColorClass {
         this.id = id;
         this.colors = colors;
     }
+
+//    StaticColorClass(String id, Color... col) {
+//        this.id = id;
+//        this.colors = Arrays.asList(col);
+//    }
 
     public boolean contains(Color c) {
         return colors.contains(c);
