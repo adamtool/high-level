@@ -63,9 +63,9 @@ public class ContainerHabourHL {
                 partitions.put("scanned_r" + i + "xhigh", actToken + i);
             }
 
-            for (int i = 0; i < nb_costs; i++) {
-                partitions.put("costs_m" + i, actToken + nb_robots + i);
-            }
+//            for (int i = 0; i < nb_costs; i++) {
+//                partitions.put("costs_m" + i, actToken + nb_robots + i);
+//            }
 
             net.putExtension("partitions", partitions);
         }
@@ -89,8 +89,8 @@ public class ContainerHabourHL {
 
         List<Pair<String, String[]>> batteries = new ArrayList<>();
         batteries.add(new Pair<>("B0", new String[]{"dead"}));
-        batteries.add(new Pair<>("B1", new String[]{"low"}));
-        batteries.add(new Pair<>("B2", new String[]{"medium"}));
+//        batteries.add(new Pair<>("B1", new String[]{"low"}));
+//        batteries.add(new Pair<>("B2", new String[]{"medium"}));
         batteries.add(new Pair<>("B3", new String[]{"high"}));
 
         net.createBasicColorClass("E", false, "e");
@@ -144,15 +144,17 @@ public class ContainerHabourHL {
         net.setBad(bad);
         t = net.createTransition();
         net.createFlow(contP, t, new ArcExpression(new ArcTuple(new Variable("c"), new Variable("p"))));
+        net.createFlow(t, bad, new ArcExpression(new Variable("c")));        
+        t = net.createTransition();
+        net.createFlow(sC, t, new ArcExpression(new Variable("c")));
         net.createFlow(t, bad, new ArcExpression(new Variable("c")));
         t = net.createTransition();
         net.createFlow(rec, t, new ArcExpression(new ArcTuple(new Variable("c"), new Variable("p"))));
         net.createFlow(contP, t, new ArcExpression(new ArcTuple(new Variable("c"), new Variable("p"))));
 
         // costs
-        Place ccost = net.createSysPlace("costs", k);
-        net.setColorTokens(ccost, costs);
-
+//        Place ccost = net.createSysPlace("costs", k);
+//        net.setColorTokens(ccost, costs);
         // scanning 
         Place scanned = net.createSysPlace("scanned", rb);
 
@@ -165,24 +167,23 @@ public class ContainerHabourHL {
         net.setColorTokens(rob, init);
         t = net.createTransition(new BasicPredicate(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
         net.createFlow(sC, t, new ArcExpression(new Variable("c")));
+        net.createFlow(t, sC, new ArcExpression(new Variable("c")));
         ArcTuple tup = new ArcTuple();
         tup.add(new Variable("r"));
         tup.add(new SuccessorTerm(new Variable("b"), net));
         net.createFlow(rob, t, new ArcExpression(tup));
 //        net.createFlow(t, rob, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b")))); // VERSION A
-        net.createFlow(t, contP, new ArcExpression(new ArcTuple(new Variable("c"), new Variable("p"))));
+//        net.createFlow(t, contP, new ArcExpression(new ArcTuple(new Variable("c"), new Variable("p"))));
         net.createFlow(t, scanned, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b")))); // VERSION D
 
         t = net.createTransition(new BasicPredicate(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
         net.createFlow(rob, t, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));
-        net.createFlow(ccost, t, new ArcExpression(new Variable("z")));
+//        net.createFlow(ccost, t, new ArcExpression(new Variable("z")));
         net.createFlow(t, rob, new ArcExpression(tup));
-
-        t = net.createTransition(new BasicPredicate(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.EQ, new ColorClassTerm("B3")));
-        net.createFlow(rob, t, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));
-        net.createFlow(ccost, t, new ArcExpression(new Variable("z")));
-        net.createFlow(t, rob, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));
-
+//        t = net.createTransition(new BasicPredicate(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.EQ, new ColorClassTerm("B3")));
+//        net.createFlow(rob, t, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));
+//        net.createFlow(ccost, t, new ArcExpression(new Variable("z")));
+//        net.createFlow(t, rob, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));
         // ADDED for VERSION D
         t = net.createTransition();
         net.createFlow(scanned, t, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));

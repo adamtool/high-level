@@ -92,15 +92,20 @@ public class TestConverter {
 //        opt.setNoType2(true);
 //        BDDSolver<? extends Condition> sol = BDDSolverFactory.getInstance().getSolver(pg, false, opt);
 //        System.out.println("asdf " + sol.existsWinningStrategy());
-        HLPetriGame hlgame = ContainerHabourHL.generateD(2, 2, 1, 1, true);
+        HLPetriGame hlgame = ContainerHabourHL.generateD(4, 2, 1, 1, true);
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
         PetriGame pg = HL2PGConverter.convert(hlgame, true, true);
         PGTools.savePG2PDF(outputDir + pg.getName(), pg, false, 8);
-        PGTools.saveAPT(outputDir + pg.getName(), pg, false);
+        PGTools.saveAPT(outputDir + pg.getName(), pg, true);
         BDDSolverOptions opt = new BDDSolverOptions();
         opt.setNoType2(true);
         BDDSolver<? extends Condition> sol = BDDSolverFactory.getInstance().getSolver(pg, false, opt);
-        System.out.println("asdf " + sol.existsWinningStrategy());
+
+        sol.initialize();
+
+        double sizeBDD = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
+        System.out.println("size" + sizeBDD);
+//        System.out.println("asdf " + sol.existsWinningStrategy());
 
     }
 
