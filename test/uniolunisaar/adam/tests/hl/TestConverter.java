@@ -19,6 +19,7 @@ import uniolunisaar.adam.exceptions.pg.SolvingException;
 import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
 import uniolunisaar.adam.generators.hl.AlarmSystemHL;
 import uniolunisaar.adam.generators.hl.ContainerHabourHL;
+import uniolunisaar.adam.generators.hl.PackageDeliveryHL;
 import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolver;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolverFactory;
@@ -107,6 +108,24 @@ public class TestConverter {
         System.out.println("size" + sizeBDD);
 //        System.out.println("asdf " + sol.existsWinningStrategy());
 
+    }
+
+    @Test
+    public void packageDelivery() throws IOException, InterruptedException, CouldNotFindSuitableConditionException, SolvingException, CalculationInterruptedException, RenderException {
+        HLPetriGame hlgame = PackageDeliveryHL.generateB(4, 3, true);
+        HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
+        PetriGame pg = HL2PGConverter.convert(hlgame, true, true);
+        PGTools.savePG2PDF(outputDir + pg.getName(), pg, false, 8);
+        PGTools.saveAPT(outputDir + pg.getName(), pg, true);
+        BDDSolverOptions opt = new BDDSolverOptions();
+        opt.setNoType2(true);
+        BDDSolver<? extends Condition> sol = BDDSolverFactory.getInstance().getSolver(pg, false, opt);
+
+        sol.initialize();
+
+        double sizeBDD = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
+        System.out.println("size" + sizeBDD);
+        System.out.println("asdf " + sol.existsWinningStrategy());
     }
 
 }
