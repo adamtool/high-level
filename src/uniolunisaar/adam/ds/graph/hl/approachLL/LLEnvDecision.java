@@ -2,7 +2,6 @@ package uniolunisaar.adam.ds.graph.hl.approachLL;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.hl.EnvDecision;

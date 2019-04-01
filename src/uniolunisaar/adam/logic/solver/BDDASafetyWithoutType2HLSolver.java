@@ -1,8 +1,10 @@
 package uniolunisaar.adam.logic.solver;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import net.sf.javabdd.BDD;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
@@ -22,8 +24,10 @@ import uniolunisaar.adam.exceptions.pg.InvalidPartitionException;
 import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.symbolic.bddapproach.graph.BDDGraph;
 import uniolunisaar.adam.symbolic.bddapproach.graph.BDDState;
+import uniolunisaar.adam.symbolic.bddapproach.graph.BDDSymbolicGraphBuilder;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolver;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolverOptions;
+import uniolunisaar.adam.symbolic.bddapproach.util.BDDTools;
 import uniolunisaar.adam.util.benchmarks.Benchmarks;
 import uniolunisaar.adam.tools.Logger;
 
@@ -177,6 +181,7 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
         }
 
         return getRepresentatives(Q.and(getWellformed(0))).andWith(getWellformed(0));
+//        return Q.andWith(getWellformed(0));
     }
 
     private BDD getRepresentatives(BDD states) {
@@ -335,7 +340,17 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
      */
     @Override
     public BDDGraph getGraphGame() throws CalculationInterruptedException {
-        BDDGraph graph = super.getGraphGame();
+        if (!super.isInitialized()) {
+            initialize();
+        }
+//        try {
+//            BDDTools.saveStates2Pdf("states.pdf", getBufferedDCSs(), this);
+//        } catch (IOException ex) {
+//            java.util.logging.Logger.getLogger(BDDASafetyWithoutType2HLSolver.class.getName()).log(Level.SEVERE, null, ex);
+//        } catch (InterruptedException ex) {
+//            java.util.logging.Logger.getLogger(BDDASafetyWithoutType2HLSolver.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        BDDGraph graph = BDDSymbolicGraphBuilder.getInstance().builtGraph(this);
         for (BDDState state : graph.getStates()) { // mark all special states
             if (!graph.getInitial().equals(state) && !badStates().and(state.getState()).isZero()) {
                 state.setBad(true);
