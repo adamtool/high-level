@@ -122,7 +122,7 @@ public class TestConverter {
     public void packageDelivery() throws IOException, InterruptedException, CouldNotFindSuitableConditionException, SolvingException, CalculationInterruptedException, RenderException, NotSupportedGameException, ParseException {
         Logger.getInstance().setVerbose(true);
         
-        HLPetriGame hlgame = PackageDeliveryHL.generateE(2, 1, true);
+        HLPetriGame hlgame = PackageDeliveryHL.generateE(2, 2, true);
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
         PetriGame pg = HL2PGConverter.convert(hlgame, true, true);
         PGTools.savePG2PDF(outputDir + pg.getName(), pg, false, 8);
@@ -137,8 +137,8 @@ public class TestConverter {
 
         System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% sizeLL: " + sizeBDDLow);
         System.out.println("asdf " + sol.existsWinningStrategy());
-            BDDGraph bddgraph = sol.getGraphGame();
-        BDDTools.saveGraph2PDF(outputDir + "PDLL_gg", bddgraph, sol);
+//            BDDGraph bddgraph = sol.getGraphGame();
+//        BDDTools.saveGraph2PDF(outputDir + "PDLL_gg", bddgraph, sol);
 
 //        BDDSolverOptions opt = new BDDSolverOptions();
 //        opt.setNoType2(true);
@@ -150,8 +150,8 @@ public class TestConverter {
         double sizeBDD = solBDD.getBufferedDCSs().satCount(solBDD.getFirstBDDVariables()) + 1;
         System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% size" + sizeBDD);
         System.out.println("asdf " + solBDD.existsWinningStrategy());        
-            BDDGraph bddgraphHL = solBDD.getGraphGame();
-        BDDTools.saveGraph2PDF(outputDir + "PDHL_gg", bddgraphHL, solBDD);
+//            BDDGraph bddgraphHL = solBDD.getGraphGame();
+//        BDDTools.saveGraph2PDF(outputDir + "PDHL_gg", bddgraphHL, solBDD);
     }
 
 }

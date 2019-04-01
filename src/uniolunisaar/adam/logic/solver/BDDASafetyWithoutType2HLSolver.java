@@ -306,6 +306,34 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
         return symsBDD;
     }
 
+    BDD attractor(BDD F, boolean p1, BDD gameGraph, Map<Integer, BDD> distance) throws CalculationInterruptedException {
+        // also all symmetric are bad
+        gameGraph = getSuccs(gameGraph.and(getSymmetries()));
+        // Calculate the possibly restricted transitions to the given game graph
+        BDD graphSuccs = super.shiftFirst2Second(gameGraph);
+        BDD envTrans = getBufferedEnvTransitions().and(gameGraph).and(graphSuccs);
+        BDD sysTrans = getBufferedSystemTransitions().and(gameGraph).and(graphSuccs);
+
+        BDD Q = getZero();
+        BDD Q_ = F;
+        int i = 0;
+        while (!Q_.equals(Q)) {
+            if (Thread.currentThread().isInterrupted()) {
+                CalculationInterruptedException e = new CalculationInterruptedException();
+                Logger.getInstance().addError(e.getMessage(), e);
+                throw e;
+            }
+            if (distance != null) {
+                distance.put(i++, Q_);
+            }
+            Q = Q_;
+            BDD pre = p1 ? pre(Q, sysTrans, envTrans) : pre(Q, envTrans, sysTrans);
+            pre = getSuccs(pre.and(getSymmetries())).and(getBufferedDCSs());
+            Q_ = pre.or(Q);
+        }
+        return Q_.andWith(getWellformed(0));
+    }
+
     /**
      * Returns the winning decisionsets for the system players
      *
@@ -318,7 +346,7 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
         Benchmarks.getInstance().start(Benchmarks.Parts.FIXPOINT);
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS
         Logger.getInstance().addMessage("Calculating fixpoint ...");
-        BDD fixedPoint = attractor(badStates(), true, distance).not().and(getBufferedDCSs());//fixpointOuter();
+        BDD fixedPoint = attractor(badStates(), true, getBufferedDCSs(), distance).not().and(getBufferedDCSs());//fixpointOuter();
 //        BDDTools.printDecodedDecisionSets(fixedPoint.andWith(codePlace(getGame().getNet().getPlace("env1"), 0, 0)), this, true);
 //        BDDTools.printDecodedDecisionSets(fixedPoint.andWith(codePlace(getGame().getNet().getPlace("env1"), 0, 0)).andWith(getBufferedSystemTransition()), this, true);
 //        BDDTools.printDecodedDecisionSets(fixedPoint.andWith(codePlace(getGame().getNet().getPlace("env1"), 0, 0)).andWith(getBufferedSystemTransition()).andWith(getNotTop()), this, true);
