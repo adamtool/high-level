@@ -122,7 +122,7 @@ public class TestConverter {
     public void packageDelivery() throws IOException, InterruptedException, CouldNotFindSuitableConditionException, SolvingException, CalculationInterruptedException, RenderException, NotSupportedGameException, ParseException {
         Logger.getInstance().setVerbose(true);
         
-        HLPetriGame hlgame = PackageDeliveryHL.generateE(2, 3, true);
+        HLPetriGame hlgame = PackageDeliveryHL.generateE(2, 1, true);
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
         PetriGame pg = HL2PGConverter.convert(hlgame, true, true);
         PGTools.savePG2PDF(outputDir + pg.getName(), pg, false, 8);

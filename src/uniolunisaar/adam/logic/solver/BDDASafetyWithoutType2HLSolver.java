@@ -1,10 +1,8 @@
 package uniolunisaar.adam.logic.solver;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import net.sf.javabdd.BDD;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
@@ -24,10 +22,9 @@ import uniolunisaar.adam.exceptions.pg.InvalidPartitionException;
 import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.symbolic.bddapproach.graph.BDDGraph;
 import uniolunisaar.adam.symbolic.bddapproach.graph.BDDState;
-import uniolunisaar.adam.symbolic.bddapproach.graph.BDDSymbolicGraphBuilder;
+import uniolunisaar.adam.ds.graph.hl.approachBDD.BDDSymbolicGraphBuilder;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolver;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolverOptions;
-import uniolunisaar.adam.symbolic.bddapproach.util.BDDTools;
 import uniolunisaar.adam.util.benchmarks.Benchmarks;
 import uniolunisaar.adam.tools.Logger;
 
@@ -200,7 +197,7 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
 
     private BDD symmetries = null;
 
-    private BDD getSymmetries() {
+    public BDD getSymmetries() {
         if (symmetries == null) {
             symmetries = symmetries(syms);
         }
