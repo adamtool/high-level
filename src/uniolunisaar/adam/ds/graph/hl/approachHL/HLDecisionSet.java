@@ -203,7 +203,10 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
         for (Transition transition : p.getPlace().getPostset()) {
             for (ValuationIterator it = hlgame.getValuations(transition).iterator(); it.hasNext();) {
                 Valuation val = it.next();
-                trans.add(new ColoredTransition(hlgame, transition, val));
+                ColoredTransition ct = new ColoredTransition(hlgame, transition, val);
+                if (ct.isValid() && ct.getPreset().contains(p)) {
+                    trans.add(ct);
+                }
             }
         }
         Set<Set<ColoredTransition>> powerset = Tools.powerSet(trans);
@@ -254,9 +257,18 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
         return true;
     }
 
+    private Set<ColoredPlace> getMarking(Set<IHLDecision> dcs) {
+        Set<ColoredPlace> marking = new HashSet<>();
+        for (IHLDecision dc : dcs) {
+            marking.add(dc.getPlace());
+        }
+        return marking;
+    }
+
     private boolean calcNdet(Set<IHLDecision> dcs) {
+        Set<ColoredPlace> marking = getMarking(dcs);
         Set<Transition> trans = hlgame.getTransitions();
-        Set<Transition> choosenTrans = new HashSet<>();
+        Set<ColoredTransition> choosenTrans = new HashSet<>();
         for (Transition t1 : trans) { // create low-level transition
             for (ValuationIterator it = hlgame.getValuations(t1).iterator(); it.hasNext();) {
                 Valuation val = it.next();
@@ -269,65 +281,32 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
                         choosen = false;
                     }
                 }
-                if (!choosen) {
-                    choosenTrans.add(t1);
+                if (choosen) {
+                    choosenTrans.add(ct1);
                 }
             }
         }
-//        for (Transition t1 : choosenTrans) { // create low-level transition
-//            for (Transition t2 : choosenTrans) {
-//                if (!t1.getId().equals(t2.getId())) {
-//                    // sharing a system place?
-//                    Set<Place> preT1 = t1.getPreset();
-//                    Set<Place> preT2 = t2.getPreset();
-//                    Set<Place> intersect = new HashSet<>(preT1);
-//                    intersect.retainAll(preT2);
-//                    boolean shared = false;
-//                    for (Place place : intersect) {
-//                        if (!hlgame.isEnvironment(place) && marking.contains(place)) {
-//                            shared = true;
-//                        }
-//                    }
-//                    if (shared && hlgame.eventuallyEnabled(t1, t2)) { // here check added for firing in the original game
-//                        return true;
-//                    }
-//                }
-//            }
-//        }
-//                for (Transition t2 : trans) {
-//                    for (ValuationIterator it2 = hlgame.getValuations(t2).iterator(); it2.hasNext();) {
-//                        Valuation val2 = it2.next();
-//                        ColoredTransition ct2 = new ColoredTransition(hlgame, t2, val2);
-//                        // check if it is choosen in dcs
-//                        Set<ColoredPlace> preT2 = ct2.getPreset();
-//                        choosen = true;
-//                        for (IHLDecision decision : dcs) {
-//                            if (!(!preT2.contains(decision.getPlace()) || decision.isChoosen(ct2))) {
-//                                choosen = false;
-//                            }
-//                        }
-//                        if (!choosen) {
-//                            continue;
-//                        }
-//                        if (!ct1.equals(ct2)) {
-//                            // sharing a system place?
-//                            Set<ColoredPlace> intersect = new HashSet<>(preT1);
-//                            intersect.retainAll(preT2);
-//                            boolean shared = false;
-//                            for (ColoredPlace place : intersect) {
-//                                if (!hlgame.isEnvironment(place.getPlace())) {
-//                                    shared = true;
-//                                }
-//                            }
-////                            if (shared && hlgame.eventuallyEnabled(t1, t2)) { // here check added for firing in the original game
-////                                return true;
-////                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
-        return false; //todo: finish
+        for (ColoredTransition t1 : choosenTrans) { // create low-level transition
+            for (ColoredTransition t2 : choosenTrans) {
+                if (!t1.equals(t2)) {
+                    // sharing a system place?
+                    Set<ColoredPlace> preT1 = t1.getPreset();
+                    Set<ColoredPlace> preT2 = t2.getPreset();
+                    Set<ColoredPlace> intersect = new HashSet<>(preT1);
+                    intersect.retainAll(preT2);
+                    boolean shared = false;
+                    for (ColoredPlace place : intersect) {
+                        if (!hlgame.isEnvironment(place.getPlace()) && marking.contains(place)) {
+                            shared = true;
+                        }
+                    }
+                    if (shared && hlgame.eventuallyEnabled(t1.getTransition(), t2.getTransition())) { // here check added for firing in the original game
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private boolean calcDeadlock(Set<IHLDecision> dcs) {

@@ -97,7 +97,7 @@ public class HLPetriGame extends Extensible {
         colorClasses.put(id, new BasicColorClass(id, ordered, colors));
     }
 
-    public void createBasicColorClass(String id, boolean ordered, Pair<String, String[]>... staticSubClasses) throws IdentifierAlreadyExistentException {        ;
+    public void createBasicColorClass(String id, boolean ordered, Pair<String, String[]>... staticSubClasses) throws IdentifierAlreadyExistentException {;
 //        List<Pair<String, String[]>> asdf =  new ArrayList<Pair<String, String[]>>(Arrays.staticSubClasses);
         createBasicColorClassByStaticSubClass(id, ordered, Arrays.asList(staticSubClasses));
     }
@@ -395,6 +395,10 @@ public class HLPetriGame extends Extensible {
     }
 
     // %%%%%%%%%%%%%%%%%%%%%%%% DELEGATES
+    public boolean eventuallyEnabled(Transition t1, Transition t2) {
+        return game.eventuallyEnabled(t1, t2);
+    }
+
     public double getXCoord(Node node) {
         return game.getXCoord(node);
     }

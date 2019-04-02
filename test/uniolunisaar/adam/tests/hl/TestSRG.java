@@ -451,22 +451,32 @@ public class TestSRG {
     public void packageDelivery() throws ModuleException, CalculationInterruptedException, IOException, InterruptedException, NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
         Logger.getInstance().setVerbose(false);
         Logger.getInstance().setVerboseMessageStream(null);
-        HLPetriGame hlgame = PackageDeliveryHL.generateE(2, 3, true);
+        HLPetriGame hlgame = PackageDeliveryHL.generateE(2, 2, true);
+        HLTools.saveHLPG2PDF(outputDir + "PDPG11", hlgame);
+
+        // %%%%%%%%%%%%%%%%%%%%%% HL VERSION        
+        OneEnvHLPG game = new OneEnvHLPG(hlgame);
+        HLTools.saveHLPG2PDF(outputDir + "PDPG11_oneEnv", game);
+
+        SymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> hlgraph = SGGBuilder.createByHLGame(game);
+        int size = hlgraph.getStates().size();
+        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HLSGG: " + size);
+//        HLTools.saveGraph2PDF(outputDir + "PDHLExHL11_gg", hlgraph);
 
         SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
 
-        int size = graph.getStates().size();
+        size = graph.getStates().size();
 //        System.out.println("Number of states of the HL two-player game over a finite graph explizit: " + size);
         System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% " + size);
-//        HLTools.saveGraph2PDF(outputDir + "PDHLEx13_gg", graph);
-        
+//        HLTools.saveGraph2PDF(outputDir + "PDHLExLL11_gg", graph);
 
         PetriGame pg = HL2PGConverter.convert(hlgame, true, true);
+        PGTools.savePG2PDF(outputDir + "PDLL11", pg, false);
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
-        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
-            Symmetry next = iterator.next();
-            System.out.println(next.toString());
-        }
+//        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+//            Symmetry next = iterator.next();
+//            System.out.println(next.toString());
+//        }
         BDDSolverOptions opt = new BDDSolverOptions();
         opt.setNoType2(true);
         BDDASafetyWithoutType2HLSolver solBDD = new BDDASafetyWithoutType2HLSolver(pg, syms, false, new Safety(), opt);

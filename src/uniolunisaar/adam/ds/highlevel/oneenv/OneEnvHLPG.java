@@ -11,7 +11,10 @@ import uniol.apt.adt.pn.Node;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
+import uniolunisaar.adam.ds.highlevel.Valuation;
+import uniolunisaar.adam.ds.highlevel.ValuationIterator;
 
 /**
  *
@@ -20,7 +23,7 @@ import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 public class OneEnvHLPG extends HLPetriGame implements IGraphListener<PetriNet, Flow, Node> {
 
     private List<Transition> sysTransitions = null;
-    private List<Transition> singlePresetTransitions = null;
+    private List<ColoredTransition> singlePresetTransitions = null;
 
     public OneEnvHLPG(HLPetriGame game) {
         super(game, true);
@@ -53,12 +56,16 @@ public class OneEnvHLPG extends HLPetriGame implements IGraphListener<PetriNet, 
         return Collections.unmodifiableCollection(sysTransitions);
     }
 
-    public Collection<Transition> getSinglePresetTransitions() {
+    public Collection<ColoredTransition> getSinglePresetTransitions() {
         if (singlePresetTransitions == null) {
             singlePresetTransitions = new ArrayList<>();
             for (Transition transition : getTransitions()) {
-                if (isSystem(transition) && transition.getPreset().size() == 1) {
-                    singlePresetTransitions.add(transition);
+                for (ValuationIterator it = this.getValuations(transition).iterator(); it.hasNext();) {
+                    Valuation val = it.next();
+                    ColoredTransition ct = new ColoredTransition(this, transition, val);
+                    if (isSystem(transition) && ct.getPreset().size() == 1) {
+                        singlePresetTransitions.add(ct);
+                    }
                 }
             }
         }
