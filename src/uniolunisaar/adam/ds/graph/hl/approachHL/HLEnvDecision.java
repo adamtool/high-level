@@ -33,4 +33,9 @@ public class HLEnvDecision extends EnvDecision<ColoredPlace, ColoredTransition> 
     public HLEnvDecision apply(Symmetry sym) {
         return new HLEnvDecision(getPlace().apply(sym));
     }
+
+    @Override
+    public boolean isChoosen(ColoredTransition t) {
+        return getPlace().getPlace().getPostset().contains(t.getTransition());
+    }
 }

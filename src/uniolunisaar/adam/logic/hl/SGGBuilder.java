@@ -69,9 +69,9 @@ public class SGGBuilder {
             }
             if (isSystem) {
                 sysTransitions.add(transition);
-            }
-            if (transition.getPreset().size() == 1) {
-                singlePresetTransitions.add(transition);
+                if (transition.getPreset().size() == 1) {
+                    singlePresetTransitions.add(transition);
+                }
             }
         }
         pgame.putExtension("sysTransitions", sysTransitions);// todo: just a quick hack to not calculate them too often
@@ -166,7 +166,7 @@ public class SGGBuilder {
         HLDecisionSet init = new HLDecisionSet(inits, false, false, hlgame);
 
         // Create the graph iteratively
-        SymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> srg = new SymbolicGameGraph<>(hlgame.getName() + "_SRG", init);
+        SymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> srg = new SymbolicGameGraph<>(hlgame.getName() + "_HL_SGG", init);
         Stack<Integer> todo = new Stack<>();
         todo.push(init.getId());
         while (!todo.isEmpty()) { // as long as new states had been added            
@@ -227,13 +227,11 @@ public class SGGBuilder {
     private static void addSuccessors(HLDecisionSet pre, ColoredTransition t, Set<HLDecisionSet> succs, Symmetries syms, Stack<Integer> todo, SymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> srg) {
         for (HLDecisionSet succ : succs) {
             boolean newOne = true;
-            // todo: could think of creating a copy of succ, to create really the succ state and not the one which is the last application of the
-            // symmetry. Don't know if this leads to not checking so much symmetries during the search of existing ones?            
-//            DecisionSet copySucc = new DecisionSet(succ); // did this thing now, so test which version is better. Could make the copy cheaper since we put new colors and variables anyways
+            int id = succ.getId();
             HLDecisionSet copySucc = succ;
             for (SymmetryIterator iti = syms.iterator(); iti.hasNext();) {
                 Symmetry sym = iti.next(); // todo: get rid of the identity symmetry, just do it in this case before looping
-                copySucc.apply(sym);
+                copySucc = succ.apply(sym);
                 if (srg.contains(copySucc)) {
                     newOne = false;
                     break;
@@ -241,12 +239,12 @@ public class SGGBuilder {
             }
 
             if (newOne) {
-                srg.addState(copySucc);
-                todo.add(copySucc.getId());
+                srg.addState(succ);
+                todo.add(id);
             } else {
-                copySucc = succ; // replace it with the initial one, since we hope this is cheaper for finding the equivalent marking in the symmetry loop
+                id = copySucc.getId();
             }
-            srg.addFlow(new SRGFlow(pre.getId(), t, copySucc.getId()));
+            srg.addFlow(new SRGFlow(pre.getId(), t, id));
         }
     }
 
@@ -273,14 +271,11 @@ public class SGGBuilder {
     private static void addSuccessors(LLDecisionSet pre, Transition t, Set<LLDecisionSet> succs, Symmetries syms, Stack<Integer> todo, SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> srg) {
         for (LLDecisionSet succ : succs) {
             boolean newOne = true;
-            // todo: could think of creating a copy of succ, to create really the succ state and not the one which is the last application of the
-            // symmetry. Don't know if this leads to not checking so much symmetries during the search of existing ones?            
             int id = succ.getId();
             LLDecisionSet copySucc = succ;
-//            LLDecisionSet copySucc = new LLDecisionSet(succ); // did this thing now, so test which version is better. Could make the copy cheaper since we put new colors and variables anyways
             for (SymmetryIterator iti = syms.iterator(); iti.hasNext();) {
                 Symmetry sym = iti.next(); // todo: get rid of the identity symmetry, just do it in this case before looping
-                copySucc = copySucc.apply(sym);
+                copySucc = succ.apply(sym);
                 if (srg.contains(copySucc)) {
                     newOne = false;
                     break;

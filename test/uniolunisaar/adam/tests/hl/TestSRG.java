@@ -39,23 +39,30 @@ import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.highlevel.symmetries.SymmetryIterator;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.objectives.Condition;
+import uniolunisaar.adam.ds.objectives.Safety;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.pg.CouldNotCalculateException;
+import uniolunisaar.adam.exceptions.pg.InvalidPartitionException;
+import uniolunisaar.adam.exceptions.pg.NetNotSafeException;
+import uniolunisaar.adam.exceptions.pg.NoSuitableDistributionFoundException;
 import uniolunisaar.adam.exceptions.pg.NotSupportedGameException;
 import uniolunisaar.adam.exceptions.pg.SolvingException;
 import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
 import uniolunisaar.adam.generators.hl.AlarmSystemHL;
 import uniolunisaar.adam.generators.hl.ConcurrentMachinesHL;
 import uniolunisaar.adam.generators.hl.DocumentWorkflowHL;
+import uniolunisaar.adam.generators.hl.PackageDeliveryHL;
 import uniolunisaar.adam.generators.pg.Clerks;
 import uniolunisaar.adam.generators.pg.Workflow;
 import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.logic.hl.SGGBuilder;
+import uniolunisaar.adam.logic.solver.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.symbolic.bddapproach.graph.BDDGraph;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolver;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolverFactory;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolverOptions;
+import uniolunisaar.adam.symbolic.bddapproach.util.BDDTools;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.HLTools;
 import uniolunisaar.adam.util.PGTools;
@@ -438,6 +445,38 @@ public class TestSRG {
 //        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
 ////        BDDTools.saveGraph2PDF(outputDir + "DWs" + size + "_bdd_gg", bddgraph, sol);
 ////        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
+    }
+
+    @Test
+    public void packageDelivery() throws ModuleException, CalculationInterruptedException, IOException, InterruptedException, NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
+        Logger.getInstance().setVerbose(false);
+        Logger.getInstance().setVerboseMessageStream(null);
+        HLPetriGame hlgame = PackageDeliveryHL.generateE(2, 3, true);
+
+        SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
+
+        int size = graph.getStates().size();
+//        System.out.println("Number of states of the HL two-player game over a finite graph explizit: " + size);
+        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% " + size);
+//        HLTools.saveGraph2PDF(outputDir + "PDHLEx13_gg", graph);
+        
+
+        PetriGame pg = HL2PGConverter.convert(hlgame, true, true);
+        Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
+        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+            Symmetry next = iterator.next();
+            System.out.println(next.toString());
+        }
+        BDDSolverOptions opt = new BDDSolverOptions();
+        opt.setNoType2(true);
+        BDDASafetyWithoutType2HLSolver solBDD = new BDDASafetyWithoutType2HLSolver(pg, syms, false, new Safety(), opt);
+        solBDD.initialize();
+
+        double sizeBDD = solBDD.getBufferedDCSs().satCount(solBDD.getFirstBDDVariables()) + 1;
+        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% size " + sizeBDD);
+        System.out.println("asdf " + solBDD.existsWinningStrategy());
+//        BDDGraph bddgraphHL = solBDD.getGraphGame();
+//        BDDTools.saveGraph2PDF(outputDir + "PDHL13_gg", bddgraphHL, solBDD);
     }
 
     @Test

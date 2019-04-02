@@ -73,7 +73,8 @@ public class LLSysDecision extends SysDecision<Place, Transition, LLCommitmentSe
     public int hashCode() {
         int hash = 5;
         hash = 29 * hash + HL2PGConverter.getHashCode(getPlace());
-        hash = 29 * hash * Objects.hashCode(getC());
+        int mult = Objects.hashCode(getC());
+        hash = 29 * hash * (mult == 0 ? 1 : mult);
         return hash;
     }
 

@@ -66,7 +66,8 @@ public abstract class SysDecision<P, T, C extends CommitmentSet<T>> implements I
     public int hashCode() {
         int hash = 5;
         hash = 29 * hash + Objects.hashCode(this.place);
-        hash = 29 * hash * Objects.hashCode(this.c);
+        int mult = Objects.hashCode(this.c);
+        hash = 29 * hash * (mult == 0 ? 1 : mult);
         return hash;
     }
 

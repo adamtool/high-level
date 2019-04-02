@@ -32,7 +32,8 @@ public class SymbolicGameGraph<P, T, DC extends IDecision<P, T>, S extends Decis
     }
 
     public boolean contains(S state) {
-        return states.values().contains(state);
+        return states.containsKey(state.getId());
+//        return states.values().contains(state);
     }
 
     public void addState(S state) {

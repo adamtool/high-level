@@ -1,13 +1,13 @@
 package uniolunisaar.adam.ds.graph.hl.approachHL;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import uniol.apt.adt.extension.Extensible;
-import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.hl.DecisionSet;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
@@ -49,6 +49,15 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
         this.bad = dcs.bad;
     }
 
+    /**
+     * ATTENTION: don't change the elements of the set afterwards, otherwise
+     * contains won't work anymore
+     *
+     * @param decisions
+     * @param mcut
+     * @param bad
+     * @param hlgame
+     */
     public HLDecisionSet(Set<IHLDecision> decisions, boolean mcut, boolean bad, OneEnvHLPG hlgame) {
         this.decisions = decisions;
         this.mcut = mcut;
@@ -180,6 +189,11 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
             decisionsets.add(new HLDecisionSet(ret, !(hasTop || !checkMcut(ret)), calcBad(ret), hlgame));
             return decisionsets;
         } else {
+            if (places.isEmpty()) {
+                Set<HLDecisionSet> decisionsets = new HashSet<>();
+                decisionsets.add(new HLDecisionSet(ret, checkMcut(ret), calcBad(ret), hlgame));
+                return decisionsets;
+            }
             return createDecisionSets(places, commitments, ret);
         }
     }
@@ -195,7 +209,14 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
         Set<Set<ColoredTransition>> powerset = Tools.powerSet(trans);
         List<Set<ColoredTransition>> converted = new ArrayList<>();
         for (Set<ColoredTransition> set : powerset) {
-            converted.add(set);
+            // Reduction technique of the MA of Valentin Spreckels:
+            // When there is a transition with only one place in the preset
+            // this transition is only allowed to appear solely in the commitment sets
+            Collection<Transition> single = new ArrayList(set);
+            single.retainAll(hlgame.getSinglePresetTransitions());
+            if (single.isEmpty() || set.size() == 1) {
+                converted.add(set);
+            }
         }
         return converted;
     }
@@ -234,7 +255,7 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
     }
 
     private boolean calcNdet(Set<IHLDecision> dcs) {
-        Set<Transition> trans = hlgame.getTransitions();        
+        Set<Transition> trans = hlgame.getTransitions();
         Set<Transition> choosenTrans = new HashSet<>();
         for (Transition t1 : trans) { // create low-level transition
             for (ValuationIterator it = hlgame.getValuations(t1).iterator(); it.hasNext();) {
@@ -249,7 +270,7 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
                     }
                 }
                 if (!choosen) {
-                     choosenTrans.add(t1);
+                    choosenTrans.add(t1);
                 }
             }
         }
@@ -402,13 +423,12 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
     public int hashCode() {
         int hash = 7;
         hash = 31 * hash + Objects.hashCode(this.decisions);
-        hash = 31 * hash + (this.mcut ? 1 : 0);
+//        hash = 31 * hash + (this.mcut ? 1 : 0);
         return hash;
     }
 
     @Override
-    public boolean equals(Object obj
-    ) {
+    public boolean equals(Object obj) {
         if (this == obj) {
             return true;
         }

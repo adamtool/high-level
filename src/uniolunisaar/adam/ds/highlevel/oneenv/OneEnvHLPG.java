@@ -20,6 +20,7 @@ import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 public class OneEnvHLPG extends HLPetriGame implements IGraphListener<PetriNet, Flow, Node> {
 
     private List<Transition> sysTransitions = null;
+    private List<Transition> singlePresetTransitions = null;
 
     public OneEnvHLPG(HLPetriGame game) {
         super(game, true);
@@ -52,9 +53,22 @@ public class OneEnvHLPG extends HLPetriGame implements IGraphListener<PetriNet, 
         return Collections.unmodifiableCollection(sysTransitions);
     }
 
+    public Collection<Transition> getSinglePresetTransitions() {
+        if (singlePresetTransitions == null) {
+            singlePresetTransitions = new ArrayList<>();
+            for (Transition transition : getTransitions()) {
+                if (isSystem(transition) && transition.getPreset().size() == 1) {
+                    singlePresetTransitions.add(transition);
+                }
+            }
+        }
+        return Collections.unmodifiableCollection(singlePresetTransitions);
+    }
+
     @Override
     public boolean changeOccurred(IGraph<PetriNet, Flow, Node> graph) {
         sysTransitions = null;
+        singlePresetTransitions = null;
         return true;
     }
 
