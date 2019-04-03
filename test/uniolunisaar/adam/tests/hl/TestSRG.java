@@ -451,7 +451,7 @@ public class TestSRG {
     public void packageDelivery() throws ModuleException, CalculationInterruptedException, IOException, InterruptedException, NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
         Logger.getInstance().setVerbose(false);
         Logger.getInstance().setVerboseMessageStream(null);
-        HLPetriGame hlgame = PackageDeliveryHL.generateE(2, 2, true);
+        HLPetriGame hlgame = PackageDeliveryHL.generateEwithPool(2, 3, true);
         HLTools.saveHLPG2PDF(outputDir + "PDPG11", hlgame);
 
         // %%%%%%%%%%%%%%%%%%%%%% HL VERSION        

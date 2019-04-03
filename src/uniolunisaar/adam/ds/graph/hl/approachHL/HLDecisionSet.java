@@ -272,17 +272,20 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
         for (Transition t1 : trans) { // create low-level transition
             for (ValuationIterator it = hlgame.getValuations(t1).iterator(); it.hasNext();) {
                 Valuation val = it.next();
-                ColoredTransition ct1 = new ColoredTransition(hlgame, t1, val);
+                ColoredTransition ct = new ColoredTransition(hlgame, t1, val);
+                if (!ct.isValid()) {
+                    continue;
+                }
                 // check if it is choosen in dcs
-                Set<ColoredPlace> preT1 = ct1.getPreset();
+                Set<ColoredPlace> preT1 = ct.getPreset();
                 boolean choosen = true;
                 for (IHLDecision decision : dcs) {
-                    if (!(!preT1.contains(decision.getPlace()) || decision.isChoosen(ct1))) {
+                    if (!(!preT1.contains(decision.getPlace()) || decision.isChoosen(ct))) {
                         choosen = false;
                     }
                 }
                 if (choosen) {
-                    choosenTrans.add(ct1);
+                    choosenTrans.add(ct);
                 }
             }
         }
