@@ -448,24 +448,24 @@ public class TestSRG {
     }
 
     @Test
-    public void packageDelivery() throws ModuleException, CalculationInterruptedException, IOException, InterruptedException, NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
+    public void packageDelivery() throws ModuleException, CalculationInterruptedException, IOException, InterruptedException, NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException, ParseException, CouldNotCalculateException, CouldNotFindSuitableConditionException, SolvingException {
         Logger.getInstance().setVerbose(false);
         Logger.getInstance().setVerboseMessageStream(null);
-        HLPetriGame hlgame = PackageDeliveryHL.generateEwithPool(2, 3, true);
+        HLPetriGame hlgame = PackageDeliveryHL.generateEwithPool(2, 2, true);
         HLTools.saveHLPG2PDF(outputDir + "PDPG11", hlgame);
 
-        // %%%%%%%%%%%%%%%%%%%%%% HL VERSION        
-        OneEnvHLPG game = new OneEnvHLPG(hlgame);
-        HLTools.saveHLPG2PDF(outputDir + "PDPG11_oneEnv", game);
-
-        SymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> hlgraph = SGGBuilder.createByHLGame(game);
-        int size = hlgraph.getStates().size();
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HLSGG: " + size);
+//        // %%%%%%%%%%%%%%%%%%%%%% HL VERSION        
+//        OneEnvHLPG game = new OneEnvHLPG(hlgame);
+//        HLTools.saveHLPG2PDF(outputDir + "PDPG11_oneEnv", game);
+//
+//        SymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> hlgraph = SGGBuilder.createByHLGame(game);
+//        int size = hlgraph.getStates().size();
+//        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HLSGG: " + size);
 //        HLTools.saveGraph2PDF(outputDir + "PDHLExHL11_gg", hlgraph);
 
         SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
 
-        size = graph.getStates().size();
+        int size = graph.getStates().size();
 //        System.out.println("Number of states of the HL two-player game over a finite graph explizit: " + size);
         System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% " + size);
 //        HLTools.saveGraph2PDF(outputDir + "PDHLExLL11_gg", graph);
@@ -485,8 +485,15 @@ public class TestSRG {
         double sizeBDD = solBDD.getBufferedDCSs().satCount(solBDD.getFirstBDDVariables()) + 1;
         System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% size " + sizeBDD);
         System.out.println("asdf " + solBDD.existsWinningStrategy());
-//        BDDGraph bddgraphHL = solBDD.getGraphGame();
+        BDDGraph bddgraphHL = solBDD.getGraphGame();
 //        BDDTools.saveGraph2PDF(outputDir + "PDHL13_gg", bddgraphHL, solBDD);
+        
+                opt = new BDDSolverOptions();
+        opt.setNoType2(true);
+        BDDSolver solBDDLL = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(pg, true, false), true, opt);       
+        solBDDLL.initialize();
+        double sizeBDDLL = solBDDLL.getBufferedDCSs().satCount(solBDD.getFirstBDDVariables()) + 1; 
+        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% size " + sizeBDDLL);
     }
 
     @Test
