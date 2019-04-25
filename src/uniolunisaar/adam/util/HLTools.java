@@ -180,6 +180,8 @@ public class HLTools {
             saveHLPG2Dot(path, game, tokencount);
         }
         String[] command = {"dot", "-Tpdf", path + ".dot", "-o", path + ".pdf"};
+        // Mac:
+        //String[] command = {"/usr/local/bin/dot", "-Tpdf", path + ".dot", "-o", path + ".pdf"};
         ExternalProcessHandler procH = new ExternalProcessHandler(true, command);
         ProcessPool.getInstance().putProcess(game.getName() + "#dot", procH);
         // start it in an extra thread
@@ -241,7 +243,7 @@ public class HLTools {
                 // Delete dot file
                 new File(bufferpath + ".dot").delete();
                 Logger.getInstance().addMessage("Deleted: " + bufferpath + ".dot", true);
-                // move to original name 
+                // move to original name
                 Files.move(new File(bufferpath + ".pdf").toPath(), new File(path + ".pdf").toPath(), REPLACE_EXISTING);
                 Logger.getInstance().addMessage("Moved: " + bufferpath + ".pdf --> " + path + ".pdf", true);
             } catch (IOException | InterruptedException ex) {

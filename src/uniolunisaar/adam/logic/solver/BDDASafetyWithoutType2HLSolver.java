@@ -357,31 +357,25 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
         return fixedPoint;
     }
 
+// %%%%%%%%%%%%%%%%%%%%%%%%% END The relevant ability of the solver %%%%%%%%%%%%
+    @Override
+    protected BDD calcBadDCSs() {
+        return badStates();
+    }
+
+    @Override
+    protected BDD calcSpecialDCSs() {
+        return getFactory().zero();
+    }
+
     /**
-     * Overriden for marking the bad states.
+     * Safety game graphs don't have a special state
      *
+     * @param state
      * @return
-     * @throws uniolunisaar.adam.exceptions.pg.CalculationInterruptedException
      */
     @Override
-    public BDDGraph getGraphGame() throws CalculationInterruptedException {
-        if (!super.isInitialized()) {
-            initialize();
-        }
-//        try {
-//            BDDTools.saveStates2Pdf("states.pdf", getBufferedDCSs(), this);
-//        } catch (IOException ex) {
-//            java.util.logging.Logger.getLogger(BDDASafetyWithoutType2HLSolver.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (InterruptedException ex) {
-//            java.util.logging.Logger.getLogger(BDDASafetyWithoutType2HLSolver.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        BDDGraph graph = BDDSymbolicGraphBuilder.getInstance().builtGraph(this);
-        for (BDDState state : graph.getStates()) { // mark all special states
-            if (!graph.getInitial().equals(state) && !badStates().and(state.getState()).isZero()) {
-                state.setBad(true);
-            }
-        }
-        return graph;
+    public boolean isSpecialState(BDD state) {
+        return false;
     }
-// %%%%%%%%%%%%%%%%%%%%%%%%% END The relevant ability of the solver %%%%%%%%%%%%
 }
