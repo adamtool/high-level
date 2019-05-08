@@ -18,6 +18,7 @@ import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.tools.ExternalProcessHandler;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.exceptions.ProcessNotStartedException;
+import uniolunisaar.adam.tools.PetriNetExtensionHandler;
 import uniolunisaar.adam.tools.ProcessPool;
 
 /**
@@ -183,7 +184,7 @@ public class HLTools {
         // Mac:
         //String[] command = {"/usr/local/bin/dot", "-Tpdf", path + ".dot", "-o", path + ".pdf"};
         ExternalProcessHandler procH = new ExternalProcessHandler(true, command);
-        ProcessPool.getInstance().putProcess(game.getName() + "#dot", procH);
+        ProcessPool.getInstance().putProcess(game.getProcessFamilyID() + "#dot", procH);
         // start it in an extra thread
         Thread thread = new Thread(() -> {
             try {
@@ -249,7 +250,7 @@ public class HLTools {
             } catch (IOException | InterruptedException ex) {
                 Logger.getInstance().addError("Deleting the buffer files and moving the pdf failed", ex);
             }
-        });
+        });        
         mvPdf.start();
         return mvPdf;
     }

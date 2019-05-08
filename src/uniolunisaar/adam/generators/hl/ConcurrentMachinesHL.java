@@ -20,7 +20,7 @@ import uniolunisaar.adam.ds.highlevel.terms.ColorClassTerm;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 
 /**
- *
+ * The concurrent machines benchmark
  * @author Manuel Gieseking
  */
 public class ConcurrentMachinesHL {

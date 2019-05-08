@@ -33,6 +33,7 @@ import uniolunisaar.adam.exceptions.highlevel.IdentifierAlreadyExistentException
 import uniolunisaar.adam.exceptions.highlevel.NoSuccessorForUnorderedColorClassException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuchColorDomainException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuchColorException;
+import uniolunisaar.adam.tools.PetriNetExtensionHandler;
 
 /**
  *
@@ -514,6 +515,10 @@ public class HLPetriGame extends Extensible {
 
     public void setBad(Place place) {
         game.setBad(place);
+    }
+
+    public String getProcessFamilyID() {
+        return PetriNetExtensionHandler.getProcessFamilyID(game);
     }
 
     protected boolean addListener(IGraphListener<PetriNet, Flow, Node> listener) {
