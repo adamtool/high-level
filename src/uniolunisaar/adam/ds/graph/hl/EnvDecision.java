@@ -42,6 +42,11 @@ public abstract class EnvDecision<P, T> implements IDecision<P, T> {
     }
 
     @Override
+    public String toString() {
+        return place.toString();
+    }
+
+    @Override
     public int hashCode() {
         int hash = 5;
         hash = 31 * hash + Objects.hashCode(this.place);

@@ -33,6 +33,7 @@ import uniolunisaar.adam.exceptions.highlevel.IdentifierAlreadyExistentException
 import uniolunisaar.adam.exceptions.highlevel.NoSuccessorForUnorderedColorClassException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuchColorDomainException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuchColorException;
+import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.tools.PetriNetExtensionHandler;
 
 /**
@@ -395,11 +396,26 @@ public class HLPetriGame extends Extensible {
         }
     }
 
-    // %%%%%%%%%%%%%%%%%%%%%%%% DELEGATES
-    public boolean eventuallyEnabled(Transition t1, Transition t2) {
-        return game.eventuallyEnabled(t1, t2);
+    // TODO: Only needed for the eventuallyEnabled method below
+    // and this is only needed for the nondeterminism. All in all
+    // this is totally stupid, since when I calculate it anyhow, 
+    // I could also used in the other cases and this results in
+    // the LLApproach ...
+    private PetriGame llGame = null;
+
+    public boolean eventuallyEnabled(ColoredTransition t1, ColoredTransition t2) {
+        // TODO: this is really silly. If this approach has any advantages,
+        // I have to write this eventually enabledness by using only the 
+        // high-level structure
+        if (llGame == null) {
+            llGame = HL2PGConverter.convert(this);
+        }
+        Transition llt1 = llGame.getTransition(HL2PGConverter.getTransitionID(t1.getTransition().getId(), t1.getVal()));
+        Transition llt2 = llGame.getTransition(HL2PGConverter.getTransitionID(t2.getTransition().getId(), t2.getVal()));
+        return llGame.eventuallyEnabled(llt1, llt2);
     }
 
+    // %%%%%%%%%%%%%%%%%%%%%%%% DELEGATES
     public double getXCoord(Node node) {
         return game.getXCoord(node);
     }

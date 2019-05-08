@@ -63,6 +63,15 @@ public abstract class SysDecision<P, T, C extends CommitmentSet<T>> implements I
     }
 
     @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("(");
+        sb.append(place.toString()).append(", ");
+        sb.append(c.toDot());
+        sb.append(")");
+        return sb.toString();
+    }
+
+    @Override
     public int hashCode() {
         int hash = 5;
         hash = 29 * hash + Objects.hashCode(this.place);

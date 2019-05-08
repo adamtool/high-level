@@ -14,13 +14,15 @@ import uniolunisaar.adam.ds.highlevel.terms.ColorClassTerm;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 
 /**
- * The concurrent machines benchmark
+ * The package delivery benchmark
  * @author Manuel Gieseking
  */
 public class PackageDeliveryHL {
 
     /**
      *
+     * @param nb_drones
+     * @param nb_packages
      * @param withPartition
      * @return
      */

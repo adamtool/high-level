@@ -280,7 +280,7 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
                 Set<ColoredPlace> preT1 = ct.getPreset();
                 boolean choosen = true;
                 for (IHLDecision decision : dcs) {
-                    if (!(!preT1.contains(decision.getPlace()) || decision.isChoosen(ct))) {
+                    if (preT1.contains(decision.getPlace()) && !decision.isChoosen(ct)) {
                         choosen = false;
                     }
                 }
@@ -289,7 +289,7 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
                 }
             }
         }
-        for (ColoredTransition t1 : choosenTrans) { // create low-level transition
+        for (ColoredTransition t1 : choosenTrans) { // todo: to stupid loops also tests t1 t2 and t2, t1.
             for (ColoredTransition t2 : choosenTrans) {
                 if (!t1.equals(t2)) {
                     // sharing a system place?
@@ -303,7 +303,7 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
                             shared = true;
                         }
                     }
-                    if (shared && hlgame.eventuallyEnabled(t1.getTransition(), t2.getTransition())) { // here check added for firing in the original game
+                    if (shared && hlgame.eventuallyEnabled(t1, t2)) { // here check added for firing in the original game
                         return true;
                     }
                 }
@@ -442,4 +442,15 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
         return sb.toString();
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (IHLDecision dc : decisions) {
+            sb.append(dc.toString()).append("\n");
+        }
+        if (decisions.size() >= 1) {
+            sb.delete(sb.length() - 2, sb.length());
+        }
+        return sb.toString();
+    }
 }
