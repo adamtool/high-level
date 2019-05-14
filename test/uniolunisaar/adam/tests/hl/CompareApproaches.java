@@ -2,30 +2,21 @@ package uniolunisaar.adam.tests.hl;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.hl.SRGFlow;
 import uniolunisaar.adam.ds.graph.hl.SymbolicGameGraph;
-import uniolunisaar.adam.ds.graph.hl.approachHL.HLCommitmentSet;
 import uniolunisaar.adam.ds.graph.hl.approachHL.HLDecisionSet;
-import uniolunisaar.adam.ds.graph.hl.approachHL.HLEnvDecision;
-import uniolunisaar.adam.ds.graph.hl.approachHL.HLSysDecision;
 import uniolunisaar.adam.ds.graph.hl.approachHL.IHLDecision;
 import uniolunisaar.adam.ds.graph.hl.approachLL.ILLDecision;
 import uniolunisaar.adam.ds.graph.hl.approachLL.LLDecisionSet;
-import uniolunisaar.adam.ds.highlevel.Color;
-import uniolunisaar.adam.ds.highlevel.ColorToken;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
-import uniolunisaar.adam.ds.highlevel.Valuation;
 import uniolunisaar.adam.ds.highlevel.oneenv.OneEnvHLPG;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetries;
-import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.objectives.Safety;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
@@ -39,7 +30,9 @@ import uniolunisaar.adam.generators.hl.PackageDeliveryHL;
 import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.logic.hl.SGGBuilder;
 import uniolunisaar.adam.logic.solver.BDDASafetyWithoutType2HLSolver;
+import uniolunisaar.adam.symbolic.bddapproach.graph.BDDGraph;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolverOptions;
+import uniolunisaar.adam.symbolic.bddapproach.util.BDDTools;
 import uniolunisaar.adam.util.HLTools;
 
 /**
@@ -104,7 +97,7 @@ public class CompareApproaches {
         HLPetriGame hlgame = PackageDeliveryHL.generateEwithPool(1, 6, true);
         HLTools.saveHLPG2PDF(outputDir + "PD16HL", hlgame);
         OneEnvHLPG game = new OneEnvHLPG(hlgame);
-      
+
         SymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> graph = SGGBuilder.createByHLGame(game);
 //        HLTools.saveGraph2PDF(outputDir + "DWs1HL_gg", graph);
         System.out.println("size HL" + graph.getStates().size());
@@ -124,29 +117,30 @@ public class CompareApproaches {
 //        BDDTools.saveGraph2PDF(outputDir + "CM21_gg", graph, sol);
     }
 
-     @Test
+    @Test
     public void testCM() throws IOException, InterruptedException, NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException, CalculationInterruptedException {
-        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersion(2, 3, true);
-        HLTools.saveHLPG2PDF(outputDir + "CM22HL", hlgame);
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(4, 1, true);
+        HLTools.saveHLPG2PDF(outputDir + "CM41HL", hlgame);
         OneEnvHLPG game = new OneEnvHLPG(hlgame);
-      
+
         SymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> graph = SGGBuilder.createByHLGame(game);
-//        HLTools.saveGraph2PDF(outputDir + "DWs1HL_gg", graph);
+        HLTools.saveGraph2PDF(outputDir + "CM41HL_gg", graph);
         System.out.println("size HL" + graph.getStates().size());
 
         SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graphll = SGGBuilder.createByLLGame(hlgame);
-//        HLTools.saveGraph2PDF(outputDir + "DWs1LL_gg", graphll);
+        HLTools.saveGraph2PDF(outputDir + "CM41LL_gg", graphll);
         System.out.println("size HL" + graphll.getStates().size());
 
-//        Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
-//        PetriGame llgame = HL2PGConverter.convert(hlgame, true, true);
-//        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(llgame, syms, false, new Safety(), new BDDSolverOptions());
-//        sol.initialize();
+        Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
+        PetriGame llgame = HL2PGConverter.convert(hlgame, true, true);
+        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(llgame, syms, false, new Safety(), new BDDSolverOptions());
+        sol.initialize();
 //
-//        double size = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
-//        System.out.println("size " + size);
-//        BDDGraph graph = sol.getGraphGame();
-//        BDDTools.saveGraph2PDF(outputDir + "CM21_gg", graph, sol);
+        double size = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
+        System.out.println("size bdd " + size);
+        BDDGraph bddGraph = sol.getGraphGame();
+        System.out.println("size bdd by graph " + bddGraph.getStates().size());
+        BDDTools.saveGraph2PDF(outputDir + "C41_bdd_gg", bddGraph, sol);
     }
-    
+
 }

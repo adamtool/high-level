@@ -21,8 +21,8 @@ import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.pg.InvalidPartitionException;
 import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.symbolic.bddapproach.graph.BDDGraph;
-import uniolunisaar.adam.symbolic.bddapproach.graph.BDDState;
-import uniolunisaar.adam.ds.graph.hl.approachBDD.BDDSymbolicGraphBuilder;
+import uniolunisaar.adam.exceptions.pg.NoStrategyExistentException;
+import uniolunisaar.adam.logic.hl.BDDSGGBuilder;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolver;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolverOptions;
 import uniolunisaar.adam.util.benchmarks.Benchmarks;
@@ -43,8 +43,10 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
      * Creates a new Safety solver for a given game.
      *
      * @param game - the Petri game to solve.
+     * @param syms
      * @param skipTests - should the tests for safe and bounded and other
      * preconditions be skipped?
+     * @param win
      * @param opts - the options for the solver.
      * @throws NotSupportedGameException - Thrown if the given net is not
      * bounded.
@@ -187,7 +189,7 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
 //            BDDTools.printDecodedDecisionSets(state, this, true);
         while (!state.isZero()) {
             reps = reps.or(state);
-            BDD syms = getSuccs(getSymmetries().and(state));
+            BDD syms = getSymmetricStates(state);
 //            BDDTools.printDecodedDecisionSets(syms, this, true);
             states.andWith(syms.not());
             state = states.satOne(getFirstBDDVariables(), false);
@@ -202,6 +204,10 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
             symmetries = symmetries(syms);
         }
         return symmetries;
+    }
+
+    public BDD getSymmetricStates(BDD state) {
+        return getSuccs(getSymmetries().and(state));
     }
 
     private BDD symmetries(Symmetries syms) {
@@ -255,7 +261,7 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
     }
 
     /**
-     * ATTENTION: This method can only be used if the places are devided into
+     * ATTENTION: This method can only be used if the places are divided into
      * the partitions according their color classes. It is cheaper than the
      * symmetries function because the places and transition loops are not
      * nested
@@ -355,6 +361,23 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
         Benchmarks.getInstance().stop(Benchmarks.Parts.FIXPOINT);
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS
         return fixedPoint;
+    }
+
+    @Override
+    public BDDGraph calculateGraphGame() throws CalculationInterruptedException {
+        return BDDSGGBuilder.getInstance().builtGraph(this);
+    }
+
+    @Override
+    public BDDGraph calculateGraphStrategy() throws NoStrategyExistentException, CalculationInterruptedException {
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS
+        Benchmarks.getInstance().start(Benchmarks.Parts.GRAPH_STRAT);
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS        
+        BDDGraph g = BDDSGGBuilder.getInstance().builtGraphStrategy(this);
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS
+        Benchmarks.getInstance().stop(Benchmarks.Parts.GRAPH_STRAT);
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS 
+        return g;
     }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%% END The relevant ability of the solver %%%%%%%%%%%%
