@@ -334,7 +334,10 @@ public class LLDecisionSet extends Extensible implements DecisionSet<Place, Tran
 
     private boolean calcBad(Set<ILLDecision> dcs) {
         return calcBadPlace(dcs) || calcDeadlock(dcs) || calcNdet(dcs);
+//        return calcDeadlock(dcs);// || calcNdet(dcs);
+//        return calcBadPlace(dcs) ;//|| calcDeadlock(dcs) || calcNdet(dcs);
 //        return calcNdet(dcs);
+//        return false;
     }
 
 //    @Override

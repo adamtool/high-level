@@ -125,7 +125,7 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
     }
 
     /**
-     * Returns the resulting decisionsets (possibly more than one iff this is
+     * Returns the resulting decision sets (possibly more than one iff this is
      * not an mcut all possible solutions for commitment sets are used) or null
      * iff t is not firable.
      *
@@ -370,6 +370,9 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
 
     private boolean calcBad(Set<IHLDecision> dcs) {
         return calcBadPlace(dcs) || calcDeadlock(dcs) || calcNdet(dcs);
+//        return calcDeadlock(dcs);// || calcNdet(dcs);
+//        return calcBadPlace(dcs);// || calcDeadlock(dcs) || calcNdet(dcs);
+//return false;
     }
 
 //    public void apply(Symmetry sym) {
@@ -422,6 +425,9 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
         }
         final HLDecisionSet other = (HLDecisionSet) obj;
         if (this.mcut != other.mcut) {
+            return false;
+        }        
+        if (this.bad != other.bad) {
             return false;
         }
         if (!Objects.equals(this.decisions, other.decisions)) {

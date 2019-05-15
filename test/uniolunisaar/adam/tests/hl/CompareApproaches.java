@@ -2,6 +2,8 @@ package uniolunisaar.adam.tests.hl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import uniol.apt.adt.pn.Place;
@@ -15,6 +17,8 @@ import uniolunisaar.adam.ds.graph.hl.approachLL.LLDecisionSet;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
+import uniolunisaar.adam.ds.highlevel.Valuation;
+import uniolunisaar.adam.ds.highlevel.ValuationIterator;
 import uniolunisaar.adam.ds.highlevel.oneenv.OneEnvHLPG;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.objectives.Safety;
@@ -128,7 +132,7 @@ public class CompareApproaches {
         System.out.println("size HL" + graph.getStates().size());
 
         SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graphll = SGGBuilder.createByLLGame(hlgame);
-        HLTools.saveGraph2PDF(outputDir + "CM41LL_gg", graphll);
+        HLTools.saveGraph2DotAndPDF(outputDir + "CM41LL_gg", graphll);
         System.out.println("size HL" + graphll.getStates().size());
 
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
@@ -140,7 +144,80 @@ public class CompareApproaches {
         System.out.println("size bdd " + size);
         BDDGraph bddGraph = sol.getGraphGame();
         System.out.println("size bdd by graph " + bddGraph.getStates().size());
-        BDDTools.saveGraph2PDF(outputDir + "C41_bdd_gg", bddGraph, sol);
+        BDDTools.saveGraph2DotAndPDF(outputDir + "C41_bdd_gg", bddGraph, sol);
+    }
+
+    @Test
+    public void hlVsll() {
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(3,2, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HL", hlgame);
+        OneEnvHLPG game = new OneEnvHLPG(hlgame);
+
+        SymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> graph = SGGBuilder.createByHLGame(game);
+//        HLTools.saveGraph2PDF(outputDir + "CM41HL_gg", graph);
+        int hlmcuts = 0;
+        int hlbad = 0;
+        for (HLDecisionSet state : graph.getStates()) {
+            if (state.isMcut()) {
+                ++hlmcuts;
+            }
+            if (state.isBad()) {
+                ++hlbad;
+            }
+        }
+        Collection<ColoredTransition> systemTransitions = new ArrayList<>();
+        for (Transition t : game.getSystemTransitions()) {
+            for (ValuationIterator it = hlgame.getValuations(t).iterator(); it.hasNext();) {
+                Valuation val = it.next();
+                ColoredTransition ct = new ColoredTransition(hlgame, t, val);
+                if(ct.isValid()) {
+                    systemTransitions.add(ct);
+                }
+            }
+        }
+
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOW LEVEL
+        SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graphll = SGGBuilder.createByLLGame(hlgame);
+//        HLTools.saveGraph2DotAndPDF(outputDir + "CM41LL_gg", graphll);
+        int llmcuts = 0;
+        int llbad = 0;
+        for (LLDecisionSet state : graphll.getStates()) {
+            if (state.isMcut()) {
+                ++llmcuts;
+            }
+            if (state.isBad()) {
+                ++llbad;
+            }
+        }
+        PetriGame pgame = HL2PGConverter.convert(hlgame, true);
+        // calculate the system transitions
+        Collection<Transition> sysTransitions = new ArrayList<>();
+        Collection<Transition> singlePresetTransitions = new ArrayList<>();
+        for (Transition transition : pgame.getTransitions()) {
+            boolean isSystem = true;
+            for (Place place : transition.getPreset()) {
+                if (pgame.isEnvironment(place)) {
+                    isSystem = false;
+                }
+            }
+            if (isSystem) {
+                sysTransitions.add(transition);
+                if (transition.getPreset().size() == 1) {
+                    singlePresetTransitions.add(transition);
+                }
+            }
+        }
+
+        System.out.println("size HL" + graph.getStates().size());
+        System.out.println("size LL " + graphll.getStates().size());
+        System.out.println("mcuts HL " + hlmcuts);
+        System.out.println("mcuts LL " + llmcuts);
+        System.out.println("bad HL " + hlbad);
+        System.out.println("bad LL " + llbad);
+        System.out.println("singleSys HL " + game.getSinglePresetTransitions().size());
+        System.out.println("singleSys LL " + singlePresetTransitions.size());
+        System.out.println("system HL " + systemTransitions.size());
+        System.out.println("system LL " + sysTransitions.size());
     }
 
 }

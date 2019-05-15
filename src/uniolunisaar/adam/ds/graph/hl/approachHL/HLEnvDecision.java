@@ -34,8 +34,17 @@ public class HLEnvDecision extends EnvDecision<ColoredPlace, ColoredTransition> 
         return new HLEnvDecision(getPlace().apply(sym));
     }
 
+    /**
+     * Attention: it is not checked if t is valid for 
+     * cost saving reasons.
+     * @param t
+     * @return 
+     */
     @Override
     public boolean isChoosen(ColoredTransition t) {
-        return getPlace().getPlace().getPostset().contains(t.getTransition());
+//        return getPlace().getPlace().getPostset().contains(t.getTransition());
+// this above is less expensive and currently seems to deliver the same results,
+// but not sure if this would work in any case
+        return t.getPreset().contains(getPlace());
     }
 }

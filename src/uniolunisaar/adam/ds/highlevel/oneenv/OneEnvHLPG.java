@@ -63,7 +63,7 @@ public class OneEnvHLPG extends HLPetriGame implements IGraphListener<PetriNet, 
                 for (ValuationIterator it = this.getValuations(transition).iterator(); it.hasNext();) {
                     Valuation val = it.next();
                     ColoredTransition ct = new ColoredTransition(this, transition, val);
-                    if (isSystem(transition) && ct.getPreset().size() == 1) {
+                    if (ct.isValid() && isSystem(transition) && ct.getPreset().size() == 1) {
                         singlePresetTransitions.add(ct);
                     }
                 }
