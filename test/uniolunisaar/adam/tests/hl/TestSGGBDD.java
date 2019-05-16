@@ -10,7 +10,7 @@ import uniol.apt.adt.pn.Transition;
 import uniol.apt.io.parser.ParseException;
 import uniol.apt.io.renderer.RenderException;
 import uniolunisaar.adam.ds.graph.hl.SRGFlow;
-import uniolunisaar.adam.ds.graph.hl.SymbolicGameGraph;
+import uniolunisaar.adam.ds.graph.hl.SGGByHashCode;
 import uniolunisaar.adam.ds.graph.hl.approachLL.ILLDecision;
 import uniolunisaar.adam.ds.graph.hl.approachLL.LLDecisionSet;
 import uniolunisaar.adam.ds.highlevel.Color;
@@ -37,7 +37,7 @@ import uniolunisaar.adam.generators.hl.DocumentWorkflowHL;
 import uniolunisaar.adam.generators.pg.Clerks;
 import uniolunisaar.adam.generators.pg.Workflow;
 import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
-import uniolunisaar.adam.logic.hl.SGGBuilder;
+import uniolunisaar.adam.logic.hl.SGGBuilderLL;
 import uniolunisaar.adam.logic.solver.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.symbolic.bddapproach.graph.BDDGraph;
 import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolver;
@@ -101,7 +101,7 @@ public class TestSGGBDD {
         BDDTools.saveGraph2PDF(outputDir + "CM21_bdd_gg", bddgraph, sol);
 
         // Test the new version
-        SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
+        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilderLL.createByLLGame(hlgame);
         System.out.println("SIZE: " + graph.getStates().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
 //        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
@@ -118,7 +118,7 @@ public class TestSGGBDD {
         sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), true, opt);
         bddgraph = sol.getGraphGame();
 
-        graph = SGGBuilder.createByLLGame(hlgame);
+        graph = SGGBuilderLL.createByLLGame(hlgame);
 //        System.out.println("SIZE: " + graph.getStates().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "CM22_gg", graph);
 //        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size()); // todo: why does this fail?
@@ -140,7 +140,7 @@ public class TestSGGBDD {
 //        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
 //        BDDTools.saveGraph2PDF(outputDir + "DW" + size + "_bdd_gg", bddgraph, sol);
 
-        graph = SGGBuilder.createByLLGame(hlgame);
+        graph = SGGBuilderLL.createByLLGame(hlgame);
 //        System.out.println("SIZE: " + graph.getStates().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "DW" + size + "_gg", graph);
         Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
@@ -150,7 +150,7 @@ public class TestSGGBDD {
     @Test
     public void testCM() throws IOException, InterruptedException, CalculationInterruptedException, NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
-        SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
+        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilderLL.createByLLGame(hlgame);
 
         System.out.println("SIZE: " + graph.getStates().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
@@ -284,7 +284,7 @@ public class TestSGGBDD {
         BDDTools.saveGraph2PDF(outputDir + "toyexmpale2", graph, sol);
         Assert.assertEquals(graph.getStates().size(), graph.getStates().size());
 
-        SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graphEX = SGGBuilder.createByLLGame(hlgame);
+        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graphEX = SGGBuilderLL.createByLLGame(hlgame);
 
         System.out.println("SIZE: " + graphEX.getStates().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "toyexmpleExplixit", graphEX);

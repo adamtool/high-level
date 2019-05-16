@@ -14,9 +14,9 @@ public interface DecisionSet<P, T, DC extends IDecision<P, T>> {
 
     public boolean hasTop();
 
-    public Set<? extends DecisionSet> resolveTop();
+    public Set<? extends DecisionSet<P, T, DC>> resolveTop();
 
-    public Set<? extends DecisionSet> fire(T t);
+    public Set<? extends DecisionSet<P, T, DC>> fire(T t);
 //    /**
 //     * Changing the decision set is nice for not creating so much copies but using
 //     * objects in sets which hashcode can change are evil.
