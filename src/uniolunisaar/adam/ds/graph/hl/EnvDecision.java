@@ -48,8 +48,8 @@ public abstract class EnvDecision<P, T> implements IDecision<P, T> {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 31 * hash + Objects.hashCode(this.place);
+        int hash = 23;
+        hash = 29 * hash * Objects.hashCode(this.place);
         return hash;
     }
 

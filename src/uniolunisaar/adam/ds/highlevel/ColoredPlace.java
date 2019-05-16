@@ -59,7 +59,7 @@ public class ColoredPlace {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 37 * hash + Objects.hashCode(this.place);
+        hash = 29 * hash * Objects.hashCode(this.place);
         hash = 37 * hash * Objects.hashCode(this.color);
         return hash;
     }

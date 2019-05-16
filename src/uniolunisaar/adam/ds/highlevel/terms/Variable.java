@@ -54,7 +54,7 @@ public class Variable implements IPredicateTerm<Color>, IArcTerm<Color>, IArcTup
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 79 * hash + Objects.hashCode(this.name);
+        hash = 11 * hash * Objects.hashCode(this.name);
         return hash;
     }
 

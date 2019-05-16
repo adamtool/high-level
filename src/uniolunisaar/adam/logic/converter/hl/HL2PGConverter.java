@@ -159,13 +159,13 @@ public class HL2PGConverter {
 
     public static int getHashCode(Place llPlace) {
         int result = getOrigID(llPlace).hashCode();
-        result = 31 * result * Objects.hashCode(getColors(llPlace));
+        result = 17 * result * Objects.hashCode(getColors(llPlace));
         return result;
     }
 
     public static int getHashCode(Transition llTransition) {
         int result = getOrigID(llTransition).hashCode();
-        result = 31 * result * Objects.hashCode(getValuation(llTransition));
+        result = 11 * result * Objects.hashCode(getValuation(llTransition));
         return result;
     }
 

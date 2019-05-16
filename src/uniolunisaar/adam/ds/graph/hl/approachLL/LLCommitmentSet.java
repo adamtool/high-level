@@ -99,13 +99,13 @@ public class LLCommitmentSet extends CommitmentSet<Transition> {
     public int hashCode() {
         int hash = 7;
         hash = 59 * hash + (isTop() ? 1 : 0);
-        int tr = 0;
+        int tr = 1;
         if (getTransitions() != null) {
             for (Transition transition : getTransitions()) {
-                tr += HL2PGConverter.getHashCode(transition);
+                tr *= HL2PGConverter.getHashCode(transition);
             }
         }
-        hash = 59 * hash + tr;
+        hash = 13 * hash * tr;
         return hash;
     }
 

@@ -60,8 +60,8 @@ public class LLEnvDecision extends EnvDecision<Place, Transition> implements ILL
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 31 * hash + HL2PGConverter.getHashCode(getPlace());
+        int hash = 23;
+        hash = 29 * hash * HL2PGConverter.getHashCode(getPlace());
         return hash;
     }
     

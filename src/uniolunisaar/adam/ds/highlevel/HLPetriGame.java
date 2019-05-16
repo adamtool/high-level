@@ -65,7 +65,7 @@ public class HLPetriGame extends Extensible {
         for (Map.Entry<String, BasicColorClass> entry : hlgame.colorClasses.entrySet()) {
             String key = entry.getKey();
             BasicColorClass value = entry.getValue();
-            cclasses.put(new String(key), new BasicColorClass(value));
+            cclasses.put(key, new BasicColorClass(value));
         }
         return cclasses;
     }

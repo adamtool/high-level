@@ -372,9 +372,10 @@ public class LLDecisionSet extends Extensible implements DecisionSet<Place, Tran
 
     @Override
     public int hashCode() {
-        int hash = 7;
-        hash = 31 * hash + Objects.hashCode(this.decisions);
-//        hash = 31 * hash * (this.mcut ? 2 : 1);
+        int hash = 41;
+        hash = 37 * hash * Objects.hashCode(this.decisions);
+        hash = hash * (this.mcut ? 2 : 1);
+        hash = hash * (this.bad ? 3 : 1);
         return hash;
     }
 

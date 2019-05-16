@@ -314,7 +314,7 @@ public class TestSRG {
     public void testSGG() throws IOException, InterruptedException {
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
         HLTools.saveHLPG2PDF(outputDir + "CM21", hlgame);
-        OneEnvHLPG game = new OneEnvHLPG(hlgame);
+        OneEnvHLPG game = new OneEnvHLPG(hlgame, false);
         SymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> graph = SGGBuilder.createByHLGame(game);
         HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
         System.out.println("SIZE: " + graph.getStates().size());

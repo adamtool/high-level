@@ -407,7 +407,9 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 31 * hash + Objects.hashCode(this.decisions);
+        hash = 31 * hash * Objects.hashCode(this.decisions);
+        hash = hash * (this.mcut ? 2 : 1);
+        hash = hash * (this.bad ? 3 : 1);
 //        hash = 31 * hash + (this.mcut ? 1 : 0);
         return hash;
     }
@@ -426,7 +428,7 @@ public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlac
         final HLDecisionSet other = (HLDecisionSet) obj;
         if (this.mcut != other.mcut) {
             return false;
-        }        
+        }
         if (this.bad != other.bad) {
             return false;
         }

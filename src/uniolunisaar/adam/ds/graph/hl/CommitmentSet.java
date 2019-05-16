@@ -119,7 +119,7 @@ public abstract class CommitmentSet<T> {
     public int hashCode() {
         int hash = 7;
         hash = 59 * hash + (this.isTop ? 1 : 0);
-        hash = 59 * hash + Objects.hashCode(this.transitions);
+        hash = 13 * hash * Objects.hashCode(this.transitions);
         return hash;
     }
 
