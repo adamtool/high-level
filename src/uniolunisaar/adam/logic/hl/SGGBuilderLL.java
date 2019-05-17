@@ -96,7 +96,7 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, LLD
 
         // Create the graph iteratively
         SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> srg = new SGGByHashCode<>(hlgame.getName() + "_SRG", init);
-        addStatesIteratively(hlgame, srg, init, pgame.getEnvTransitions(), sysTransitions);
+        addStatesIteratively(hlgame, srg, init, pgame.getTransitions(), sysTransitions);
         return srg;
     }
 
@@ -122,7 +122,7 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, LLD
 
         // Create the graph iteratively
         SGG<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, LLDecisionSet>> srg = new SGG<>(hlgame.getName() + "_SRG", init);
-        addStatesIteratively(hlgame, srg, init, pgame.getEnvTransitions(), sysTransitions);
+        addStatesIteratively(hlgame, srg, init, pgame.getTransitions(), sysTransitions);
         return srg;
     }
 
