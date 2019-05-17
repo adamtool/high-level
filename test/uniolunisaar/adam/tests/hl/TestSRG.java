@@ -15,7 +15,8 @@ import uniol.apt.adt.pn.Transition;
 import uniol.apt.io.parser.ParseException;
 import uniol.apt.module.exception.ModuleException;
 import uniolunisaar.adam.ds.graph.hl.CommitmentSet;
-import uniolunisaar.adam.ds.graph.hl.SRGFlow;
+import uniolunisaar.adam.ds.graph.hl.IntegerID;
+import uniolunisaar.adam.ds.graph.hl.SGGFlow;
 import uniolunisaar.adam.ds.graph.hl.SGGByHashCode;
 import uniolunisaar.adam.ds.graph.hl.approachHL.HLCommitmentSet;
 import uniolunisaar.adam.ds.graph.hl.approachHL.HLDecisionSet;
@@ -316,7 +317,7 @@ public class TestSRG {
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
         HLTools.saveHLPG2PDF(outputDir + "CM21", hlgame);
         OneEnvHLPG game = new OneEnvHLPG(hlgame, false);
-        SGGByHashCode<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> graph = SGGBuilderHL.createByHLGame(game);
+        SGGByHashCode<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, IntegerID>> graph = SGGBuilderHL.getInstance().createByHashcode(game);
         HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
         System.out.println("SIZE: " + graph.getStates().size());
     }
@@ -338,7 +339,7 @@ public class TestSRG {
 //        BDDTools.saveGraph2PDF(outputDir + "CM21_bdd_gg", bddgraph, sol);
 
         // Test the new version
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilderLL.createByLLGame(hlgame);
+        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 //        System.out.println("SIZE: " + graph.getStates().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
         Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
@@ -355,7 +356,7 @@ public class TestSRG {
         sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), true, opt);
         bddgraph = sol.getGraphGame();
 
-        graph = SGGBuilderLL.createByLLGame(hlgame);
+        graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 //        System.out.println("SIZE: " + graph.getStates().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "CM22_gg", graph);
 //        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size()); // todo: why does this fail?
@@ -377,7 +378,7 @@ public class TestSRG {
 //        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
 //        BDDTools.saveGraph2PDF(outputDir + "DW" + size + "_bdd_gg", bddgraph, sol);
 
-        graph = SGGBuilderLL.createByLLGame(hlgame);
+        graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 //        System.out.println("SIZE: " + graph.getStates().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "DW" + size + "_gg", graph);
         Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
@@ -387,7 +388,7 @@ public class TestSRG {
     @Test
     public void testCM() throws IOException, InterruptedException {
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilderLL.createByLLGame(hlgame);
+        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 
         System.out.println("SIZE: " + graph.getStates().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
@@ -418,7 +419,7 @@ public class TestSRG {
 //        bddgraph = sol.getGraphGame();
 ////        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
 //        BDDTools.saveGraph2PDF(outputDir + "DW" + size + "_bdd_gg", bddgraph, sol);
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilderLL.createByLLGame(hlgame);
+        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 
         System.out.println("SIZE: " + graph.getStates().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "DW" + size + "_gg", graph);
@@ -462,8 +463,7 @@ public class TestSRG {
 //        int size = hlgraph.getStates().size();
 //        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HLSGG: " + size);
 //        HLTools.saveGraph2PDF(outputDir + "PDHLExHL11_gg", hlgraph);
-
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilderLL.createByLLGame(hlgame);
+        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 
         int size = graph.getStates().size();
 //        System.out.println("Number of states of the HL two-player game over a finite graph explizit: " + size);
@@ -487,12 +487,12 @@ public class TestSRG {
         System.out.println("asdf " + solBDD.existsWinningStrategy());
         BDDGraph bddgraphHL = solBDD.getGraphGame();
 //        BDDTools.saveGraph2PDF(outputDir + "PDHL13_gg", bddgraphHL, solBDD);
-        
-                opt = new BDDSolverOptions();
+
+        opt = new BDDSolverOptions();
         opt.setNoType2(true);
-        BDDSolver solBDDLL = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(pg, true, false), true, opt);       
+        BDDSolver solBDDLL = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(pg, true, false), true, opt);
         solBDDLL.initialize();
-        double sizeBDDLL = solBDDLL.getBufferedDCSs().satCount(solBDD.getFirstBDDVariables()) + 1; 
+        double sizeBDDLL = solBDDLL.getBufferedDCSs().satCount(solBDD.getFirstBDDVariables()) + 1;
         System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% size " + sizeBDDLL);
     }
 
@@ -509,7 +509,7 @@ public class TestSRG {
         }
         HLPetriGame hlgame = getHLGame(elem[elem.length - 1], para);
 
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilderLL.createByLLGame(hlgame);
+        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 
         int size = graph.getStates().size();
         System.out.println("Number of states of the HL two-player game over a finite graph explizit: " + size); // todo: fix the logger...

@@ -10,17 +10,17 @@ import java.util.Set;
 import uniol.apt.adt.extension.Extensible;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.graph.hl.DecisionSet;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.tools.CartesianProduct;
 import uniolunisaar.adam.tools.Tools;
+import uniolunisaar.adam.ds.graph.hl.IDecisionSet;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class LLDecisionSet extends Extensible implements DecisionSet<Place, Transition, ILLDecision> {
+public class LLDecisionSet extends Extensible implements IDecisionSet<Place, Transition, ILLDecision> {
 
     private final Set<ILLDecision> decisions;
     private final boolean mcut;

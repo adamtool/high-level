@@ -12,11 +12,12 @@ import java.util.Set;
  * @param <S>
  * @param <DC>
  * @param <T>
+ * @param <ID>
  * @param <F>
  */
-public abstract class AbstractSymbolicGameGraph<P, T, DC extends IDecision<P, T>, S extends DecisionSet<P, T, DC>, F extends SRGFlow<T>> {
+public abstract class AbstractSymbolicGameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC>, ID extends StateIdentifier, F extends SGGFlow<T, ID>> {
 
-    private String name;
+    private final String name;
     private final Set<F> flows;
     private final S initial;
 
@@ -30,9 +31,11 @@ public abstract class AbstractSymbolicGameGraph<P, T, DC extends IDecision<P, T>
 
     public abstract void addState(S state);
 
-    public abstract S getState(int id);
+    public abstract S getState(ID id);
 
     public abstract Collection<S> getStates();
+
+    public abstract ID getID(S state);
 
     public void addFlow(F flow) {
         flows.add(flow);

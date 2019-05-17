@@ -11,7 +11,9 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.module.exception.ModuleException;
 import uniolunisaar.adam.ds.graph.hl.AbstractSymbolicGameGraph;
-import uniolunisaar.adam.ds.graph.hl.SRGFlow;
+import uniolunisaar.adam.ds.graph.hl.IntegerID;
+import uniolunisaar.adam.ds.graph.hl.SGG;
+import uniolunisaar.adam.ds.graph.hl.SGGFlow;
 import uniolunisaar.adam.ds.graph.hl.SGGByHashCode;
 import uniolunisaar.adam.ds.graph.hl.approachHL.HLDecisionSet;
 import uniolunisaar.adam.ds.graph.hl.approachHL.IHLDecision;
@@ -35,7 +37,6 @@ import uniolunisaar.adam.generators.hl.ConcurrentMachinesHL;
 import uniolunisaar.adam.generators.hl.DocumentWorkflowHL;
 import uniolunisaar.adam.generators.hl.PackageDeliveryHL;
 import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
-import uniolunisaar.adam.logic.hl.SGGBuilder;
 import uniolunisaar.adam.logic.hl.SGGBuilderHL;
 import uniolunisaar.adam.logic.hl.SGGBuilderLL;
 import uniolunisaar.adam.logic.solver.BDDASafetyWithoutType2HLSolver;
@@ -82,11 +83,11 @@ public class CompareApproaches {
 //        System.out.println(dcs.toString());
 //        System.out.println(dcs.calcNdet(decisions));
 
-        SGGByHashCode<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> graph = SGGBuilderHL.createByHLGame(game);
+        SGGByHashCode<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, IntegerID>> graph = SGGBuilderHL.getInstance().createByHashcode(game);
 //        HLTools.saveGraph2PDF(outputDir + "DWs1HL_gg", graph);
         System.out.println("size HL" + graph.getStates().size());
 
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graphll = SGGBuilderLL.createByLLGame(hlgame);
+        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graphll = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 //        HLTools.saveGraph2PDF(outputDir + "DWs1LL_gg", graphll);
         System.out.println("size HL" + graphll.getStates().size());
 
@@ -107,11 +108,11 @@ public class CompareApproaches {
         HLTools.saveHLPG2PDF(outputDir + "PD16HL", hlgame);
         OneEnvHLPG game = new OneEnvHLPG(hlgame, false);
 
-        SGGByHashCode<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> graph = SGGBuilderHL.createByHLGame(game);
+        SGGByHashCode<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, IntegerID>> graph = SGGBuilderHL.getInstance().createByHashcode(game);
 //        HLTools.saveGraph2PDF(outputDir + "DWs1HL_gg", graph);
         System.out.println("size HL" + graph.getStates().size());
 
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graphll = SGGBuilderLL.createByLLGame(hlgame);
+        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graphll = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 //        HLTools.saveGraph2PDF(outputDir + "DWs1LL_gg", graphll);
         System.out.println("size LL" + graphll.getStates().size());
 
@@ -132,11 +133,11 @@ public class CompareApproaches {
         HLTools.saveHLPG2PDF(outputDir + "CM41HL", hlgame);
         OneEnvHLPG game = new OneEnvHLPG(hlgame, false);
 
-        SGGByHashCode<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> graph = SGGBuilderHL.createByHLGame(game);
+        SGGByHashCode<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, IntegerID>> graph = SGGBuilderHL.getInstance().createByHashcode(game);
         HLTools.saveGraph2PDF(outputDir + "CM41HL_gg", graph);
         System.out.println("size HL" + graph.getStates().size());
 
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graphll = SGGBuilderLL.createByLLGame(hlgame);
+        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graphll = SGGBuilderLL.getInstance().createByHashcode(hlgame);
         HLTools.saveGraph2DotAndPDF(outputDir + "CM41LL_gg", graphll);
         System.out.println("size HL" + graphll.getStates().size());
 
@@ -158,7 +159,7 @@ public class CompareApproaches {
         HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         OneEnvHLPG game = new OneEnvHLPG(hlgame, false);
 
-        SGGByHashCode<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> graph = SGGBuilderHL.createByHLGame(game);
+        SGGByHashCode<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, IntegerID>> graph = SGGBuilderHL.getInstance().createByHashcode(game);
 //        HLTools.saveGraph2PDF(outputDir + "CM41HL_gg", graph);
         int hlmcuts = 0;
         int hlbad = 0;
@@ -182,7 +183,7 @@ public class CompareApproaches {
         }
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOW LEVEL
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graphll = SGGBuilderLL.createByLLGame(hlgame);
+        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graphll = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 //        HLTools.saveGraph2DotAndPDF(outputDir + "CM41LL_gg", graphll);
         int llmcuts = 0;
         int llbad = 0;
@@ -231,165 +232,247 @@ public class CompareApproaches {
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(3, 2, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         OneEnvHLPG game = new OneEnvHLPG(hlgame, false);
-        AbstractSymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> graph = SGGBuilderHL.createByHLGame(game);
-        System.out.println("size HL" + graph.getStates().size());
-
-        
-        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(3, 2, true);
-//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
-        game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderHL.createByHLGame(game);
+        AbstractSymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, IntegerID, SGGFlow<ColoredTransition, IntegerID>> graph = SGGBuilderHL.getInstance().createByHashcode(game);
         System.out.println("size HL" + graph.getStates().size());
 
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(3, 2, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderHL.createByHLGame(game);
+        graph = SGGBuilderHL.getInstance().createByHashcode(game);
         System.out.println("size HL" + graph.getStates().size());
 
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(3, 2, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderHL.createByHLGame(game);
+        graph = SGGBuilderHL.getInstance().createByHashcode(game);
         System.out.println("size HL" + graph.getStates().size());
 
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(3, 2, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderHL.createByHLGame(game);
+        graph = SGGBuilderHL.getInstance().createByHashcode(game);
         System.out.println("size HL" + graph.getStates().size());
 
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(3, 2, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderHL.createByHLGame(game);
+        graph = SGGBuilderHL.getInstance().createByHashcode(game);
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(3, 2, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderHL.getInstance().createByHashcode(game);
         System.out.println("size HL" + graph.getStates().size());
     }
-    
+
     @Test
-    public void checkMultipleCallsHL() throws ModuleException, FileNotFoundException {        
-        int machines = 4;
+    public void checkMultipleCallsHL() throws ModuleException, FileNotFoundException {
+        int machines = 2;
         int products = 1;
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         OneEnvHLPG game = new OneEnvHLPG(hlgame, false);
-        AbstractSymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SRGFlow<ColoredTransition>> graph = SGGBuilderHL.create(game);
-        System.out.println("size HL" + graph.getStates().size());
-
-        
-        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
-//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
-        game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderHL.create(game);
+        AbstractSymbolicGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, HLDecisionSet, SGGFlow<ColoredTransition, HLDecisionSet>> graph = SGGBuilderHL.getInstance().create(game);
         System.out.println("size HL" + graph.getStates().size());
 
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderHL.create(game);
+        graph = SGGBuilderHL.getInstance().create(game);
         System.out.println("size HL" + graph.getStates().size());
 
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderHL.create(game);
+        graph = SGGBuilderHL.getInstance().create(game);
         System.out.println("size HL" + graph.getStates().size());
 
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderHL.create(game);
+        graph = SGGBuilderHL.getInstance().create(game);
         System.out.println("size HL" + graph.getStates().size());
 
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderHL.create(game);
+        graph = SGGBuilderHL.getInstance().create(game);
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderHL.getInstance().create(game);
         System.out.println("size HL" + graph.getStates().size());
     }
 
     @Test
     public void checkMultipleCallsLLByHash() throws ModuleException, FileNotFoundException {
         int machines = 2;
-        int products = 3;
+        int products = 1;
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         OneEnvHLPG game = new OneEnvHLPG(hlgame, false);
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilderLL.createByLLGame(game);
+        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(game);
         System.out.println("size HL" + graph.getStates().size());
 
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderLL.createByLLGame(game);
+        graph = SGGBuilderLL.getInstance().createByHashcode(game);
         System.out.println("size HL" + graph.getStates().size());
 
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderLL.createByLLGame(game);
+        graph = SGGBuilderLL.getInstance().createByHashcode(game);
         System.out.println("size HL" + graph.getStates().size());
 
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderLL.createByLLGame(game);
+        graph = SGGBuilderLL.getInstance().createByHashcode(game);
         System.out.println("size HL" + graph.getStates().size());
 
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderLL.createByLLGame(game);
+        graph = SGGBuilderLL.getInstance().createByHashcode(game);
         System.out.println("size HL" + graph.getStates().size());
 
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderLL.createByLLGame(game);
-        System.out.println("size HL" + graph.getStates().size());
-        
-        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
-//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
-        game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderLL.createByLLGame(game);
-        System.out.println("size HL" + graph.getStates().size());
+        graph = SGGBuilderLL.getInstance().createByHashcode(game);
         System.out.println("size HL" + graph.getStates().size());
 
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderLL.createByLLGame(game);
-        System.out.println("size HL" + graph.getStates().size());
-
-        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
-//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
-        game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderLL.createByLLGame(game);
-        System.out.println("size HL" + graph.getStates().size());
-        
-        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
-//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
-        game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderLL.createByLLGame(game);
+        graph = SGGBuilderLL.getInstance().createByHashcode(game);
         System.out.println("size HL" + graph.getStates().size());
         System.out.println("size HL" + graph.getStates().size());
 
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderLL.createByLLGame(game);
+        graph = SGGBuilderLL.getInstance().createByHashcode(game);
         System.out.println("size HL" + graph.getStates().size());
 
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderLL.createByLLGame(game);
+        graph = SGGBuilderLL.getInstance().createByHashcode(game);
         System.out.println("size HL" + graph.getStates().size());
-        
+
         hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         game = new OneEnvHLPG(hlgame, false);
-        graph = SGGBuilderLL.createByLLGame(game);
+        graph = SGGBuilderLL.getInstance().createByHashcode(game);
+        System.out.println("size HL" + graph.getStates().size());
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderLL.getInstance().createByHashcode(game);
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderLL.getInstance().createByHashcode(game);
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderLL.getInstance().createByHashcode(game);
+        System.out.println("size HL" + graph.getStates().size());
+    }
+    @Test
+    public void checkMultipleCallsLL() throws ModuleException, FileNotFoundException {
+        int machines = 2;
+        int products = 1;
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        OneEnvHLPG game = new OneEnvHLPG(hlgame, false);
+        SGG<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, LLDecisionSet>> graph = SGGBuilderLL.getInstance().create(game);
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderLL.getInstance().create(game);
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderLL.getInstance().create(game);
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderLL.getInstance().create(game);
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderLL.getInstance().create(game);
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderLL.getInstance().create(game);
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderLL.getInstance().create(game);
+        System.out.println("size HL" + graph.getStates().size());
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderLL.getInstance().create(game);
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderLL.getInstance().create(game);
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderLL.getInstance().create(game);
+        System.out.println("size HL" + graph.getStates().size());
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderLL.getInstance().create(game);
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderLL.getInstance().create(game);
+        System.out.println("size HL" + graph.getStates().size());
+
+        hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, products, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
+        game = new OneEnvHLPG(hlgame, false);
+        graph = SGGBuilderLL.getInstance().create(game);
         System.out.println("size HL" + graph.getStates().size());
     }
 }

@@ -6,17 +6,19 @@ import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 /**
  *
  * @author Manuel Gieseking
+ * @param <P>
+ * @param <T>
  * @param <DC>
  */
-public interface DecisionSet<P, T, DC extends IDecision<P, T>> {
+public interface IDecisionSet<P, T, DC extends IDecision<P, T>> extends StateIdentifier {
 
     public boolean hasTop(Set<DC> dcs);
 
     public boolean hasTop();
 
-    public Set<? extends DecisionSet<P, T, DC>> resolveTop();
+    public Set<? extends IDecisionSet<P, T, DC>> resolveTop();
 
-    public Set<? extends DecisionSet<P, T, DC>> fire(T t);
+    public Set<? extends IDecisionSet<P, T, DC>> fire(T t);
 //    /**
 //     * Changing the decision set is nice for not creating so much copies but using
 //     * objects in sets which hashcode can change are evil.
@@ -27,7 +29,7 @@ public interface DecisionSet<P, T, DC extends IDecision<P, T>> {
 //    @Deprecated
 //    public void apply(Symmetry sym);
 
-    public DecisionSet<P, T, DC> apply(Symmetry sym);
+    public IDecisionSet<P, T, DC> apply(Symmetry sym);
 
     public boolean isMcut();
 
@@ -36,4 +38,5 @@ public interface DecisionSet<P, T, DC extends IDecision<P, T>> {
     public String toDot();
 
     public int getId();
+
 }

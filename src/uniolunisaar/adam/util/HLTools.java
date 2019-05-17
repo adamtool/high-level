@@ -9,17 +9,17 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.graph.hl.DecisionSet;
 import uniolunisaar.adam.ds.graph.hl.IDecision;
-import uniolunisaar.adam.ds.graph.hl.SRGFlow;
+import uniolunisaar.adam.ds.graph.hl.SGGFlow;
 import uniolunisaar.adam.ds.graph.hl.SGGByHashCode;
 import uniolunisaar.adam.ds.highlevel.BasicColorClass;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.tools.ExternalProcessHandler;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.exceptions.ProcessNotStartedException;
-import uniolunisaar.adam.tools.PetriNetExtensionHandler;
 import uniolunisaar.adam.tools.ProcessPool;
+import uniolunisaar.adam.ds.graph.hl.IDecisionSet;
+import uniolunisaar.adam.ds.graph.hl.StateIdentifier;
 
 /**
  *
@@ -250,12 +250,12 @@ public class HLTools {
             } catch (IOException | InterruptedException ex) {
                 Logger.getInstance().addError("Deleting the buffer files and moving the pdf failed", ex);
             }
-        });        
+        });
         mvPdf.start();
         return mvPdf;
     }
 
-    public static <P, T, DC extends IDecision<P, T>, DCS extends DecisionSet<P, T, DC>> String hlGraph2Dot(SGGByHashCode<P, T, DC, DCS, ? extends SRGFlow<T>> graph) {
+    public static <P, T, DC extends IDecision<P, T>, DCS extends IDecisionSet<P, T, DC>, ID extends StateIdentifier> String hlGraph2Dot(SGGByHashCode<P, T, DC, DCS, ? extends SGGFlow<T, ID>> graph) {
         final String mcutColor = "white";
         final String sysColor = "gray";
 
@@ -283,8 +283,8 @@ public class HLTools {
 
         // Flows
         sb.append("\n#flows\n");
-        for (SRGFlow<T> f : graph.getFlows()) {
-            sb.append(f.getSourceid()).append("->").append(f.getTargetid());
+        for (SGGFlow<T, ID> f : graph.getFlows()) {
+            sb.append(f.getSource().toString()).append("->").append(f.getTarget().toString());
             T t = f.getTransition();
             String label = (t == null) ? "T" : t.toString();
             sb.append("[label=\"").append(label).append("\"]");
@@ -297,14 +297,14 @@ public class HLTools {
         return sb.toString();
     }
 
-    public static <P, T, DC extends IDecision<P, T>, DCS extends DecisionSet<P, T, DC>> void saveGraph2Dot(String path, SGGByHashCode<P, T, DC, DCS, ? extends SRGFlow<T>> graph) throws FileNotFoundException {
+    public static <P, T, DC extends IDecision<P, T>, DCS extends IDecisionSet<P, T, DC>, ID extends StateIdentifier> void saveGraph2Dot(String path, SGGByHashCode<P, T, DC, DCS, ? extends SGGFlow<T, ID>> graph) throws FileNotFoundException {
         try (PrintStream out = new PrintStream(path + ".dot")) {
             out.println(hlGraph2Dot(graph));
         }
         Logger.getInstance().addMessage("Saved to: " + path + ".dot", true);
     }
 
-    public static <P, T, DC extends IDecision<P, T>, DCS extends DecisionSet<P, T, DC>> void saveGraph2DotAndPDF(String path, SGGByHashCode<P, T, DC, DCS, ? extends SRGFlow<T>> graph) throws IOException, InterruptedException {
+    public static <P, T, DC extends IDecision<P, T>, DCS extends IDecisionSet<P, T, DC>, ID extends StateIdentifier> void saveGraph2DotAndPDF(String path, SGGByHashCode<P, T, DC, DCS, ? extends SGGFlow<T, ID>> graph) throws IOException, InterruptedException {
         saveGraph2Dot(path, graph);
         Runtime rt = Runtime.getRuntime();
         String exString = "dot -Tpdf " + path + ".dot -o " + path + ".pdf";
@@ -313,7 +313,7 @@ public class HLTools {
         Logger.getInstance().addMessage("Saved to: " + path + ".pdf", true);
     }
 
-    public static <P, T, DC extends IDecision<P, T>, DCS extends DecisionSet<P, T, DC>> void saveGraph2PDF(String path, SGGByHashCode<P, T, DC, DCS, ? extends SRGFlow<T>> graph) throws IOException, InterruptedException {
+    public static <P, T, DC extends IDecision<P, T>, DCS extends IDecisionSet<P, T, DC>, ID extends StateIdentifier> void saveGraph2PDF(String path, SGGByHashCode<P, T, DC, DCS, ? extends SGGFlow<T, ID>> graph) throws IOException, InterruptedException {
         String bufferpath = path + System.currentTimeMillis();
         saveGraph2DotAndPDF(bufferpath, graph);
         // Delete dot file

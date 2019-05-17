@@ -9,7 +9,6 @@ import java.util.Objects;
 import java.util.Set;
 import uniol.apt.adt.extension.Extensible;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.graph.hl.DecisionSet;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.Valuation;
@@ -18,12 +17,13 @@ import uniolunisaar.adam.ds.highlevel.oneenv.OneEnvHLPG;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.tools.CartesianProduct;
 import uniolunisaar.adam.tools.Tools;
+import uniolunisaar.adam.ds.graph.hl.IDecisionSet;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class HLDecisionSet extends Extensible implements DecisionSet<ColoredPlace, ColoredTransition, IHLDecision> {
+public class HLDecisionSet extends Extensible implements IDecisionSet<ColoredPlace, ColoredTransition, IHLDecision> {
 
     private final Set<IHLDecision> decisions;
     private final boolean mcut;

@@ -6,25 +6,27 @@ import uniol.apt.adt.extension.Extensible;
 /**
  *
  * @author Manuel Gieseking
+ * @param <T>
+ * @param <S>
  */
-public class SRGFlow<T> extends Extensible {
+public class SGGFlow<T, S extends StateIdentifier> extends Extensible {
 
-    private final int sourceid;
-    private final int targetid;
+    private final S source;
+    private final S target;
     private final T transition;
 
-    public SRGFlow(int sourceid, T transition, int targetid) {
-        this.sourceid = sourceid;
-        this.targetid = targetid;
+    public SGGFlow(S source, T transition, S target) {
+        this.source = source;
+        this.target = target;
         this.transition = transition;
     }
 
-    public int getSourceid() {
-        return sourceid;
+    public S getSource() {
+        return source;
     }
 
-    public int getTargetid() {
-        return targetid;
+    public S getTarget() {
+        return target;
     }
 
     public T getTransition() {
@@ -33,15 +35,15 @@ public class SRGFlow<T> extends Extensible {
 
     @Override
     public String toString() {
-        return sourceid + "->" + targetid;
+        return source.toString() + "->" + target.toString();
     }
 
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 59 * hash + this.sourceid;
-        hash = 59 * hash + this.targetid;
-        hash = 59 * hash + Objects.hashCode(this.transition);
+        hash = 13 * hash * this.source.hashCode();
+        hash = 11 * hash * this.target.hashCode();
+        hash = 59 * hash * Objects.hashCode(this.transition);
         return hash;
     }
 
@@ -56,11 +58,11 @@ public class SRGFlow<T> extends Extensible {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final SRGFlow other = (SRGFlow) obj;
-        if (this.sourceid != other.sourceid) {
+        final SGGFlow other = (SGGFlow) obj;
+        if (this.source != other.source) {
             return false;
         }
-        if (this.targetid != other.targetid) {
+        if (this.target != other.target) {
             return false;
         }
         if (!Objects.equals(this.transition, other.transition)) {

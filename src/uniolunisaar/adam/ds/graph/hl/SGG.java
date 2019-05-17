@@ -14,7 +14,7 @@ import java.util.Set;
  * @param <T>
  * @param <F>
  */
-public class SGG<P, T, DC extends IDecision<P, T>, S extends DecisionSet<P, T, DC>, F extends SRGFlow<T>> extends AbstractSymbolicGameGraph<P, T, DC, S, F> {
+public class SGG<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC>, F extends SGGFlow<T, S>> extends AbstractSymbolicGameGraph<P, T, DC, S, S, F> {
 
     private final Set<S> states;
 
@@ -36,12 +36,18 @@ public class SGG<P, T, DC extends IDecision<P, T>, S extends DecisionSet<P, T, D
     }
 
     @Override
-    public S getState(int id) {
-        return null;//states.get(id);
+    public S getState(S id) {
+        return id;
     }
 
     @Override
     public Collection<S> getStates() {
         return Collections.unmodifiableCollection(states);
     }
+
+    @Override
+    public S getID(S state) {
+        return state;
+    }
+
 }

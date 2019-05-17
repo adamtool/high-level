@@ -9,7 +9,8 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.io.parser.ParseException;
 import uniol.apt.io.renderer.RenderException;
-import uniolunisaar.adam.ds.graph.hl.SRGFlow;
+import uniolunisaar.adam.ds.graph.hl.IntegerID;
+import uniolunisaar.adam.ds.graph.hl.SGGFlow;
 import uniolunisaar.adam.ds.graph.hl.SGGByHashCode;
 import uniolunisaar.adam.ds.graph.hl.approachLL.ILLDecision;
 import uniolunisaar.adam.ds.graph.hl.approachLL.LLDecisionSet;
@@ -101,7 +102,7 @@ public class TestSGGBDD {
         BDDTools.saveGraph2PDF(outputDir + "CM21_bdd_gg", bddgraph, sol);
 
         // Test the new version
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilderLL.createByLLGame(hlgame);
+        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
         System.out.println("SIZE: " + graph.getStates().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
 //        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
@@ -118,7 +119,7 @@ public class TestSGGBDD {
         sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), true, opt);
         bddgraph = sol.getGraphGame();
 
-        graph = SGGBuilderLL.createByLLGame(hlgame);
+        graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 //        System.out.println("SIZE: " + graph.getStates().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "CM22_gg", graph);
 //        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size()); // todo: why does this fail?
@@ -140,7 +141,7 @@ public class TestSGGBDD {
 //        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
 //        BDDTools.saveGraph2PDF(outputDir + "DW" + size + "_bdd_gg", bddgraph, sol);
 
-        graph = SGGBuilderLL.createByLLGame(hlgame);
+        graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 //        System.out.println("SIZE: " + graph.getStates().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "DW" + size + "_gg", graph);
         Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
@@ -150,7 +151,7 @@ public class TestSGGBDD {
     @Test
     public void testCM() throws IOException, InterruptedException, CalculationInterruptedException, NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilderLL.createByLLGame(hlgame);
+        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 
         System.out.println("SIZE: " + graph.getStates().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
@@ -284,7 +285,7 @@ public class TestSGGBDD {
         BDDTools.saveGraph2PDF(outputDir + "toyexmpale2", graph, sol);
         Assert.assertEquals(graph.getStates().size(), graph.getStates().size());
 
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graphEX = SGGBuilderLL.createByLLGame(hlgame);
+        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graphEX = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 
         System.out.println("SIZE: " + graphEX.getStates().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "toyexmpleExplixit", graphEX);

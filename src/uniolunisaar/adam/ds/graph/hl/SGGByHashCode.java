@@ -14,7 +14,7 @@ import java.util.Map;
  * @param <T>
  * @param <F>
  */
-public class SGGByHashCode<P, T, DC extends IDecision<P, T>, S extends DecisionSet<P, T, DC>, F extends SRGFlow<T>> extends AbstractSymbolicGameGraph<P, T, DC, S, F> {
+public class SGGByHashCode<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC>, F extends SGGFlow<T, IntegerID>> extends AbstractSymbolicGameGraph<P, T, DC, S, IntegerID, F> {
 
     private final Map<Integer, S> states;
 
@@ -36,12 +36,18 @@ public class SGGByHashCode<P, T, DC extends IDecision<P, T>, S extends DecisionS
     }
 
     @Override
-    public S getState(int id) {
-        return states.get(id);
+    public S getState(IntegerID id) {
+        return states.get(id.getId());
     }
 
     @Override
     public Collection<S> getStates() {
         return Collections.unmodifiableCollection(states.values());
     }
+
+    @Override
+    public IntegerID getID(S state) {
+        return new IntegerID(state.getId());
+    }
+
 }
