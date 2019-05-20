@@ -243,7 +243,7 @@ public class TestSGGBDD {
         HLTools.saveHLPG2PDF(outputDir + "toyexample", hlgame);
 
         PetriGame game = HL2PGConverter.convert(hlgame, true, true);
-        PGTools.savePG2PDF(outputDir + "toyexmapelell", game, false, -1);
+        PGTools.savePG2PDF(outputDir + "toyexmapelell", game, false, false);
 
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
 
@@ -271,7 +271,7 @@ public class TestSGGBDD {
         HLTools.saveHLPG2PDF(outputDir + "toyexample2", hlgame);
 
         PetriGame game = HL2PGConverter.convert(hlgame, true, true);
-        PGTools.savePG2PDF(outputDir + "toyexmapelell2", game, false, -1);
+        PGTools.savePG2PDF(outputDir + "toyexmapelell2", game, false, false);
 
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
 

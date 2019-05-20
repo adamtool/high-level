@@ -104,7 +104,7 @@ public class TestConverter {
         HLPetriGame hlgame = ContainerHabourHL.generateD(4, 2, 1, 1, true);
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
         PetriGame pg = HL2PGConverter.convert(hlgame, true, true);
-        PGTools.savePG2PDF(outputDir + pg.getName(), pg, false, 8);
+        PGTools.savePG2PDF(outputDir + pg.getName(), pg, false, true);
         PGTools.saveAPT(outputDir + pg.getName(), pg, true);
         BDDSolverOptions opt = new BDDSolverOptions();
         opt.setNoType2(true);
@@ -125,7 +125,7 @@ public class TestConverter {
         HLPetriGame hlgame = PackageDeliveryHL.generateE(1, 3, true);
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
         PetriGame pg = HL2PGConverter.convert(hlgame, true, true);
-        PGTools.savePG2PDF(outputDir + pg.getName(), pg, false, 8);
+        PGTools.savePG2PDF(outputDir + pg.getName(), pg, false, true);
         PGTools.saveAPT(outputDir + pg.getName(), pg, true);
 
         BDDSolverOptions opt = new BDDSolverOptions();
