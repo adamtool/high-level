@@ -20,6 +20,7 @@ import uniolunisaar.adam.exceptions.ProcessNotStartedException;
 import uniolunisaar.adam.tools.ProcessPool;
 import uniolunisaar.adam.ds.graph.hl.IDecisionSet;
 import uniolunisaar.adam.ds.graph.hl.StateIdentifier;
+import uniolunisaar.adam.tools.AdamProperties;
 
 /**
  *
@@ -180,7 +181,8 @@ public class HLTools {
         } else {
             saveHLPG2Dot(path, game, tokencount);
         }
-        String[] command = {"dot", "-Tpdf", path + ".dot", "-o", path + ".pdf"};
+        String dot = AdamProperties.getInstance().getProperty(AdamProperties.DOT);
+        String[] command = {dot, "-Tpdf", path + ".dot", "-o", path + ".pdf"};
         // Mac:
         //String[] command = {"/usr/local/bin/dot", "-Tpdf", path + ".dot", "-o", path + ".pdf"};
         ExternalProcessHandler procH = new ExternalProcessHandler(true, command);
@@ -206,24 +208,6 @@ public class HLTools {
         });
         thread.start();
         return thread;
-        // older version
-//        ProcessBuilder procBuilder = new ProcessBuilder("dot", "-Tpdf", path + ".dot", "-o", path + ".pdf");
-//        Process proc = procBuilder.start();
-//        String error = IOUtils.toString(proc.getErrorStream());
-//        Logger.getInstance().addMessage(error, true); // todo: print it as error an a proper exception
-//        String output = IOUtils.toString(proc.getInputStream());
-//        Logger.getInstance().addMessage(output, true);
-//        proc.waitFor();
-//        Logger.getInstance().addMessage("Saved to: " + path + ".pdf", true);
-
-        // oldest version
-//        Runtime rt = Runtime.getRuntime();
-////        String exString = "dot -Tpdf " + path + ".dot > " + path + ".pdf";
-//        String exString = "dot -Tpdf " + path + ".dot -o " + path + ".pdf";
-//        Process p = rt.exec(exString);
-//        p.waitFor();
-//            rt.exec("evince " + path + ".pdf");
-//        Logger.getInstance().addMessage("Saved to: " + path + ".pdf", true);
     }
 
     public static Thread saveHLPG2PDF(String path, HLPetriGame game) throws FileNotFoundException {
@@ -307,7 +291,8 @@ public class HLTools {
     public static <P, T, DC extends IDecision<P, T>, DCS extends IDecisionSet<P, T, DC>, ID extends StateIdentifier> void saveGraph2DotAndPDF(String path, SGGByHashCode<P, T, DC, DCS, ? extends SGGFlow<T, ID>> graph) throws IOException, InterruptedException {
         saveGraph2Dot(path, graph);
         Runtime rt = Runtime.getRuntime();
-        String exString = "dot -Tpdf " + path + ".dot -o " + path + ".pdf";
+        String dot = AdamProperties.getInstance().getProperty(AdamProperties.DOT);
+        String exString = dot + " -Tpdf " + path + ".dot -o " + path + ".pdf";
         Process p = rt.exec(exString);
         p.waitFor();
         Logger.getInstance().addMessage("Saved to: " + path + ".pdf", true);
