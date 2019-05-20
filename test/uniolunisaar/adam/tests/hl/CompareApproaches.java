@@ -105,7 +105,7 @@ public class CompareApproaches {
     @Test
     public void testPD() throws IOException, InterruptedException, NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException, CalculationInterruptedException {
         int packages = 1;
-        int drones = 3;
+        int drones = 4;
         HLPetriGame hlgame = PackageDeliveryHL.generateEwithPool(packages, drones, true);
         HLTools.saveHLPG2PDF(outputDir + "PD16HL", hlgame);
         OneEnvHLPG game = new OneEnvHLPG(hlgame, false);
@@ -493,27 +493,27 @@ public class CompareApproaches {
 
     @Test
     public void checkDW() throws IOException, InterruptedException, NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException, CalculationInterruptedException {
-        int clerks = 5;
+        int clerks = 4;
         HLPetriGame hlgame = DocumentWorkflowHL.generateDW(clerks, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         SGG<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, LLDecisionSet>> graph = SGGBuilderLL.getInstance().create(hlgame);
         System.out.println("size LL " + graph.getStates().size());
 
-        hlgame = DocumentWorkflowHL.generateDW(clerks, true);
+//        hlgame = DocumentWorkflowHL.generateDW(clerks, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graphhash = SGGBuilderLL.getInstance().createByHashcode(hlgame);
         System.out.println("size LL hash" + graphhash.getStates().size());
 
         //%%%%
-        hlgame = DocumentWorkflowHL.generateDW(clerks, true);
+//        hlgame = DocumentWorkflowHL.generateDW(clerks, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         OneEnvHLPG game = new OneEnvHLPG(hlgame, false);
         SGG<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, HLDecisionSet>> graphHL = SGGBuilderHL.getInstance().create(game);
         System.out.println("size HL " + graphHL.getStates().size());
 
-        hlgame = DocumentWorkflowHL.generateDW(clerks, true);
+//        hlgame = DocumentWorkflowHL.generateDW(clerks, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
-        game = new OneEnvHLPG(hlgame, false);
+//        game = new OneEnvHLPG(hlgame, false);
         SGGByHashCode<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, IntegerID>> graphHLhash = SGGBuilderHL.getInstance().createByHashcode(game);
         System.out.println("size HL hash" + graphHLhash.getStates().size());
     }
@@ -526,21 +526,21 @@ public class CompareApproaches {
         SGG<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, LLDecisionSet>> graph = SGGBuilderLL.getInstance().create(hlgame);
         System.out.println("size LL " + graph.getStates().size());
 
-        hlgame = DocumentWorkflowHL.generateDWs(clerks, true);
+//        hlgame = DocumentWorkflowHL.generateDWs(clerks, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graphhash = SGGBuilderLL.getInstance().createByHashcode(hlgame);
         System.out.println("size LL hash" + graphhash.getStates().size());
 
         //%%%%
-        hlgame = DocumentWorkflowHL.generateDWs(clerks, true);
+//        hlgame = DocumentWorkflowHL.generateDWs(clerks, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
         OneEnvHLPG game = new OneEnvHLPG(hlgame, false);
         SGG<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, HLDecisionSet>> graphHL = SGGBuilderHL.getInstance().create(game);
         System.out.println("size HL " + graphHL.getStates().size());
 
-        hlgame = DocumentWorkflowHL.generateDWs(clerks, true);
+//        hlgame = DocumentWorkflowHL.generateDWs(clerks, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM41HLA", hlgame);
-        game = new OneEnvHLPG(hlgame, false);
+//        game = new OneEnvHLPG(hlgame, false);
         SGGByHashCode<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, IntegerID>> graphHLhash = SGGBuilderHL.getInstance().createByHashcode(game);
         System.out.println("size HL hash" + graphHLhash.getStates().size());
     }
