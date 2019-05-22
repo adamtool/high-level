@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import net.sf.javabdd.BDD;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import uniol.apt.adt.pn.Place;
@@ -33,6 +34,7 @@ import uniolunisaar.adam.exceptions.pg.InvalidPartitionException;
 import uniolunisaar.adam.exceptions.pg.NetNotSafeException;
 import uniolunisaar.adam.exceptions.pg.NoSuitableDistributionFoundException;
 import uniolunisaar.adam.exceptions.pg.NotSupportedGameException;
+import uniolunisaar.adam.generators.hl.AlarmSystemHL;
 import uniolunisaar.adam.generators.hl.ConcurrentMachinesHL;
 import uniolunisaar.adam.generators.hl.DocumentWorkflowHL;
 import uniolunisaar.adam.generators.hl.PackageDeliveryHL;
@@ -543,5 +545,98 @@ public class CompareApproaches {
 //        game = new OneEnvHLPG(hlgame, false);
         SGGByHashCode<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, IntegerID>> graphHLhash = SGGBuilderHL.getInstance().createByHashcode(game);
         System.out.println("size HL hash" + graphHLhash.getStates().size());
+    }
+
+    @Test
+    public void alarmSystem() throws ModuleException, FileNotFoundException, NotSupportedGameException, NetNotSafeException, InvalidPartitionException, NoSuitableDistributionFoundException, CalculationInterruptedException {
+        HLPetriGame hlgame = AlarmSystemHL.createSafetyVersionForHLRepWithSetMinus(2, true);
+//        HLPetriGame hlgame = DocumentWorkflowHL.generateDWs(3, true); // fits
+//        HLPetriGame hlgame = DocumentWorkflowHL.generateDW(3, true);// fits
+//        HLPetriGame hlgame = PackageDeliveryHL.generateEwithPool(2, 2, true);// fits
+        HLTools.saveHLPG2PDF(outputDir + "AS2HL", hlgame);
+        OneEnvHLPG game = new OneEnvHLPG(hlgame, false);
+
+        SGG<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, HLDecisionSet>> graph = SGGBuilderHL.getInstance().create(game);
+//        HLTools.saveGraph2PDF(outputDir + "CM41HL_gg", graph);
+        int hlmcuts = 0;
+        int hlbad = 0;
+        for (HLDecisionSet state : graph.getStates()) {
+            if (state.isMcut()) {
+                ++hlmcuts;
+            }
+            if (state.isBad()) {
+                ++hlbad;
+            }
+        }
+        Collection<ColoredTransition> systemTransitions = new ArrayList<>();
+        for (Transition t : game.getSystemTransitions()) {
+            for (ValuationIterator it = hlgame.getValuations(t).iterator(); it.hasNext();) {
+                Valuation val = it.next();
+                ColoredTransition ct = new ColoredTransition(hlgame, t, val);
+                if (ct.isValid()) {
+                    systemTransitions.add(ct);
+                }
+            }
+        }
+
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOW LEVEL
+        SGG<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, LLDecisionSet>> graphll = SGGBuilderLL.getInstance().create(hlgame);
+//        HLTools.saveGraph2DotAndPDF(outputDir + "CM41LL_gg", graphll);
+        int llmcuts = 0;
+        int llbad = 0;
+        for (LLDecisionSet state : graphll.getStates()) {
+            if (state.isMcut()) {
+                ++llmcuts;
+            }
+            if (state.isBad()) {
+                ++llbad;
+            }
+        }
+        PetriGame pgame = HL2PGConverter.convert(hlgame, true);
+        // calculate the system transitions
+        Collection<Transition> sysTransitions = new ArrayList<>();
+        Collection<Transition> singlePresetTransitions = new ArrayList<>();
+        for (Transition transition : pgame.getTransitions()) {
+            boolean isSystem = true;
+            for (Place place : transition.getPreset()) {
+                if (pgame.isEnvironment(place)) {
+                    isSystem = false;
+                }
+            }
+            if (isSystem) {
+                sysTransitions.add(transition);
+                if (transition.getPreset().size() == 1) {
+                    singlePresetTransitions.add(transition);
+                }
+            }
+        }
+
+        PetriGame bddgame = HL2PGConverter.convert(hlgame, true, true);
+        Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
+
+        BDDSolverOptions opt = new BDDSolverOptions();
+        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(bddgame, syms, true, new Safety(), opt);
+        sol.initialize();
+
+        BDD states = sol.getBufferedDCSs();
+        double sizeBDD = states.satCount(sol.getFirstBDDVariables()) + 1;
+        BDD mcuts = sol.getMcut().and(states);
+        BDD bad = sol.badStates().and(states);
+
+        System.out.println("size HL" + graph.getStates().size());
+//        HLTools.saveHLPG2PDF(outputDir + "CM41HLB", hlgame);
+        System.out.println("size LL " + graphll.getStates().size());
+        System.out.println("size BDD " + sizeBDD);
+        System.out.println("mcuts HL " + hlmcuts);
+        System.out.println("mcuts LL " + llmcuts);
+        System.out.println("mcuts BDD " + mcuts.satCount(sol.getFirstBDDVariables()));
+        System.out.println("bad HL " + hlbad);
+        System.out.println("bad LL " + llbad);
+        System.out.println("badd BDD " + bad.satCount(sol.getFirstBDDVariables()));
+        System.out.println("singleSys HL " + game.getSinglePresetTransitions().size());
+        System.out.println("singleSys LL " + singlePresetTransitions.size());
+        System.out.println("system HL " + systemTransitions.size());
+        System.out.println("system LL " + sysTransitions.size());
+
     }
 }
