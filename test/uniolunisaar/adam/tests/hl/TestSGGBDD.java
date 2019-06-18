@@ -172,7 +172,7 @@ public class TestSGGBDD {
     }
 
     @Test
-    public void testDocumentWorkflow() throws IOException, InterruptedException, CalculationInterruptedException, NotSupportedGameException, ParseException, CouldNotCalculateException, CouldNotFindSuitableConditionException, SolvingException, RenderException {
+    public void testDocumentWorkflow() throws IOException, InterruptedException, CalculationInterruptedException, NotSupportedGameException, ParseException, CouldNotCalculateException, CouldNotFindSuitableConditionException, SolvingException, RenderException, NetNotSafeException {
         //%%%%%%%%%%%%%%%%%% DW
 //        for (int i = 1; i < 5; i++) {
 //            int size = i;

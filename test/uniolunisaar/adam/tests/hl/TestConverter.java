@@ -21,6 +21,7 @@ import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.pg.NotSupportedGameException;
 import uniolunisaar.adam.exceptions.pg.SolvingException;
 import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
+import uniolunisaar.adam.exceptions.pnwt.NetNotSafeException;
 import uniolunisaar.adam.generators.hl.AlarmSystemHL;
 import uniolunisaar.adam.generators.hl.ContainerHabourHL;
 import uniolunisaar.adam.generators.hl.PackageDeliveryHL;
@@ -119,7 +120,7 @@ public class TestConverter {
     }
 
     @Test
-    public void packageDelivery() throws IOException, InterruptedException, CouldNotFindSuitableConditionException, SolvingException, CalculationInterruptedException, RenderException, NotSupportedGameException, ParseException {
+    public void packageDelivery() throws IOException, InterruptedException, CouldNotFindSuitableConditionException, SolvingException, CalculationInterruptedException, RenderException, NotSupportedGameException, ParseException, NetNotSafeException {
         Logger.getInstance().setVerbose(true);
         
         HLPetriGame hlgame = PackageDeliveryHL.generateE(1, 3, true);
