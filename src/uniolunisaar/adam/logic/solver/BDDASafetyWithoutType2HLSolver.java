@@ -165,7 +165,7 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
 //        } catch (Exception e) {
 //        }
         while (!Q_.equals(Q)) {
-            if (Thread.currentThread().isInterrupted()) {
+            if (Thread.interrupted()) {
                 CalculationInterruptedException e = new CalculationInterruptedException();
                 Logger.getInstance().addError(e.getMessage(), e);
                 throw e;
@@ -324,7 +324,7 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
         BDD Q_ = F;
         int i = 0;
         while (!Q_.equals(Q)) {
-            if (Thread.currentThread().isInterrupted()) {
+            if (Thread.interrupted()) {
                 CalculationInterruptedException e = new CalculationInterruptedException();
                 Logger.getInstance().addError(e.getMessage(), e);
                 throw e;
