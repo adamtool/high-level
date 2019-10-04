@@ -29,12 +29,12 @@ import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
 import uniolunisaar.adam.ds.highlevel.terms.SuccessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.exceptions.highlevel.IdentifierAlreadyExistentException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuccessorForUnorderedColorClassException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuchColorDomainException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuchColorException;
 import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
-import uniolunisaar.adam.tools.PetriNetExtensionHandler;
 
 /**
  *

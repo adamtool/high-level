@@ -32,7 +32,7 @@ import uniolunisaar.adam.ds.highlevel.arcexpressions.SetMinusType;
 import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
 import uniolunisaar.adam.ds.highlevel.terms.ColorClassType;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
-import uniolunisaar.adam.ds.objectives.Condition;
+import uniolunisaar.adam.ds.petrinet.objectives.Condition;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.logic.pg.calculators.ConcurrencyPreservingCalculator;
 import uniolunisaar.adam.logic.pg.calculators.MaxTokenCountCalculator;
