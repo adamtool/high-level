@@ -136,8 +136,8 @@ public class TestConverter {
 
         double sizeBDDLow = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1; // for the additional init state
 
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% sizeLL: " + sizeBDDLow);
-        System.out.println("asdf " + sol.existsWinningStrategy());
+//        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% sizeLL: " + sizeBDDLow);
+//        System.out.println("asdf " + sol.existsWinningStrategy());
             BDDGraph bddgraph = sol.getGraphGame();
         BDDTools.saveGraph2PDF(outputDir + "PDLL13_gg", bddgraph, sol);
 
@@ -149,8 +149,8 @@ public class TestConverter {
         solBDD.initialize();
 
         double sizeBDD = solBDD.getBufferedDCSs().satCount(solBDD.getFirstBDDVariables()) + 1;
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% size" + sizeBDD);
-        System.out.println("asdf " + solBDD.existsWinningStrategy());        
+//        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% size" + sizeBDD);
+//        System.out.println("asdf " + solBDD.existsWinningStrategy());        
             BDDGraph bddgraphHL = solBDD.getGraphGame();
         BDDTools.saveGraph2PDF(outputDir + "PDHL13_gg", bddgraphHL, solBDD);
     }
