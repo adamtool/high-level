@@ -12,6 +12,7 @@ public class IntegerID implements StateIdentifier {
         this.id = id;
     }
 
+    @Override
     public int getId() {
         return id;
     }

@@ -33,7 +33,7 @@ public abstract class AbstractSymbolicGameGraph<P, T, DC extends IDecision<P, T>
 
     public abstract S getState(ID id);
 
-    public abstract Collection<S> getStates();
+    public abstract Collection<S> getStatesView();
 
     public abstract ID getID(S state);
 
@@ -41,8 +41,17 @@ public abstract class AbstractSymbolicGameGraph<P, T, DC extends IDecision<P, T>
         flows.add(flow);
     }
 
-    public Collection<F> getFlows() {
-        return Collections.unmodifiableCollection(flows);
+    /**
+     * Attention: don't change the set when using this method.
+     *
+     * @return
+     */
+    Set<F> getFlows() {
+        return flows;
+    }
+
+    public Collection<F> getFlowsView() {
+        return Collections.unmodifiableCollection(getFlows());
     }
 
     public String getName() {

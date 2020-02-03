@@ -85,7 +85,13 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, LLD
      *
      * @param hlgame
      * @return
+     *
+     *
+     * Think that this method had the problems with the identifying of different
+     * nodes with the same hash value. But I'm not sure!
+     *
      */
+    @Deprecated
     public SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> createByHashcode(HLPetriGame hlgame) {
         // Convert the high-level game to its low-level version
         PetriGame pgame = HL2PGConverter.convert(hlgame, true);

@@ -9,9 +9,9 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.graph.hl.AbstractSymbolicGameGraph;
 import uniolunisaar.adam.ds.graph.hl.IDecision;
 import uniolunisaar.adam.ds.graph.hl.SGGFlow;
-import uniolunisaar.adam.ds.graph.hl.SGGByHashCode;
 import uniolunisaar.adam.ds.highlevel.BasicColorClass;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.tools.processHandling.ExternalProcessHandler;
@@ -239,7 +239,7 @@ public class HLTools {
         return mvPdf;
     }
 
-    public static <P, T, DC extends IDecision<P, T>, DCS extends IDecisionSet<P, T, DC>, ID extends StateIdentifier> String hlGraph2Dot(SGGByHashCode<P, T, DC, DCS, ? extends SGGFlow<T, ID>> graph) {
+    public static <P, T, DC extends IDecision<P, T>, DCS extends IDecisionSet<P, T, DC>, ID extends StateIdentifier, F extends SGGFlow<T, ID>> String hlGraph2Dot(AbstractSymbolicGameGraph<P, T, DC, DCS, ID, F> graph) {
         final String mcutColor = "white";
         final String sysColor = "gray";
 
@@ -248,7 +248,7 @@ public class HLTools {
 
         // States
         sb.append("#states\n");
-        for (DCS state : graph.getStates()) {
+        for (DCS state : graph.getStatesView()) {
             // mcut?
 //            String shape = (state.isMcut()) ? mcutShape : sysShape;
             String color = (state.isMcut()) ? mcutColor : sysColor;
@@ -267,8 +267,9 @@ public class HLTools {
 
         // Flows
         sb.append("\n#flows\n");
-        for (SGGFlow<T, ID> f : graph.getFlows()) {
-            sb.append(f.getSource().toString()).append("->").append(f.getTarget().toString());
+        for (F f : graph.getFlowsView()) {
+//            sb.append(f.getSource().toString()).append("->").append(f.getTarget().toString());
+            sb.append(f.getSource().getId()).append("->").append(f.getTarget().getId());
             T t = f.getTransition();
             String label = (t == null) ? "T" : t.toString();
             sb.append("[label=\"").append(label).append("\"]");
@@ -281,14 +282,14 @@ public class HLTools {
         return sb.toString();
     }
 
-    public static <P, T, DC extends IDecision<P, T>, DCS extends IDecisionSet<P, T, DC>, ID extends StateIdentifier> void saveGraph2Dot(String path, SGGByHashCode<P, T, DC, DCS, ? extends SGGFlow<T, ID>> graph) throws FileNotFoundException {
+    public static <P, T, DC extends IDecision<P, T>, DCS extends IDecisionSet<P, T, DC>, ID extends StateIdentifier, F extends SGGFlow<T, ID>> void saveGraph2Dot(String path, AbstractSymbolicGameGraph<P, T, DC, DCS, ID, F> graph) throws FileNotFoundException {
         try (PrintStream out = new PrintStream(path + ".dot")) {
             out.println(hlGraph2Dot(graph));
         }
         Logger.getInstance().addMessage("Saved to: " + path + ".dot", true);
     }
 
-    public static <P, T, DC extends IDecision<P, T>, DCS extends IDecisionSet<P, T, DC>, ID extends StateIdentifier> void saveGraph2DotAndPDF(String path, SGGByHashCode<P, T, DC, DCS, ? extends SGGFlow<T, ID>> graph) throws IOException, InterruptedException {
+    public static <P, T, DC extends IDecision<P, T>, DCS extends IDecisionSet<P, T, DC>, ID extends StateIdentifier, F extends SGGFlow<T, ID>> void saveGraph2DotAndPDF(String path, AbstractSymbolicGameGraph<P, T, DC, DCS, ID, F> graph) throws IOException, InterruptedException {
         saveGraph2Dot(path, graph);
         Runtime rt = Runtime.getRuntime();
         String dot = AdamProperties.getInstance().getProperty(AdamProperties.DOT);
@@ -298,12 +299,12 @@ public class HLTools {
         Logger.getInstance().addMessage("Saved to: " + path + ".pdf", true);
     }
 
-    public static <P, T, DC extends IDecision<P, T>, DCS extends IDecisionSet<P, T, DC>, ID extends StateIdentifier> void saveGraph2PDF(String path, SGGByHashCode<P, T, DC, DCS, ? extends SGGFlow<T, ID>> graph) throws IOException, InterruptedException {
+    public static <P, T, DC extends IDecision<P, T>, DCS extends IDecisionSet<P, T, DC>, ID extends StateIdentifier, F extends SGGFlow<T, ID>> void saveGraph2PDF(String path, AbstractSymbolicGameGraph<P, T, DC, DCS, ID, F> graph) throws IOException, InterruptedException {
         String bufferpath = path + System.currentTimeMillis();
         saveGraph2DotAndPDF(bufferpath, graph);
         // Delete dot file
-        new File(bufferpath + ".dot").delete();
-        Logger.getInstance().addMessage("Deleted: " + bufferpath + ".dot", true);
+//        new File(bufferpath + ".dot").delete();
+//        Logger.getInstance().addMessage("Deleted: " + bufferpath + ".dot", true);
         // move to original name
         Files.move(new File(bufferpath + ".pdf").toPath(), new File(path + ".pdf").toPath(), REPLACE_EXISTING);
         Logger.getInstance().addMessage("Moved: " + bufferpath + ".pdf --> " + path + ".pdf", true);

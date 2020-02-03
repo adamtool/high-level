@@ -73,7 +73,13 @@ public class SGGBuilderHL extends SGGBuilder<ColoredPlace, ColoredTransition, IH
      *
      * @param hlgame
      * @return
+     *
+     *
+     * Think that this method had the problems with the identifying of different
+     * nodes with the same hash value. But I'm not sure!
+     *
      */
+    @Deprecated
     public SGGByHashCode<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, IntegerID>> createByHashcode(OneEnvHLPG hlgame) {
         // create initial decision set
         HLDecisionSet init = createInitDCS(hlgame);
