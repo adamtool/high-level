@@ -40,7 +40,7 @@ import uniolunisaar.adam.util.PGTools;
 public class TestASafetyWithoutType2HLSolver {
 
     private static final String outputDir = System.getProperty("testoutputfolder") + "/sgg/";
-    
+
     @BeforeClass
     public void logger() {
         Logger.getInstance().setVerbose(true);
@@ -57,14 +57,19 @@ public class TestASafetyWithoutType2HLSolver {
 
     @Test
     public void testMachinesHL() throws FileNotFoundException, CalculationInterruptedException, CouldNotFindSuitableConditionException, SolvingException, NotSupportedGameException, ParseException, IOException, InterruptedException {
-        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 6, true);
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM21", hlgame);
         OneEnvHLPG game = new OneEnvHLPG(hlgame, false);
         SGG<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, HLDecisionSet>> graph = SGGBuilderHL.getInstance().create(game);
-//        HLTools.saveGraph2PDF(outputDir+"CM21_hlgg", graph);
+        HLTools.saveGraph2PDF(outputDir+"CM21_hlgg", graph);
         SGGASafetyWithoutType2Solver<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, HLDecisionSet>> solver = new SGGASafetyWithoutType2Solver<>();
         boolean win = solver.isWinning(graph, false);
-        Assert.assertFalse(win);
+//        Assert.assertFalse(win);
+        Assert.assertTrue(win);
+
+        SGG<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, HLDecisionSet>> strat = solver.calculateGraphStrategy(graph, false);
+        HLTools.saveGraph2PDF(outputDir + "CM21_hl_strat", strat);
+
 //
 //        PetriGame llgame = HL2PGConverter.convert(hlgame, true);
 //        llgame = PGTools.getPetriGameFromParsedPetriNet(llgame, true, false);

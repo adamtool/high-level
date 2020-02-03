@@ -1,7 +1,10 @@
 package uniolunisaar.adam.logic.solver;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import uniolunisaar.adam.ds.graph.hl.IDecision;
@@ -91,15 +94,52 @@ public class SGGASafetyWithoutType2Solver<P, T, DC extends IDecision<P, T>, S ex
 //        return BDDSGGBuilder.getInstance().builtGraph(this);
 //    }
 //
-//    @Override
-//    public BDDGraph calculateGraphStrategy() throws NoStrategyExistentException, CalculationInterruptedException {
-//        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS
-//        Benchmarks.getInstance().start(Benchmarks.Parts.GRAPH_STRAT);
-//        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS        
-//        BDDGraph g = BDDSGGBuilder.getInstance().builtGraphStrategy(this);
-//        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS
-//        Benchmarks.getInstance().stop(Benchmarks.Parts.GRAPH_STRAT);
-//        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS 
-//        return g;
-//    }
+    public SGG<P, T, DC, S, F> calculateGraphStrategy(SGG<P, T, DC, S, F> graph, boolean p1) throws CalculationInterruptedException {
+        Set<S> winning = winRegionSafety(graph, p1, null);
+        S init = graph.getInitial();
+        SGG<P, T, DC, S, F> strat = new SGG<>(graph.getName() + "_HLstrat", init);
+        LinkedList<S> added = new LinkedList<>();
+        added.add(init);
+        while (!added.isEmpty()) {
+            S state = added.pop();
+            boolean belongsToThePlayer = (p1 && state.isMcut()) || (!p1 && !state.isMcut()); // it belongs to the current player
+            Collection<S> successors = graph.getPostsetView(state);
+            for (S successor : successors) {
+                if (winning.contains(successor) && !strat.contains(successor)) {
+                    strat.addState(successor);
+//                    strat.addFlow(new SGGFlow<T,F>(state.getId(), null, successor.getId()));
+                    List<F> flows = getFlow(graph, state, successor, belongsToThePlayer); // todo: replace this, that is expensive
+                    for (F flow : flows) {
+                        strat.addFlow(flow);
+                    }
+                    added.push(successor);
+                    if (belongsToThePlayer) {
+                        break;
+                    }
+                }
+            }
+        }
+        return strat;
+    }
+
+    /**
+     * TOOD: do it better since it is really expensive
+     *
+     * @param graph
+     * @param pre
+     * @param post
+     * @return
+     */
+    private List<F> getFlow(SGG<P, T, DC, S, F> graph, S pre, S post, boolean one) {
+        List<F> flows = new ArrayList<>();
+        for (F f : graph.getFlowsView()) {
+            if (f.getSource().equals(pre) && f.getTarget().equals(post)) {
+                flows.add(f);
+                if (one) {
+                    return flows;
+                }
+            }
+        }
+        return flows;
+    }
 }

@@ -303,8 +303,8 @@ public class HLTools {
         String bufferpath = path + System.currentTimeMillis();
         saveGraph2DotAndPDF(bufferpath, graph);
         // Delete dot file
-//        new File(bufferpath + ".dot").delete();
-//        Logger.getInstance().addMessage("Deleted: " + bufferpath + ".dot", true);
+        new File(bufferpath + ".dot").delete();
+        Logger.getInstance().addMessage("Deleted: " + bufferpath + ".dot", true);
         // move to original name
         Files.move(new File(bufferpath + ".pdf").toPath(), new File(path + ".pdf").toPath(), REPLACE_EXISTING);
         Logger.getInstance().addMessage("Moved: " + bufferpath + ".pdf --> " + path + ".pdf", true);
