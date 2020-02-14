@@ -1,4 +1,4 @@
-package uniolunisaar.adam.logic.hl;
+package uniolunisaar.adam.logic.graphbuilder.hl;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -20,11 +20,11 @@ import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.pg.InvalidPartitionException;
 import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
-import uniolunisaar.adam.symbolic.bddapproach.graph.BDDGraph;
+import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
 import uniolunisaar.adam.exceptions.pg.NoStrategyExistentException;
-import uniolunisaar.adam.logic.hl.BDDSGGBuilder;
-import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolver;
-import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolverOptions;
+import uniolunisaar.adam.logic.graphbuilder.hl.BDDSGGBuilder;
+import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolver;
+import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolverOptions;
 import uniolunisaar.adam.util.benchmarks.Benchmarks;
 import uniolunisaar.adam.tools.Logger;
 

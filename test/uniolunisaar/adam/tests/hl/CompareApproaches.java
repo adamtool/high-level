@@ -39,12 +39,12 @@ import uniolunisaar.adam.generators.hl.ConcurrentMachinesHL;
 import uniolunisaar.adam.generators.hl.DocumentWorkflowHL;
 import uniolunisaar.adam.generators.hl.PackageDeliveryHL;
 import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
-import uniolunisaar.adam.logic.hl.SGGBuilderHL;
-import uniolunisaar.adam.logic.hl.SGGBuilderLL;
+import uniolunisaar.adam.logic.graphbuilder.hl.SGGBuilderHL;
+import uniolunisaar.adam.logic.graphbuilder.hl.SGGBuilderLL;
 import uniolunisaar.adam.logic.solver.BDDASafetyWithoutType2HLSolver;
-import uniolunisaar.adam.symbolic.bddapproach.graph.BDDGraph;
-import uniolunisaar.adam.symbolic.bddapproach.solver.BDDSolverOptions;
-import uniolunisaar.adam.symbolic.bddapproach.util.BDDTools;
+import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
+import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolverOptions;
+import uniolunisaar.adam.util.symbolic.bddapproach.BDDTools;
 import uniolunisaar.adam.util.HLTools;
 
 /**

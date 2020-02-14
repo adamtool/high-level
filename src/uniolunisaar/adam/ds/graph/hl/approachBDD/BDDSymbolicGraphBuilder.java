@@ -5,9 +5,9 @@ import net.sf.javabdd.BDD;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.Flow;
 import uniolunisaar.adam.logic.solver.BDDASafetyWithoutType2HLSolver;
-import uniolunisaar.adam.symbolic.bddapproach.graph.BDDGraph;
-import uniolunisaar.adam.symbolic.bddapproach.graph.BDDGraphBuilder;
-import uniolunisaar.adam.symbolic.bddapproach.graph.BDDState;
+import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
+import uniolunisaar.adam.logic.pg.builder.graph.symbolic.bddapproach.BDDGraphBuilder;
+import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDState;
 
 /**
  * @author Manuel Gieseking
