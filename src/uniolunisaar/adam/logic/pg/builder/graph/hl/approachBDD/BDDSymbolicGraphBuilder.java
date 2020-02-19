@@ -10,15 +10,15 @@ import uniolunisaar.adam.logic.pg.builder.graph.symbolic.bddapproach.BDDGraphBui
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDState;
 
 /**
- * Not really sure for what this class was once added
- * (2019-04-01 19:32:53 MG: added a graph builder for the symblic graph game.)
- * 
+ * Not really sure for what this class was once added (2019-04-01 19:32:53 MG:
+ * added a graph builder for the symblic graph game.)
+ *
  * Because of that now deprecated.
- * 
+ *
  * @author Manuel Gieseking
  */
 @Deprecated
-public class BDDSymbolicGraphBuilder extends BDDGraphBuilder<BDDASafetyWithoutType2HLSolver> {
+public class BDDSymbolicGraphBuilder extends BDDGraphBuilder {
 
     private static BDDSymbolicGraphBuilder instance = null;
 
@@ -29,13 +29,11 @@ public class BDDSymbolicGraphBuilder extends BDDGraphBuilder<BDDASafetyWithoutTy
         return instance;
     }
 
-    @Override
     protected BDD getSuccessorBDD(BDDASafetyWithoutType2HLSolver solver, BDD succs, BDD validStates) {
         BDD symmetricSuccs = solver.getSuccs(solver.getSuccs(succs).and(solver.getSymmetries()));
         return symmetricSuccs.and(validStates);
     }
 
-    @Override
     protected Flow addFlow(BDDASafetyWithoutType2HLSolver solver, BDDGraph graph, BDDState pre, BDDState succ) {
         List<Transition> trans = solver.getAllTransitions(pre.getState(), succ.getState());
         Flow f = null;

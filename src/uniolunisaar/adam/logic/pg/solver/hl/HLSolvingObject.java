@@ -1,7 +1,6 @@
 package uniolunisaar.adam.logic.pg.solver.hl;
 
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.petrinet.objectives.Condition;
 import uniolunisaar.adam.ds.solver.SolvingObject;
 
@@ -21,8 +20,7 @@ public class HLSolvingObject<W extends Condition<W>> extends SolvingObject<HLPet
     }
 
     @Override
-    public SolvingObject<PetriGame, W> getCopy() {
-        return new HLSolvingObject(this);
+    public HLSolvingObject<W> getCopy() {
+        return new HLSolvingObject<>(this);
     }
-
 }
