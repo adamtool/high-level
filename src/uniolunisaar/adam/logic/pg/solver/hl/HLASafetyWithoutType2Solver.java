@@ -22,7 +22,7 @@ import uniolunisaar.adam.logic.pg.builder.graph.hl.SGGStrategyBuilder;
  * @param <S>
  * @param <F>
  */
-public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC>, F extends SGGFlow<T, S>> extends HLSolver<Safety, P, T, DC, S, F> {
+public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends SGGFlow<T, S>> extends HLSolver<Safety, P, T, DC, S, F> {
 
     public HLASafetyWithoutType2Solver(HLSolvingObject<Safety> solverObject, HLSolverOptions options) {
         super(solverObject, options);
@@ -31,7 +31,7 @@ public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, 
     public Set<S> winRegionSafety(boolean p1, Map<Integer, Set<S>> distance) throws CalculationInterruptedException {
         Set<S> attr = attractor(getGraph().getBadStatesView(), !p1, distance);
 //        System.out.println(attr.toString());
-        Set<S> winning = new HashSet(getGraph().getStatesView());
+        Set<S> winning = new HashSet<>(getGraph().getStatesView());
         winning.removeAll(attr);
 //        for (S s : winning) {
 //            System.out.println(s.toString());

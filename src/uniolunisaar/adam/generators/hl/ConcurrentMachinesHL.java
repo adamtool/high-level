@@ -112,7 +112,7 @@ public class ConcurrentMachinesHL {
         for (int i = 0; i < machines - 1; i++) {
             Variable mi = new Variable("m" + i);
             expr.add(mi);
-            uneq.add(new BasicPredicate(mVar, BasicPredicate.Operator.NEQ, mi));
+            uneq.add(new BasicPredicate<>(mVar, BasicPredicate.Operator.NEQ, mi));
         }
         IPredicate p1 = Predicate.createPredicate(uneq, Predicate.Operator.AND);
         // this next predicate would not be needed if the check online valuations which correspond to safe nets                
@@ -121,7 +121,7 @@ public class ConcurrentMachinesHL {
             Variable mi = new Variable("m" + i);
             for (int j = i + 1; j < machines - 1; j++) {
                 Variable mj = new Variable("m" + j);
-                different.add(new BasicPredicate(mi, BasicPredicate.Operator.NEQ, mj));
+                different.add(new BasicPredicate<>(mi, BasicPredicate.Operator.NEQ, mj));
             }
         }
         IPredicate p2 = Predicate.createPredicate(different, Predicate.Operator.AND);

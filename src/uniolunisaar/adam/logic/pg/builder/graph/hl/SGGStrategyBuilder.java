@@ -20,7 +20,7 @@ import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
  * @param <S>
  * @param <DC>
  */
-public class SGGStrategyBuilder<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC>, F extends SGGFlow<T, S>> {
+public class SGGStrategyBuilder<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends SGGFlow<T, S>> {
 
     public SGG<P, T, DC, S, F> calculateGraphStrategy(SGG<P, T, DC, S, F> graph, boolean p1, Set<S> winningRegion) throws CalculationInterruptedException {
         S init = graph.getInitial();

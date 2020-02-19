@@ -24,7 +24,7 @@ import uniolunisaar.adam.ds.graph.hl.StateIdentifier;
  * @param <S>
  * @param <F>
  */
-public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC>, F extends SGGFlow<T, ? extends StateIdentifier>> {
+public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends SGGFlow<T, ? extends StateIdentifier>> {
 
     <ID extends StateIdentifier> void addStatesIteratively(HLPetriGame hlgame, AbstractSymbolicGameGraph<P, T, DC, S, ID, SGGFlow<T, ID>> srg, S init,
             Collection<Transition> allTransitions, Collection<Transition> systemTransitions) {
@@ -38,7 +38,7 @@ public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDe
             S state = srg.getState(todo.pop());
             // if the current state contains tops, resolve them 
             if (!state.isMcut() && state.hasTop()) {
-                Set<S> succs = (Set<S>) state.resolveTop();
+                Set<S> succs = state.resolveTop();
                 // add only the not to any existing state equivalent decision sets
                 // otherwise only the flows are added to the belonging equivalent class
                 addSuccessors(state, null, succs, syms, todo, srg);
@@ -55,7 +55,7 @@ public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDe
                 transitions = systemTransitions;
             }
             for (T transition : getTransitions(transitions, hlgame)) {
-                Set<S> succs = (Set<S>) state.fire(transition);
+                Set<S> succs = state.fire(transition);
 //                    if (!state.isMcut()) {
 //                        System.out.println("liko to fire" + t);
 //                    }
@@ -91,7 +91,7 @@ public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDe
             S copySucc = succ;
             for (SymmetryIterator iti = syms.iterator(); iti.hasNext();) {
                 Symmetry sym = iti.next(); // todo: get rid of the identity symmetry, just do it in this case before looping
-                copySucc = (S) succ.apply(sym);
+                copySucc = succ.apply(sym);
                 if (srg.contains(copySucc)) {
                     newOne = false;
                     break;

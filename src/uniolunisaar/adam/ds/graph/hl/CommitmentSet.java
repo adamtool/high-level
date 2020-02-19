@@ -134,7 +134,7 @@ public abstract class CommitmentSet<T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final CommitmentSet<T> other = (CommitmentSet<T>) obj;
+        final CommitmentSet<?> other = (CommitmentSet<?>) obj;
         if (this.isTop != other.isTop) {
             return false;
         }

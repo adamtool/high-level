@@ -91,7 +91,7 @@ public abstract class SysDecision<P, T, C extends CommitmentSet<T>> implements I
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final SysDecision other = (SysDecision) obj;
+        final SysDecision<?, ?, ?> other = (SysDecision<?, ?, ?>) obj;
         if (!Objects.equals(this.place, other.place)) {
             return false;
         }

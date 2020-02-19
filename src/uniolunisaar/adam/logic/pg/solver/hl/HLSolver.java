@@ -24,7 +24,7 @@ import uniolunisaar.adam.tools.Logger;
  * @param <S>
  * @param <F>
  */
-public abstract class HLSolver<W extends Condition<W>, P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC>, F extends SGGFlow<T, S>> extends Solver<HLPetriGame, HLSolvingObject<W>, HLSolverOptions> {
+public abstract class HLSolver<W extends Condition<W>, P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends SGGFlow<T, S>> extends Solver<HLPetriGame, HLSolvingObject<W>, HLSolverOptions> {
 
     private SGG<P, T, DC, S, F> graph = null;
 
@@ -35,7 +35,7 @@ public abstract class HLSolver<W extends Condition<W>, P, T, DC extends IDecisio
     protected abstract SGG<P, T, DC, S, F> calculateGraph(HLPetriGame hlgame);
 
     Set<S> attractor(Collection<S> init, boolean p1, Map<Integer, Set<S>> distance) throws CalculationInterruptedException {
-        Set<S> attr = new HashSet(init);
+        Set<S> attr = new HashSet<>(init);
         Set<S> lastAdded = new HashSet<>(init);
         int i = 0;
         while (!lastAdded.isEmpty()) {

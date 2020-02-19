@@ -9,5 +9,7 @@ import uniolunisaar.adam.ds.highlevel.Color;
  */
 public class Symmetry extends HashMap<Color, Color> {
 
+    private static final long serialVersionUID = 1L;
+
     
 }

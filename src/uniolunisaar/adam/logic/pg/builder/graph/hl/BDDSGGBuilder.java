@@ -13,9 +13,8 @@ import uniolunisaar.adam.tools.Logger;
 
 /**
  * @author Manuel Gieseking
- * @param <S>
  */
-public class BDDSGGBuilder<S extends BDDASafetyWithoutType2HLSolver> {
+public class BDDSGGBuilder {
 
     private static BDDSGGBuilder instance = null;
 
@@ -29,15 +28,15 @@ public class BDDSGGBuilder<S extends BDDASafetyWithoutType2HLSolver> {
     protected BDDSGGBuilder() {
     }
 
-    public BDDGraph builtGraph(S solver) throws CalculationInterruptedException {
+    public <S extends BDDASafetyWithoutType2HLSolver> BDDGraph builtGraph(S solver) throws CalculationInterruptedException {
         return builtGraph(solver, false, -1);
     }
 
-    public BDDGraph builtGraph(S solver, int depth) throws CalculationInterruptedException {
+    public <S extends BDDASafetyWithoutType2HLSolver> BDDGraph builtGraph(S solver, int depth) throws CalculationInterruptedException {
         return builtGraph(solver, false, depth);
     }
 
-    public BDDGraph builtGraphStrategy(S solver) throws NoStrategyExistentException, CalculationInterruptedException {
+    public <S extends BDDASafetyWithoutType2HLSolver> BDDGraph builtGraphStrategy(S solver) throws NoStrategyExistentException, CalculationInterruptedException {
         if (!solver.existsWinningStrategy()) {
             throw new NoStrategyExistentException();
         }
@@ -51,7 +50,7 @@ public class BDDSGGBuilder<S extends BDDASafetyWithoutType2HLSolver> {
      * @param depth -1 means do the whole graph
      * @return
      */
-    private BDDGraph builtGraph(S solver, boolean strategy, int depth) throws CalculationInterruptedException {
+    private <S extends BDDASafetyWithoutType2HLSolver> BDDGraph builtGraph(S solver, boolean strategy, int depth) throws CalculationInterruptedException {
         String text = (strategy) ? "strategy" : "game";
         BDDGraph graph = new BDDGraph("Finite graph " + text + " of the net "
                 + solver.getGame().getName());
@@ -130,11 +129,11 @@ public class BDDSGGBuilder<S extends BDDASafetyWithoutType2HLSolver> {
         return graph;
     }
 
-    protected BDD getSuccessorBDD(S solver, BDD succs, BDD validStates) {
+    protected <S extends BDDASafetyWithoutType2HLSolver> BDD getSuccessorBDD(S solver, BDD succs, BDD validStates) {
         return solver.getSymmetricStates(solver.getSuccs(succs)).and(validStates);
     }
 
-    void addOneInitState(S solver, BDDGraph graph, BDD inits, LinkedList<BDDState> todoStates) {
+    <S extends BDDASafetyWithoutType2HLSolver> void addOneInitState(S solver, BDDGraph graph, BDD inits, LinkedList<BDDState> todoStates) {
         BDD init = inits.satOne(solver.getFirstBDDVariables(), false);
         BDDState in = graph.addState(init, solver);
         in.setMcut(solver.isEnvState(init));
@@ -144,7 +143,7 @@ public class BDDSGGBuilder<S extends BDDASafetyWithoutType2HLSolver> {
         todoStates.add(in);
     }
 
-    void addAllSuccessors(BDD succs, S solver, BDDGraph graph, BDDState prev, LinkedList<BDDState> todoStates, boolean oneRandom) {
+    <S extends BDDASafetyWithoutType2HLSolver> void addAllSuccessors(BDD succs, S solver, BDDGraph graph, BDDState prev, LinkedList<BDDState> todoStates, boolean oneRandom) {
         BDD succ = succs.satOne(solver.getFirstBDDVariables(), false);
         while (!succ.isZero()) {
             String value = BDDTools.getDecodedDecisionSets(succ, solver);
@@ -158,11 +157,11 @@ public class BDDSGGBuilder<S extends BDDASafetyWithoutType2HLSolver> {
         }
     }
 
-    void addOneSuccessor(BDD succs, S solver, BDDGraph graph, BDDState prev, LinkedList<BDDState> todoStates) {
+    <S extends BDDASafetyWithoutType2HLSolver> void addOneSuccessor(BDD succs, S solver, BDDGraph graph, BDDState prev, LinkedList<BDDState> todoStates) {
         addAllSuccessors(succs, solver, graph, prev, todoStates, true);
     }
 
-    protected Flow addFlow(S solver, BDDGraph graph, BDDState pre, BDDState succ) {
+    protected <S extends BDDASafetyWithoutType2HLSolver> Flow addFlow(S solver, BDDGraph graph, BDDState pre, BDDState succ) {
         return graph.addFlow(pre, succ, solver.getTransition(pre.getState(), succ.getState()));
     }
 
@@ -177,7 +176,7 @@ public class BDDSGGBuilder<S extends BDDASafetyWithoutType2HLSolver> {
      * @param todoStates
      * @param succ
      */
-    void addState(S solver, BDDGraph graph, BDDState prev, LinkedList<BDDState> todoStates, BDDState succ) {
+    <S extends BDDASafetyWithoutType2HLSolver> void addState(S solver, BDDGraph graph, BDDState prev, LinkedList<BDDState> todoStates, BDDState succ) {
         BDDState oldSuccState = graph.contains(succ.getState());
         if (oldSuccState != null) { // jump to every already visited cut
             addFlow(solver, graph, prev, oldSuccState);

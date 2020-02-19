@@ -101,7 +101,7 @@ public class HLPetriGame extends Extensible implements IPetriGame {
         colorClasses.put(id, new BasicColorClass(id, ordered, colors));
     }
 
-    public void createBasicColorClass(String id, boolean ordered, Pair<String, String[]>... staticSubClasses) throws IdentifierAlreadyExistentException {;
+    public void createBasicColorClass(String id, boolean ordered, Pair<String, String[]>... staticSubClasses) throws IdentifierAlreadyExistentException {
 //        List<Pair<String, String[]>> asdf =  new ArrayList<Pair<String, String[]>>(Arrays.staticSubClasses);
         createBasicColorClassByStaticSubClass(id, ordered, Arrays.asList(staticSubClasses));
     }
@@ -552,7 +552,7 @@ public class HLPetriGame extends Extensible implements IPetriGame {
     }
 
     @Override
-    public void initializeWinningCondition(Condition winCon) {
+    public void initializeWinningCondition(Condition<?> winCon) {
         winCon.buffer(game);
     }
 

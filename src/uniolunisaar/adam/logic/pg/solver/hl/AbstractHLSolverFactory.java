@@ -25,7 +25,7 @@ import uniolunisaar.adam.exceptions.pg.NotSupportedGameException;
  * @param <S>
  * @param <F>
  */
-public abstract class AbstractHLSolverFactory<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC>, F extends SGGFlow<T, S>>
+public abstract class AbstractHLSolverFactory<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends SGGFlow<T, S>>
         extends SolverFactory<HLPetriGame, HLSolverOptions, HLSolver<? extends Condition<?>, P, T, DC, S, F>> {
 
     @Override
@@ -44,27 +44,27 @@ public abstract class AbstractHLSolverFactory<P, T, DC extends IDecision<P, T>, 
     }
 
     @Override
-    protected HLSolver<? extends Condition, P, T, DC, S, F> getESafetySolver(SolvingObject<HLPetriGame, Safety> solverObject, HLSolverOptions options) throws SolvingException {
+    protected HLSolver<Safety, P, T, DC, S, F> getESafetySolver(SolvingObject<HLPetriGame, Safety> solverObject, HLSolverOptions options) throws SolvingException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    protected HLSolver<? extends Condition, P, T, DC, S, F> getEReachabilitySolver(SolvingObject<HLPetriGame, Reachability> solverObject, HLSolverOptions options) throws SolvingException {
+    protected HLSolver<Reachability, P, T, DC, S, F> getEReachabilitySolver(SolvingObject<HLPetriGame, Reachability> solverObject, HLSolverOptions options) throws SolvingException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    protected HLSolver<? extends Condition, P, T, DC, S, F> getAReachabilitySolver(SolvingObject<HLPetriGame, Reachability> solverObject, HLSolverOptions options) throws SolvingException {
+    protected HLSolver<Reachability, P, T, DC, S, F> getAReachabilitySolver(SolvingObject<HLPetriGame, Reachability> solverObject, HLSolverOptions options) throws SolvingException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    protected HLSolver<? extends Condition, P, T, DC, S, F> getEBuchiSolver(SolvingObject<HLPetriGame, Buchi> solverObject, HLSolverOptions options) throws SolvingException {
+    protected HLSolver<Buchi, P, T, DC, S, F> getEBuchiSolver(SolvingObject<HLPetriGame, Buchi> solverObject, HLSolverOptions options) throws SolvingException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    protected HLSolver<? extends Condition, P, T, DC, S, F> getABuchiSolver(SolvingObject<HLPetriGame, Buchi> solverObject, HLSolverOptions options) throws SolvingException {
+    protected HLSolver<Buchi, P, T, DC, S, F> getABuchiSolver(SolvingObject<HLPetriGame, Buchi> solverObject, HLSolverOptions options) throws SolvingException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -19,7 +19,7 @@ import java.util.Set;
  * @param <T>
  * @param <F>
  */
-public class SGG<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC>, F extends SGGFlow<T, S>> extends AbstractSymbolicGameGraph<P, T, DC, S, S, F> {
+public class SGG<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends SGGFlow<T, S>> extends AbstractSymbolicGameGraph<P, T, DC, S, S, F> {
 
     private final Set<S> states;
     private final Set<S> badStates;

@@ -9,6 +9,8 @@ import java.util.HashSet;
  */
 public class ColorTokens extends HashSet<ColorToken> {
 
+    private static final long serialVersionUID = 1L;
+
     public ColorTokens() {
     }
 

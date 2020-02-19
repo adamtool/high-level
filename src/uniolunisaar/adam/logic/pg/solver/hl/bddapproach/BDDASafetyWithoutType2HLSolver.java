@@ -51,6 +51,7 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
      * @throws NoSuitableDistributionFoundException - Thrown if the given net is
      * not annotated to which token each place belongs and the algorithm was not
      * able to detect it on its own.
+     * @throws uniolunisaar.adam.exceptions.pg.InvalidPartitionException
      */
     public BDDASafetyWithoutType2HLSolver(BDDSolvingObject<Safety> obj, Symmetries syms, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
         super(obj, opts);

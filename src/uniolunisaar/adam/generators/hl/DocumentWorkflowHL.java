@@ -136,6 +136,7 @@ public class DocumentWorkflowHL {
      * Festschrift.
      *
      * @param size
+     * @param withPartition
      * @return
      */
     public static HLPetriGame generateDWs(int size, boolean withPartition) {

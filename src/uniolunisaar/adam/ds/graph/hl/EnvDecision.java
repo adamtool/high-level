@@ -64,7 +64,7 @@ public abstract class EnvDecision<P, T> implements IDecision<P, T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final EnvDecision other = (EnvDecision) obj;
+        final EnvDecision<?, ?> other = (EnvDecision<?, ?>) obj;
         if (!Objects.equals(this.place, other.place)) {
             return false;
         }

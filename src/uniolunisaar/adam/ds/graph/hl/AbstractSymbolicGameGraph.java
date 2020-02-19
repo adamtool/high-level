@@ -15,7 +15,7 @@ import java.util.Set;
  * @param <ID>
  * @param <F>
  */
-public abstract class AbstractSymbolicGameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC>, ID extends StateIdentifier, F extends SGGFlow<T, ID>> {
+public abstract class AbstractSymbolicGameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, ID extends StateIdentifier, F extends SGGFlow<T, ID>> {
 
     private final String name;
     private final Set<F> flows;

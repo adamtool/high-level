@@ -20,7 +20,7 @@ import uniolunisaar.adam.ds.graph.hl.IDecisionSet;
  *
  * @author Manuel Gieseking
  */
-public class LLDecisionSet extends Extensible implements IDecisionSet<Place, Transition, ILLDecision> {
+public class LLDecisionSet extends Extensible implements IDecisionSet<Place, Transition, ILLDecision, LLDecisionSet> {
 
     private final Set<ILLDecision> decisions;
     private final boolean mcut;
@@ -196,7 +196,7 @@ public class LLDecisionSet extends Extensible implements IDecisionSet<Place, Tra
             // Reduction technique of the MA of Valentin Spreckels:
             // When there is a transition with only one place in the preset
             // this transition is only allowed to appear solely in the commitment sets
-            Collection<Transition> single = new ArrayList(set);
+            Collection<Transition> single = new ArrayList<>(set);
             single.retainAll((Collection<Transition>) game.getExtension("singlePresetTransitions"));
             if (single.isEmpty() || set.size() == 1) {
                 converted.add(set);

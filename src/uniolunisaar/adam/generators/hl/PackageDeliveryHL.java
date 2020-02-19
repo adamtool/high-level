@@ -123,7 +123,7 @@ public class PackageDeliveryHL {
         net.createFlow(t, fly, tuple);   
 
         Place goal = net.createSysPlace("goal", pc);
-        t = net.createTransition("t2", new BasicPredicate(new Variable("dX"), BasicPredicate.Operator.NEQ, dVar));
+        t = net.createTransition("t2", new BasicPredicate<>(new Variable("dX"), BasicPredicate.Operator.NEQ, dVar));
         net.createFlow(fly, t, tuple);
 //        net.createFlow(ok, t, dArc);
 //        net.createFlow(t, ok, dArc); // Variante A
@@ -253,7 +253,7 @@ public class PackageDeliveryHL {
 
         Place fin = net.createSysPlace("fin", dc);
         Place goal = net.createSysPlace("goal", pc);
-        t = net.createTransition("t2", new BasicPredicate(new Variable("dX"), BasicPredicate.Operator.NEQ, dVar));
+        t = net.createTransition("t2", new BasicPredicate<>(new Variable("dX"), BasicPredicate.Operator.NEQ, dVar));
         net.createFlow(fly, t, tuple);
 //        net.createFlow(ok, t, dArc);
 //        net.createFlow(t, ok, dArc); // Variante A

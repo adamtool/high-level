@@ -26,8 +26,11 @@ public class ContainerHabourHL {
 
     /**
      *
-     * @param size
+     * @param nb_container
+     * @param nb_ct_places
      * @param withPartition
+     * @param nb_costs
+     * @param nb_robots
      * @return
      */
     public static HLPetriGame generateD(int nb_container, int nb_ct_places, int nb_robots, int nb_costs, boolean withPartition) {
@@ -66,7 +69,6 @@ public class ContainerHabourHL {
 //            for (int i = 0; i < nb_costs; i++) {
 //                partitions.put("costs_m" + i, actToken + nb_robots + i);
 //            }
-
             net.putExtension("partitions", partitions);
         }
         // create the color classes
@@ -144,7 +146,7 @@ public class ContainerHabourHL {
         net.setBad(bad);
         t = net.createTransition();
         net.createFlow(contP, t, new ArcExpression(new ArcTuple(new Variable("c"), new Variable("p"))));
-        net.createFlow(t, bad, new ArcExpression(new Variable("c")));        
+        net.createFlow(t, bad, new ArcExpression(new Variable("c")));
         t = net.createTransition();
         net.createFlow(sC, t, new ArcExpression(new Variable("c")));
         net.createFlow(t, bad, new ArcExpression(new Variable("c")));
@@ -165,7 +167,7 @@ public class ContainerHabourHL {
             init.add(new ColorToken(new Color("r" + i), new Color("high")));
         }
         net.setColorTokens(rob, init);
-        t = net.createTransition(new BasicPredicate(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
+        t = net.createTransition(new BasicPredicate<>(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
         net.createFlow(sC, t, new ArcExpression(new Variable("c")));
         net.createFlow(t, sC, new ArcExpression(new Variable("c")));
         ArcTuple tup = new ArcTuple();
@@ -176,7 +178,7 @@ public class ContainerHabourHL {
 //        net.createFlow(t, contP, new ArcExpression(new ArcTuple(new Variable("c"), new Variable("p"))));
         net.createFlow(t, scanned, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b")))); // VERSION D
 
-        t = net.createTransition(new BasicPredicate(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
+        t = net.createTransition(new BasicPredicate<>(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
         net.createFlow(rob, t, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));
 //        net.createFlow(ccost, t, new ArcExpression(new Variable("z")));
         net.createFlow(t, rob, new ArcExpression(tup));
@@ -196,12 +198,16 @@ public class ContainerHabourHL {
 
     /**
      * Not functioning version where there is a dump place which should solve
-     * the non-determinism. Currently not sure why this is not working.
-     * Additionally the part added by B where the tagging is restricted to one
-     * should also be deletable.
+     * the non-determinism.Currently not sure why this is not
+     * working.Additionally the part added by B where the tagging is restricted
+     * to one should also be deletable.
      *
-     * @param size
+     * @param nb_container
+     * @param nb_ct_places
+     * @param nb_robots
      * @param withPartition
+     * @param nb_dumps
+     * @param nb_costs
      * @return
      */
     public static HLPetriGame generateC(int nb_container, int nb_ct_places, int nb_robots, int nb_costs, int nb_dumps, boolean withPartition) {
@@ -356,7 +362,7 @@ public class ContainerHabourHL {
             init.add(new ColorToken(new Color("r" + i), new Color("high")));
         }
         net.setColorTokens(rob, init);
-        t = net.createTransition(new BasicPredicate(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
+        t = net.createTransition(new BasicPredicate<>(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
 //        net.createFlow(sC, t, new ArcExpression(new Variable("c"))); // VERSION A
         net.createFlow(sC, t, new ArcExpression(new ArcTuple(new Variable("c"), new Variable("d"))));// VERSION C
         ArcTuple tup = new ArcTuple();
@@ -367,12 +373,12 @@ public class ContainerHabourHL {
         net.createFlow(t, contP, new ArcExpression(new ArcTuple(new Variable("c"), new Variable("p"))));
         net.createFlow(t, dump, new ArcExpression(new Variable("d")));// Version C
 
-        t = net.createTransition(new BasicPredicate(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
+        t = net.createTransition(new BasicPredicate<>(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
         net.createFlow(rob, t, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));
         net.createFlow(ccost, t, new ArcExpression(new Variable("z")));
         net.createFlow(t, rob, new ArcExpression(tup));
 
-        t = net.createTransition(new BasicPredicate(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.EQ, new ColorClassTerm("B3")));
+        t = net.createTransition(new BasicPredicate<>(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.EQ, new ColorClassTerm("B3")));
         net.createFlow(rob, t, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));
         net.createFlow(ccost, t, new ArcExpression(new Variable("z")));
         net.createFlow(t, rob, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));
@@ -382,11 +388,14 @@ public class ContainerHabourHL {
 
     /**
      * Functioning version (tested for 2 2 1 1 and 2 2 2 1) but the container
-     * cannot leave the ship without getting tagged. And every container is
-     * processed sequentially.
+     * cannot leave the ship without getting tAnd every container is processed
+     * sequentially.aially.m size
      *
-     * @param size
+     * @param nb_container
+     * @param nb_ct_places
      * @param withPartition
+     * @param nb_costs
+     * @param nb_robots
      * @return
      */
     public static HLPetriGame generateB(int nb_container, int nb_ct_places, int nb_robots, int nb_costs, boolean withPartition) {
@@ -526,7 +535,7 @@ public class ContainerHabourHL {
             init.add(new ColorToken(new Color("r" + i), new Color("high")));
         }
         net.setColorTokens(rob, init);
-        t = net.createTransition(new BasicPredicate(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
+        t = net.createTransition(new BasicPredicate<>(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
 //        net.createFlow(sC, t, new ArcExpression(new Variable("c"))); // VERSION A
         net.createFlow(sC, t, new ArcExpression(new ArcTuple(new Variable("c"), new Variable("p"))));// VERSION B
         ArcTuple tup = new ArcTuple();
@@ -536,12 +545,12 @@ public class ContainerHabourHL {
         net.createFlow(t, rob, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));
         net.createFlow(t, contP, new ArcExpression(new ArcTuple(new Variable("c"), new Variable("p"))));
 
-        t = net.createTransition(new BasicPredicate(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
+        t = net.createTransition(new BasicPredicate<>(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
         net.createFlow(rob, t, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));
         net.createFlow(ccost, t, new ArcExpression(new Variable("z")));
         net.createFlow(t, rob, new ArcExpression(tup));
 
-        t = net.createTransition(new BasicPredicate(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.EQ, new ColorClassTerm("B3")));
+        t = net.createTransition(new BasicPredicate<>(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.EQ, new ColorClassTerm("B3")));
         net.createFlow(rob, t, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));
         net.createFlow(ccost, t, new ArcExpression(new Variable("z")));
         net.createFlow(t, rob, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));
@@ -551,10 +560,13 @@ public class ContainerHabourHL {
 
     /**
      * First idea which has a problem with the new non determinism and most
-     * likely also for more than one robot with real nondet.
+     * likely also for more than one robot with real nondet.m size
      *
-     * @param size
+     * @param nb_container
      * @param withPartition
+     * @param nb_ct_places
+     * @param nb_costs
+     * @param nb_robots
      * @return
      */
     public static HLPetriGame generateA(int nb_container, int nb_ct_places, int nb_robots, int nb_costs, boolean withPartition) {
@@ -683,7 +695,7 @@ public class ContainerHabourHL {
             init.add(new ColorToken(new Color("r" + i), new Color("high")));
         }
         net.setColorTokens(rob, init);
-        t = net.createTransition(new BasicPredicate(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
+        t = net.createTransition(new BasicPredicate<>(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
         net.createFlow(sC, t, new ArcExpression(new Variable("c")));
         ArcTuple tup = new ArcTuple();
         tup.add(new Variable("r"));
@@ -692,12 +704,12 @@ public class ContainerHabourHL {
         net.createFlow(t, rob, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));
         net.createFlow(t, contP, new ArcExpression(new ArcTuple(new Variable("c"), new Variable("p"))));
 
-        t = net.createTransition(new BasicPredicate(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
+        t = net.createTransition(new BasicPredicate<>(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.NEQ, new ColorClassTerm("B3")));
         net.createFlow(rob, t, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));
         net.createFlow(ccost, t, new ArcExpression(new Variable("z")));
         net.createFlow(t, rob, new ArcExpression(tup));
 
-        t = net.createTransition(new BasicPredicate(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.EQ, new ColorClassTerm("B3")));
+        t = net.createTransition(new BasicPredicate<>(new DomainTerm(new Variable("b"), net), BasicPredicate.Operator.EQ, new ColorClassTerm("B3")));
         net.createFlow(rob, t, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));
         net.createFlow(ccost, t, new ArcExpression(new Variable("z")));
         net.createFlow(t, rob, new ArcExpression(new ArcTuple(new Variable("r"), new Variable("b"))));

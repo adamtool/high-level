@@ -125,7 +125,7 @@ public class AlarmSystemHL {
         for (int i = 0; i < nb_alarmSystems - 1; i++) {
             Variable xi = new Variable("x" + i);
             expr.add(xi);
-            uneq.add(new BasicPredicate(x, BasicPredicate.Operator.NEQ, xi));
+            uneq.add(new BasicPredicate<>(x, BasicPredicate.Operator.NEQ, xi));
         }
         IPredicate p1 = Predicate.createPredicate(uneq, Predicate.Operator.AND);
         // this next predicate would not be needed if the check online valuations which correspond to safe nets                
@@ -134,7 +134,7 @@ public class AlarmSystemHL {
             Variable xi = new Variable("x" + i);
             for (int j = i + 1; j < nb_alarmSystems - 1; j++) {
                 Variable xj = new Variable("x" + j);
-                different.add(new BasicPredicate(xi, BasicPredicate.Operator.NEQ, xj));
+                different.add(new BasicPredicate<>(xi, BasicPredicate.Operator.NEQ, xj));
             }
         }
         IPredicate p2 = Predicate.createPredicate(different, Predicate.Operator.AND);

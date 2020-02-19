@@ -23,7 +23,7 @@ import uniolunisaar.adam.ds.graph.hl.IDecisionSet;
  *
  * @author Manuel Gieseking
  */
-public class HLDecisionSet extends Extensible implements IDecisionSet<ColoredPlace, ColoredTransition, IHLDecision> {
+public class HLDecisionSet extends Extensible implements IDecisionSet<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet> {
 
     private final Set<IHLDecision> decisions;
     private final boolean mcut;
@@ -215,7 +215,7 @@ public class HLDecisionSet extends Extensible implements IDecisionSet<ColoredPla
             // Reduction technique of the MA of Valentin Spreckels:
             // When there is a transition with only one place in the preset
             // this transition is only allowed to appear solely in the commitment sets
-            Collection<Transition> single = new ArrayList(set);
+            Collection<ColoredTransition> single = new ArrayList<>(set);
             single.retainAll(hlgame.getSinglePresetTransitions());
             if (single.isEmpty() || set.size() == 1) {
                 converted.add(set);

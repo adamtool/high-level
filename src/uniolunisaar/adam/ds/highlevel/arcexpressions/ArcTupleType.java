@@ -9,4 +9,6 @@ import uniol.apt.util.Pair;
  */
 public class ArcTupleType extends ArrayList<Pair<IArcTupleElement.Sort, IArcTupleElementType>> implements IArcTupleType {
 
+    private static final long serialVersionUID = 1L;
+
 }

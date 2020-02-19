@@ -58,7 +58,7 @@ public class SGGFlow<T, S extends StateIdentifier> extends Extensible {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final SGGFlow other = (SGGFlow) obj;
+        final SGGFlow<?, ?> other = (SGGFlow<?, ?>) obj;
         if (this.source != other.source) {
             return false;
         }

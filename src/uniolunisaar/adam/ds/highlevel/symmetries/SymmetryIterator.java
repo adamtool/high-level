@@ -26,7 +26,7 @@ public class SymmetryIterator implements Iterator<Symmetry> {
         this.id = id;
 
         // Initialize iterators
-        iterators = new Iterator[unordered.size() + ordered.size()];
+        iterators = new Iterator[unordered.size() + ordered.size()]; // todo: get rid of the generic array creation?
         int i = 0;
         for (List<Color> colors : unordered) {
             iterators[i++] = new PermutationIterator<>(colors);
@@ -58,7 +58,7 @@ public class SymmetryIterator implements Iterator<Symmetry> {
 
     @Override
     public boolean hasNext() {
-        for (Iterator iterator : iterators) {
+        for (Iterator<List<Color>> iterator : iterators) {
             if (iterator.hasNext()) {
                 return true;
             }
@@ -82,7 +82,7 @@ public class SymmetryIterator implements Iterator<Symmetry> {
         }
         // from this index set all other iterators to the first value
         for (int i = pos + 1; i < iterators.length; i++) {
-            iterators[i] = (i < unordered.size()) ? new PermutationIterator(unordered.get(i)) : new RotationIterator(ordered.get(i - unordered.size()));
+            iterators[i] = (i < unordered.size()) ? new PermutationIterator<>(unordered.get(i)) : new RotationIterator(ordered.get(i - unordered.size()));
         }
 
         // populate the symmetry with the new values for this iterator and all future ones

@@ -6,8 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Think that this method had the problems with the identifying of different nodes
- * with the same hash value. But I'm not sure!
+ * Think that this method had the problems with the identifying of different
+ * nodes with the same hash value. But I'm not sure!
+ *
  * @author Manuel Gieseking
  * @param <P>
  * @param <S>
@@ -16,7 +17,7 @@ import java.util.Map;
  * @param <F>
  */
 @Deprecated
-public class SGGByHashCode<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC>, F extends SGGFlow<T, IntegerID>> extends AbstractSymbolicGameGraph<P, T, DC, S, IntegerID, F> {
+public class SGGByHashCode<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends SGGFlow<T, IntegerID>> extends AbstractSymbolicGameGraph<P, T, DC, S, IntegerID, F> {
 
     private final Map<Integer, S> states;
 
