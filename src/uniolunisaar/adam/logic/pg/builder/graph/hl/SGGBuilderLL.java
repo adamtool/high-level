@@ -1,4 +1,4 @@
-package uniolunisaar.adam.logic.graphbuilder.hl;
+package uniolunisaar.adam.logic.pg.builder.graph.hl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,7 +18,7 @@ import uniolunisaar.adam.ds.graph.hl.approachLL.LLEnvDecision;
 import uniolunisaar.adam.ds.graph.hl.approachLL.LLSysDecision;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
-import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
+import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 
 /**
  *

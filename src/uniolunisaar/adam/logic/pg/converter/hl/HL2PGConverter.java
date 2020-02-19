@@ -1,4 +1,4 @@
-package uniolunisaar.adam.logic.converter.hl;
+package uniolunisaar.adam.logic.pg.converter.hl;
 
 import java.util.ArrayList;
 import java.util.Arrays;

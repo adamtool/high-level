@@ -28,19 +28,21 @@ import uniolunisaar.adam.ds.highlevel.predicate.Constants;
 import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
 import uniolunisaar.adam.ds.highlevel.terms.SuccessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
+import uniolunisaar.adam.ds.petrigame.IPetriGame;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
+import uniolunisaar.adam.ds.petrinet.objectives.Condition;
 import uniolunisaar.adam.exceptions.highlevel.IdentifierAlreadyExistentException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuccessorForUnorderedColorClassException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuchColorDomainException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuchColorException;
-import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
+import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class HLPetriGame extends Extensible {
+public class HLPetriGame extends Extensible implements IPetriGame {
 
     private final Map<String, BasicColorClass> colorClasses;
     private final PetriGame game;
@@ -547,6 +549,11 @@ public class HLPetriGame extends Extensible {
 
     protected PetriGame getGame() {
         return game;
+    }
+
+    @Override
+    public void initializeWinningCondition(Condition winCon) {
+        winCon.buffer(game);
     }
 
 }

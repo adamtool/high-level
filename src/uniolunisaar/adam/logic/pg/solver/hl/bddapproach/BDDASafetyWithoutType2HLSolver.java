@@ -1,4 +1,4 @@
-package uniolunisaar.adam.logic.solver;
+package uniolunisaar.adam.logic.pg.solver.hl.bddapproach;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,15 +16,15 @@ import uniolunisaar.adam.exceptions.pnwt.NetNotSafeException;
 import uniolunisaar.adam.exceptions.pg.NoSuitableDistributionFoundException;
 import uniolunisaar.adam.ds.petrinet.objectives.Safety;
 import uniolunisaar.adam.exceptions.pg.NotSupportedGameException;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.pg.InvalidPartitionException;
-import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
+import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
 import uniolunisaar.adam.exceptions.pg.NoStrategyExistentException;
-import uniolunisaar.adam.logic.graphbuilder.hl.BDDSGGBuilder;
+import uniolunisaar.adam.logic.pg.builder.graph.hl.BDDSGGBuilder;
 import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolver;
 import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolverOptions;
+import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolvingObject;
 import uniolunisaar.adam.util.benchmarks.Benchmarks;
 import uniolunisaar.adam.tools.Logger;
 
@@ -42,11 +42,8 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
     /**
      * Creates a new Safety solver for a given game.
      *
-     * @param game - the Petri game to solve.
+     * @param obj
      * @param syms
-     * @param skipTests - should the tests for safe and bounded and other
-     * preconditions be skipped?
-     * @param win
      * @param opts - the options for the solver.
      * @throws NotSupportedGameException - Thrown if the given net is not
      * bounded.
@@ -55,8 +52,8 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
      * not annotated to which token each place belongs and the algorithm was not
      * able to detect it on its own.
      */
-    public BDDASafetyWithoutType2HLSolver(PetriGame game, Symmetries syms, boolean skipTests, Safety win, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
-        super(game, skipTests, win, opts);
+    public BDDASafetyWithoutType2HLSolver(BDDSolvingObject<Safety> obj, Symmetries syms, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
+        super(obj, opts);
         this.syms = syms;
     }
 

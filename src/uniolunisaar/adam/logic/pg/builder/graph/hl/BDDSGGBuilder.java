@@ -1,4 +1,4 @@
-package uniolunisaar.adam.logic.graphbuilder.hl;
+package uniolunisaar.adam.logic.pg.builder.graph.hl;
 
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDState;
@@ -7,7 +7,7 @@ import net.sf.javabdd.BDD;
 import uniolunisaar.adam.exceptions.pg.NoStrategyExistentException;
 import uniolunisaar.adam.ds.graph.Flow;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
-import uniolunisaar.adam.logic.solver.BDDASafetyWithoutType2HLSolver;
+import uniolunisaar.adam.logic.pg.solver.hl.bddapproach.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.util.symbolic.bddapproach.BDDTools;
 import uniolunisaar.adam.tools.Logger;
 

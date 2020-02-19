@@ -37,13 +37,14 @@ import uniolunisaar.adam.generators.hl.ConcurrentMachinesHL;
 import uniolunisaar.adam.generators.hl.DocumentWorkflowHL;
 import uniolunisaar.adam.generators.pg.Clerks;
 import uniolunisaar.adam.generators.pg.Workflow;
-import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
-import uniolunisaar.adam.logic.graphbuilder.hl.SGGBuilderLL;
-import uniolunisaar.adam.logic.solver.BDDASafetyWithoutType2HLSolver;
+import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
+import uniolunisaar.adam.logic.pg.builder.graph.hl.SGGBuilderLL;
+import uniolunisaar.adam.logic.pg.solver.hl.bddapproach.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
 import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolver;
 import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolverFactory;
 import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolverOptions;
+import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolvingObject;
 import uniolunisaar.adam.util.symbolic.bddapproach.BDDTools;
 import uniolunisaar.adam.util.HLTools;
 import uniolunisaar.adam.util.PGTools;
@@ -75,7 +76,7 @@ public class TestSGGBDD {
 
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
 
-        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(game, syms, false, new Safety(), new BDDSolverOptions());
+        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(new BDDSolvingObject<>(game, new Safety()), syms, new BDDSolverOptions(false));
         sol.initialize();
 
         double size = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
@@ -94,9 +95,9 @@ public class TestSGGBDD {
         PetriGame game = Workflow.generateBJVersion(2, 1, true, false);
 //        PGTools.savePG2PDF(outputDir + "CM21_ll", game, false);
         // Test  the old graph game
-        BDDSolverOptions opt = new BDDSolverOptions();
+        BDDSolverOptions opt = new BDDSolverOptions(true);
         opt.setNoType2(true);
-        BDDSolver<? extends Condition> sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), true, opt);
+        BDDSolver<? extends Condition> sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), opt);
         BDDGraph bddgraph = sol.getGraphGame();
         System.out.println("SIZE BDD: " + bddgraph.getStates().size());
         BDDTools.saveGraph2PDF(outputDir + "CM21_bdd_gg", bddgraph, sol);
@@ -114,9 +115,9 @@ public class TestSGGBDD {
 //        PGTools.savePG2PDF(outputDir + "CM22_ll", game, false);
 //        PetriGame gameConv = HL2PGConverter.convert(hlgame);
 //        PGTools.savePG2PDF(outputDir + "CM22_ll_conv", gameConv, false);
-        opt = new BDDSolverOptions();
+        opt = new BDDSolverOptions(true);
         opt.setNoType2(true);
-        sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), true, opt);
+        sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), opt);
         bddgraph = sol.getGraphGame();
 
         graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
@@ -134,9 +135,9 @@ public class TestSGGBDD {
 //        PGTools.savePG2PDF(outputDir + "DW" + size + "_ll_conv", gameConv, false);
 
         // Test  the old graph game
-        opt = new BDDSolverOptions();
+        opt = new BDDSolverOptions(true);
         opt.setNoType2(true);
-        sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), true, opt);
+        sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), opt);
         bddgraph = sol.getGraphGame();
 //        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
 //        BDDTools.saveGraph2PDF(outputDir + "DW" + size + "_bdd_gg", bddgraph, sol);
@@ -196,9 +197,9 @@ public class TestSGGBDD {
             System.out.println(next.toString());
         }
 
-        BDDSolverOptions opt = new BDDSolverOptions();
+        BDDSolverOptions opt = new BDDSolverOptions(false);
 //        opt.setLibraryName("buddy");
-        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(game, syms, false, new Safety(), opt);
+        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(new BDDSolvingObject<>(game, new Safety()), syms, opt);
         sol.initialize();
 
         double sizeBDD = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
@@ -247,7 +248,7 @@ public class TestSGGBDD {
 
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
 
-        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(game, syms, false, new Safety(), new BDDSolverOptions());
+        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(new BDDSolvingObject<>(game, new Safety()), syms, new BDDSolverOptions(false));
         sol.initialize();
 
         double sizeBDD = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
@@ -275,7 +276,7 @@ public class TestSGGBDD {
 
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
 
-        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(game, syms, false, new Safety(), new BDDSolverOptions());
+        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(new BDDSolvingObject<>(game, new Safety()), syms, new BDDSolverOptions(false));
         sol.initialize();
 
         double sizeBDD = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;

@@ -8,7 +8,7 @@ import uniolunisaar.adam.ds.graph.hl.EnvDecision;
 import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
-import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
+import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 
 /**
  *

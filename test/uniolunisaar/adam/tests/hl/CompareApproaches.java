@@ -38,12 +38,13 @@ import uniolunisaar.adam.generators.hl.AlarmSystemHL;
 import uniolunisaar.adam.generators.hl.ConcurrentMachinesHL;
 import uniolunisaar.adam.generators.hl.DocumentWorkflowHL;
 import uniolunisaar.adam.generators.hl.PackageDeliveryHL;
-import uniolunisaar.adam.logic.converter.hl.HL2PGConverter;
-import uniolunisaar.adam.logic.graphbuilder.hl.SGGBuilderHL;
-import uniolunisaar.adam.logic.graphbuilder.hl.SGGBuilderLL;
-import uniolunisaar.adam.logic.solver.BDDASafetyWithoutType2HLSolver;
+import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
+import uniolunisaar.adam.logic.pg.builder.graph.hl.SGGBuilderHL;
+import uniolunisaar.adam.logic.pg.builder.graph.hl.SGGBuilderLL;
+import uniolunisaar.adam.logic.pg.solver.hl.bddapproach.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
 import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolverOptions;
+import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolvingObject;
 import uniolunisaar.adam.util.symbolic.bddapproach.BDDTools;
 import uniolunisaar.adam.util.HLTools;
 
@@ -160,7 +161,7 @@ public class CompareApproaches {
 
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
         PetriGame llgame = HL2PGConverter.convert(hlgame, true, true);
-        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(llgame, syms, false, new Safety(), new BDDSolverOptions());
+        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(new BDDSolvingObject<>(llgame, new Safety()), syms, new BDDSolverOptions(false));
         sol.initialize();
 //
         double size = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
@@ -614,8 +615,8 @@ public class CompareApproaches {
         PetriGame bddgame = HL2PGConverter.convert(hlgame, true, true);
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
 
-        BDDSolverOptions opt = new BDDSolverOptions();
-        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(bddgame, syms, true, new Safety(), opt);
+        BDDSolverOptions opt = new BDDSolverOptions(true);
+        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(new BDDSolvingObject<>(bddgame, new Safety()), syms, opt);
         sol.initialize();
 
         BDD states = sol.getBufferedDCSs();
