@@ -24,7 +24,7 @@ import uniolunisaar.adam.tools.Logger;
  * @param <S>
  * @param <F>
  */
-public abstract class HLSolver<W extends Condition<W>, P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends SGGFlow<T, S>> extends Solver<HLPetriGame, HLSolvingObject<W>, HLSolverOptions> {
+public abstract class HLSolver<W extends Condition<W>, P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends SGGFlow<T, S>> extends Solver<HLPetriGame, W, HLSolvingObject<W>, HLSolverOptions> {
 
     private SGG<P, T, DC, S, F> graph = null;
 

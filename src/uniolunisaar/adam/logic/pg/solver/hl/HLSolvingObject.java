@@ -9,7 +9,7 @@ import uniolunisaar.adam.ds.solver.SolvingObject;
  * @author Manuel Gieseking
  * @param <W>
  */
-public class HLSolvingObject<W extends Condition<W>> extends SolvingObject<HLPetriGame, W> {
+public class HLSolvingObject<W extends Condition<W>> extends SolvingObject<HLPetriGame, W, HLSolvingObject<W>> {
 
     public HLSolvingObject(HLPetriGame hlgame, W winCon) {
         super(hlgame, winCon);

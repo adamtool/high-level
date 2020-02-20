@@ -7,11 +7,9 @@ import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.petrinet.objectives.Safety;
-import uniolunisaar.adam.ds.solver.SolvingObject;
 import uniolunisaar.adam.exceptions.pg.SolvingException;
 import uniolunisaar.adam.logic.pg.solver.hl.AbstractHLSolverFactory;
 import uniolunisaar.adam.logic.pg.solver.hl.HLSolverOptions;
-import uniolunisaar.adam.logic.pg.solver.hl.HLSolvingObject;
 
 /**
  *
@@ -33,8 +31,8 @@ public class HLSolverFactoryHLApproach extends AbstractHLSolverFactory<ColoredPl
     }
 
     @Override
-    protected HLASafetyWithoutType2SolverHLApproach getASafetySolver(SolvingObject<HLPetriGame, Safety> obj, HLSolverOptions opts) throws SolvingException {
-        return new HLASafetyWithoutType2SolverHLApproach((HLSolvingObject<Safety>) obj, opts);
+    protected HLASafetyWithoutType2SolverHLApproach getASafetySolver(HLPetriGame game, Safety con, HLSolverOptions opts) throws SolvingException {
+        return new HLASafetyWithoutType2SolverHLApproach(createSolvingObject(game, con), opts);
     }
 
 }

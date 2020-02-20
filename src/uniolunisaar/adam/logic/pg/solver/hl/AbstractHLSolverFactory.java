@@ -13,7 +13,6 @@ import uniolunisaar.adam.ds.petrinet.objectives.Buchi;
 import uniolunisaar.adam.ds.petrinet.objectives.Reachability;
 import uniolunisaar.adam.ds.petrinet.objectives.Safety;
 import uniolunisaar.adam.ds.petrinet.objectives.Condition;
-import uniolunisaar.adam.ds.solver.SolvingObject;
 import uniolunisaar.adam.exceptions.pg.NotSupportedGameException;
 
 /**
@@ -39,32 +38,32 @@ public abstract class AbstractHLSolverFactory<P, T, DC extends IDecision<P, T>, 
     }
 
     @Override
-    protected <W extends Condition<W>> SolvingObject<HLPetriGame, W> createSolvingObject(HLPetriGame game, W winCon) throws NotSupportedGameException {
+    protected <W extends Condition<W>> HLSolvingObject<W> createSolvingObject(HLPetriGame game, W winCon) throws NotSupportedGameException {
         return new HLSolvingObject<>(game, winCon);
     }
 
     @Override
-    protected HLSolver<Safety, P, T, DC, S, F> getESafetySolver(SolvingObject<HLPetriGame, Safety> solverObject, HLSolverOptions options) throws SolvingException {
+    protected HLSolver<Safety, P, T, DC, S, F> getESafetySolver(HLPetriGame game, Safety con, HLSolverOptions options) throws SolvingException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    protected HLSolver<Reachability, P, T, DC, S, F> getEReachabilitySolver(SolvingObject<HLPetriGame, Reachability> solverObject, HLSolverOptions options) throws SolvingException {
+    protected HLSolver<Reachability, P, T, DC, S, F> getEReachabilitySolver(HLPetriGame game, Reachability con, HLSolverOptions options) throws SolvingException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    protected HLSolver<Reachability, P, T, DC, S, F> getAReachabilitySolver(SolvingObject<HLPetriGame, Reachability> solverObject, HLSolverOptions options) throws SolvingException {
+    protected HLSolver<Reachability, P, T, DC, S, F> getAReachabilitySolver(HLPetriGame game, Reachability con, HLSolverOptions options) throws SolvingException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    protected HLSolver<Buchi, P, T, DC, S, F> getEBuchiSolver(SolvingObject<HLPetriGame, Buchi> solverObject, HLSolverOptions options) throws SolvingException {
+    protected HLSolver<Buchi, P, T, DC, S, F> getEBuchiSolver(HLPetriGame game, Buchi con, HLSolverOptions options) throws SolvingException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    protected HLSolver<Buchi, P, T, DC, S, F> getABuchiSolver(SolvingObject<HLPetriGame, Buchi> solverObject, HLSolverOptions options) throws SolvingException {
+    protected HLSolver<Buchi, P, T, DC, S, F> getABuchiSolver(HLPetriGame game, Buchi con, HLSolverOptions options) throws SolvingException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

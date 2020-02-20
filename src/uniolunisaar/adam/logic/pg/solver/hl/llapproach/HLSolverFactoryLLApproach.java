@@ -7,11 +7,9 @@ import uniolunisaar.adam.ds.graph.hl.approachLL.ILLDecision;
 import uniolunisaar.adam.ds.graph.hl.approachLL.LLDecisionSet;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.petrinet.objectives.Safety;
-import uniolunisaar.adam.ds.solver.SolvingObject;
 import uniolunisaar.adam.exceptions.pg.SolvingException;
 import uniolunisaar.adam.logic.pg.solver.hl.AbstractHLSolverFactory;
 import uniolunisaar.adam.logic.pg.solver.hl.HLSolverOptions;
-import uniolunisaar.adam.logic.pg.solver.hl.HLSolvingObject;
 
 /**
  *
@@ -33,8 +31,8 @@ public class HLSolverFactoryLLApproach extends AbstractHLSolverFactory<Place, Tr
     }
 
     @Override
-    protected HLASafetyWithoutType2SolverLLApproach getASafetySolver(SolvingObject<HLPetriGame, Safety> obj, HLSolverOptions opts) throws SolvingException {
-        return new HLASafetyWithoutType2SolverLLApproach((HLSolvingObject<Safety>) obj, opts);
+    protected HLASafetyWithoutType2SolverLLApproach getASafetySolver(HLPetriGame game, Safety con, HLSolverOptions opts) throws SolvingException {
+        return new HLASafetyWithoutType2SolverLLApproach(createSolvingObject(game, con), opts);
     }
 
 }
