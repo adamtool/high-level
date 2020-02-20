@@ -1,8 +1,8 @@
 package uniolunisaar.adam.logic.pg.solver.hl.hlapproach;
 
-import uniolunisaar.adam.ds.graph.hl.SGGFlow;
-import uniolunisaar.adam.ds.graph.hl.approachHL.HLDecisionSet;
-import uniolunisaar.adam.ds.graph.hl.approachHL.IHLDecision;
+import uniolunisaar.adam.ds.graph.GameGraphFlow;
+import uniolunisaar.adam.ds.graph.hl.hlapproach.HLDecisionSet;
+import uniolunisaar.adam.ds.graph.hl.hlapproach.IHLDecision;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
@@ -15,7 +15,7 @@ import uniolunisaar.adam.logic.pg.solver.hl.HLSolverOptions;
  *
  * @author Manuel Gieseking
  */
-public class HLSolverFactoryHLApproach extends AbstractHLSolverFactory<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, HLDecisionSet>> {
+public class HLSolverFactoryHLApproach extends AbstractHLSolverFactory<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> {
 
     private static HLSolverFactoryHLApproach instance = null;
 

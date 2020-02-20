@@ -3,10 +3,10 @@ package uniolunisaar.adam.logic.pg.solver.hl;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import uniolunisaar.adam.ds.graph.hl.IDecision;
-import uniolunisaar.adam.ds.graph.hl.IDecisionSet;
-import uniolunisaar.adam.ds.graph.hl.SGG;
-import uniolunisaar.adam.ds.graph.hl.SGGFlow;
+import uniolunisaar.adam.ds.graph.IDecision;
+import uniolunisaar.adam.ds.graph.IDecisionSet;
+import uniolunisaar.adam.ds.graph.GameGraph;
+import uniolunisaar.adam.ds.graph.GameGraphFlow;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.petrinet.objectives.Safety;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
@@ -22,7 +22,7 @@ import uniolunisaar.adam.logic.pg.builder.graph.hl.SGGStrategyBuilder;
  * @param <S>
  * @param <F>
  */
-public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends SGGFlow<T, S>> extends HLSolver<Safety, P, T, DC, S, F> {
+public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends GameGraphFlow<T, S>> extends HLSolver<Safety, P, T, DC, S, F> {
 
     public HLASafetyWithoutType2Solver(HLSolvingObject<Safety> solverObject, HLSolverOptions options) {
         super(solverObject, options);
@@ -45,7 +45,7 @@ public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, 
         return winRegionSafety(p1, null).contains(getGraph().getInitial());
     }
 
-    public SGG<P, T, DC, S, F> calculateGraphStrategy(SGG<P, T, DC, S, F> graph, boolean p1) throws CalculationInterruptedException {
+    public GameGraph<P, T, DC, S, F> calculateGraphStrategy(GameGraph<P, T, DC, S, F> graph, boolean p1) throws CalculationInterruptedException {
         SGGStrategyBuilder<P, T, DC, S, F> builder = new SGGStrategyBuilder<>();
         return builder.calculateGraphStrategy(getGraph(), p1, winRegionSafety(p1, null));
     }

@@ -1,4 +1,4 @@
-package uniolunisaar.adam.ds.graph.hl;
+package uniolunisaar.adam.ds.graph;
 
 import java.util.Objects;
 import uniol.apt.adt.extension.Extensible;
@@ -9,13 +9,13 @@ import uniol.apt.adt.extension.Extensible;
  * @param <T>
  * @param <S>
  */
-public class SGGFlow<T, S extends StateIdentifier> extends Extensible {
+public class GameGraphFlow<T, S extends StateIdentifier> extends Extensible {
 
     private final S source;
     private final S target;
     private final T transition;
 
-    public SGGFlow(S source, T transition, S target) {
+    public GameGraphFlow(S source, T transition, S target) {
         this.source = source;
         this.target = target;
         this.transition = transition;
@@ -58,7 +58,7 @@ public class SGGFlow<T, S extends StateIdentifier> extends Extensible {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final SGGFlow<?, ?> other = (SGGFlow<?, ?>) obj;
+        final GameGraphFlow<?, ?> other = (GameGraphFlow<?, ?>) obj;
         if (this.source != other.source) {
             return false;
         }

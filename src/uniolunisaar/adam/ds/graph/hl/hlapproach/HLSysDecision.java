@@ -1,7 +1,7 @@
-package uniolunisaar.adam.ds.graph.hl.approachHL;
+package uniolunisaar.adam.ds.graph.hl.hlapproach;
 
 import uniol.apt.adt.pn.Place;
-import uniolunisaar.adam.ds.graph.hl.SysDecision;
+import uniolunisaar.adam.ds.graph.AbstractSysDecision;
 import uniolunisaar.adam.ds.highlevel.ColorToken;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
@@ -11,7 +11,7 @@ import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
  *
  * @author Manuel Gieseking
  */
-public class HLSysDecision extends SysDecision<ColoredPlace, ColoredTransition, HLCommitmentSet> implements IHLDecision {
+public class HLSysDecision extends AbstractSysDecision<ColoredPlace, ColoredTransition, HLCommitmentSet> implements IHLDecision {
 
     /**
      * Copy-Constructor

@@ -1,4 +1,4 @@
-package uniolunisaar.adam.ds.graph.hl;
+package uniolunisaar.adam.ds.graph;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -17,11 +17,11 @@ import java.util.Map;
  * @param <F>
  */
 @Deprecated
-public class SGGByHashCode<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends SGGFlow<T, IntegerID>> extends AbstractSymbolicGameGraph<P, T, DC, S, IntegerID, F> {
+public class GameGraphByHashCode<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends GameGraphFlow<T, IntegerID>> extends AbstractGameGraph<P, T, DC, S, IntegerID, F> {
 
     private final Map<Integer, S> states;
 
-    public SGGByHashCode(String name, S initial) {
+    public GameGraphByHashCode(String name, S initial) {
         super(name, initial);
         this.states = new HashMap<>();
         this.states.put(initial.getId(), initial);

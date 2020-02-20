@@ -1,4 +1,4 @@
-package uniolunisaar.adam.ds.graph.hl;
+package uniolunisaar.adam.ds.graph;
 
 import java.util.Objects;
 
@@ -9,7 +9,7 @@ import java.util.Objects;
  * @param <T>
  * @param <C>
  */
-public abstract class SysDecision<P, T, C extends CommitmentSet<T>> implements IDecision<P, T> {
+public abstract class AbstractSysDecision<P, T, C extends AbstractCommitmentSet<T>> implements IDecision<P, T> {
 
     private final P place;
 //    private final boolean type;
@@ -21,7 +21,7 @@ public abstract class SysDecision<P, T, C extends CommitmentSet<T>> implements I
 //        this.type = type;
 //        this.c = c;
 //    }
-    public SysDecision(P place, C c) {
+    public AbstractSysDecision(P place, C c) {
         this.place = place;
         this.c = c;
     }
@@ -91,7 +91,7 @@ public abstract class SysDecision<P, T, C extends CommitmentSet<T>> implements I
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final SysDecision<?, ?, ?> other = (SysDecision<?, ?, ?>) obj;
+        final AbstractSysDecision<?, ?, ?> other = (AbstractSysDecision<?, ?, ?>) obj;
         if (!Objects.equals(this.place, other.place)) {
             return false;
         }

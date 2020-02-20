@@ -1,4 +1,4 @@
-package uniolunisaar.adam.ds.graph.hl.approachHL;
+package uniolunisaar.adam.ds.graph.hl.hlapproach;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,7 +17,7 @@ import uniolunisaar.adam.ds.highlevel.oneenv.OneEnvHLPG;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.tools.CartesianProduct;
 import uniolunisaar.adam.tools.Tools;
-import uniolunisaar.adam.ds.graph.hl.IDecisionSet;
+import uniolunisaar.adam.ds.graph.IDecisionSet;
 
 /**
  *

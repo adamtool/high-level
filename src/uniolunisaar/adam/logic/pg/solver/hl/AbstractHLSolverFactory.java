@@ -2,9 +2,9 @@ package uniolunisaar.adam.logic.pg.solver.hl;
 
 import java.io.IOException;
 import uniol.apt.io.parser.ParseException;
-import uniolunisaar.adam.ds.graph.hl.IDecision;
-import uniolunisaar.adam.ds.graph.hl.IDecisionSet;
-import uniolunisaar.adam.ds.graph.hl.SGGFlow;
+import uniolunisaar.adam.ds.graph.IDecision;
+import uniolunisaar.adam.ds.graph.IDecisionSet;
+import uniolunisaar.adam.ds.graph.GameGraphFlow;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
 import uniolunisaar.adam.exceptions.pg.SolvingException;
@@ -24,7 +24,7 @@ import uniolunisaar.adam.exceptions.pg.NotSupportedGameException;
  * @param <S>
  * @param <F>
  */
-public abstract class AbstractHLSolverFactory<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends SGGFlow<T, S>>
+public abstract class AbstractHLSolverFactory<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends GameGraphFlow<T, S>>
         extends SolverFactory<HLPetriGame, HLSolverOptions, HLSolver<? extends Condition<?>, P, T, DC, S, F>> {
 
     @Override

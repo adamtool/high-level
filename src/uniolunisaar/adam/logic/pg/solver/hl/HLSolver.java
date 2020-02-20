@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import uniolunisaar.adam.ds.graph.hl.IDecision;
-import uniolunisaar.adam.ds.graph.hl.IDecisionSet;
-import uniolunisaar.adam.ds.graph.hl.SGG;
-import uniolunisaar.adam.ds.graph.hl.SGGFlow;
+import uniolunisaar.adam.ds.graph.IDecision;
+import uniolunisaar.adam.ds.graph.IDecisionSet;
+import uniolunisaar.adam.ds.graph.GameGraph;
+import uniolunisaar.adam.ds.graph.GameGraphFlow;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.petrinet.objectives.Condition;
 import uniolunisaar.adam.ds.solver.Solver;
@@ -24,15 +24,15 @@ import uniolunisaar.adam.tools.Logger;
  * @param <S>
  * @param <F>
  */
-public abstract class HLSolver<W extends Condition<W>, P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends SGGFlow<T, S>> extends Solver<HLPetriGame, W, HLSolvingObject<W>, HLSolverOptions> {
+public abstract class HLSolver<W extends Condition<W>, P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends GameGraphFlow<T, S>> extends Solver<HLPetriGame, W, HLSolvingObject<W>, HLSolverOptions> {
 
-    private SGG<P, T, DC, S, F> graph = null;
+    private GameGraph<P, T, DC, S, F> graph = null;
 
     public HLSolver(HLSolvingObject<W> solverObject, HLSolverOptions options) {
         super(solverObject, options);
     }
 
-    protected abstract SGG<P, T, DC, S, F> calculateGraph(HLPetriGame hlgame);
+    protected abstract GameGraph<P, T, DC, S, F> calculateGraph(HLPetriGame hlgame);
 
     Set<S> attractor(Collection<S> init, boolean p1, Map<Integer, Set<S>> distance) throws CalculationInterruptedException {
         Set<S> attr = new HashSet<>(init);
@@ -81,7 +81,7 @@ public abstract class HLSolver<W extends Condition<W>, P, T, DC extends IDecisio
         return attr;
     }
 
-    public SGG<P, T, DC, S, F> getGraph() {
+    public GameGraph<P, T, DC, S, F> getGraph() {
         if (graph == null) {
             graph = calculateGraph(getSolvingObject().getGame());
         }

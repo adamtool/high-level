@@ -1,19 +1,19 @@
 package uniolunisaar.adam.logic.pg.builder.graph.hl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import java.util.Stack;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.graph.hl.AbstractSymbolicGameGraph;
-import uniolunisaar.adam.ds.graph.hl.IDecision;
-import uniolunisaar.adam.ds.graph.hl.SGGFlow;
+import uniolunisaar.adam.ds.graph.AbstractGameGraph;
+import uniolunisaar.adam.ds.graph.IDecision;
+import uniolunisaar.adam.ds.graph.GameGraphFlow;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.highlevel.symmetries.SymmetryIterator;
-import uniolunisaar.adam.ds.graph.hl.IDecisionSet;
-import uniolunisaar.adam.ds.graph.hl.StateIdentifier;
+import uniolunisaar.adam.ds.graph.IDecisionSet;
+import uniolunisaar.adam.ds.graph.StateIdentifier;
+import uniolunisaar.adam.logic.pg.builder.graph.GameGraphBuilder;
 
 /**
  *
@@ -24,56 +24,23 @@ import uniolunisaar.adam.ds.graph.hl.StateIdentifier;
  * @param <S>
  * @param <F>
  */
-public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends SGGFlow<T, ? extends StateIdentifier>> {
+public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends GameGraphFlow<T, ? extends StateIdentifier>> extends GameGraphBuilder<HLPetriGame, P, T, DC, S, F> {
 
-    <ID extends StateIdentifier> void addStatesIteratively(HLPetriGame hlgame, AbstractSymbolicGameGraph<P, T, DC, S, ID, SGGFlow<T, ID>> srg, S init,
-            Collection<Transition> allTransitions, Collection<Transition> systemTransitions) {
-        // Create the iterator for the symmetries
-        Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
+    private Symmetries syms;
 
-        // Create the graph iteratively
-        Stack<ID> todo = new Stack<>();
-        todo.push(srg.getID(init));
-        while (!todo.isEmpty()) { // as long as new states had been added        
-            S state = srg.getState(todo.pop());
-            // if the current state contains tops, resolve them 
-            if (!state.isMcut() && state.hasTop()) {
-                Set<S> succs = state.resolveTop();
-                // add only the not to any existing state equivalent decision sets
-                // otherwise only the flows are added to the belonging equivalent class
-                addSuccessors(state, null, succs, syms, todo, srg);
-                continue;
-            }
-
-            // In mcuts only transitions having an env place in its preset are allowed to fire
-            // whereas in the other states solely system transitions are valid
-            Collection<Transition> transitions;
-            if (state.isMcut()) {
-                transitions = new ArrayList<>(allTransitions);
-                transitions.removeAll(systemTransitions);
-            } else {
-                transitions = systemTransitions;
-            }
-            for (T transition : getTransitions(transitions, hlgame)) {
-                Set<S> succs = state.fire(transition);
-//                    if (!state.isMcut()) {
-//                        System.out.println("liko to fire" + t);
-//                    }
-                if (succs != null) { // had been firable
-//                        if (!state.isMcut()) {
-//                            System.out.println("can fire");
-//                        }
-                    // add only the not to any existing state equivalent decision sets
-                    // otherwise only the flows are added to the belonging equivalent class
-                    addSuccessors(state, transition, succs, syms, todo, srg);
-                } else {
-//                        System.out.println("haven't");
-                }
-            }
-        }
+    @Override
+    protected <ID extends StateIdentifier> void addStatesIteratively(HLPetriGame game, AbstractGameGraph<P, T, DC, S, ID, GameGraphFlow<T, ID>> srg, S init, Collection<Transition> allTransitions, Collection<Transition> systemTransitions) {
+        syms = new Symmetries(game.getBasicColorClasses());
+        super.addStatesIteratively(game, srg, init, allTransitions, systemTransitions);
     }
 
-    abstract Collection<T> getTransitions(Collection<Transition> trans, HLPetriGame hlgame);
+    @Override
+    protected abstract Collection<T> getTransitions(Collection<Transition> trans, HLPetriGame hlgame);
+
+    @Override
+    protected <ID extends StateIdentifier> void addSuccessors(S pre, T t, Set<S> succs, Stack<ID> todo, AbstractGameGraph<P, T, DC, S, ID, GameGraphFlow<T, ID>> srg) {
+        addSuccessors(pre, t, succs, syms, todo, srg);
+    }
 
     /**
      * Adds a successor only if there is not already any equivalence class
@@ -85,7 +52,7 @@ public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDe
      * @param todo
      * @param srg
      */
-    <ID extends StateIdentifier> void addSuccessors(S pre, T t, Set<S> succs, Symmetries syms, Stack<ID> todo, AbstractSymbolicGameGraph<P, T, DC, S, ID, SGGFlow<T, ID>> srg) {
+    <ID extends StateIdentifier> void addSuccessors(S pre, T t, Set<S> succs, Symmetries syms, Stack<ID> todo, AbstractGameGraph<P, T, DC, S, ID, GameGraphFlow<T, ID>> srg) {
         for (S succ : succs) {
             boolean newOne = true;
             S copySucc = succ;
@@ -105,7 +72,8 @@ public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDe
             } else {
                 id = srg.getID(copySucc);
             }
-            srg.addFlow(new SGGFlow<>(srg.getID(pre), t, id));
+            srg.addFlow(new GameGraphFlow<>(srg.getID(pre), t, id));
         }
     }
+
 }

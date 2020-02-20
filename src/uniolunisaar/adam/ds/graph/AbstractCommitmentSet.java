@@ -1,4 +1,4 @@
-package uniolunisaar.adam.ds.graph.hl;
+package uniolunisaar.adam.ds.graph;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -11,12 +11,12 @@ import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
  * @author Manuel Gieseking
  * @param <T>
  */
-public abstract class CommitmentSet<T> {
+public abstract class AbstractCommitmentSet<T> {
 
     private final boolean isTop;
     private final Set<T> transitions;
 
-    public CommitmentSet(boolean isTop) {
+    public AbstractCommitmentSet(boolean isTop) {
         this.isTop = isTop;
         transitions = null;
     }
@@ -28,7 +28,7 @@ public abstract class CommitmentSet<T> {
      *
      * @param transitions
      */
-    public CommitmentSet(T... transitions) {
+    public AbstractCommitmentSet(T... transitions) {
         isTop = false;
         this.transitions = new HashSet<>(Arrays.asList(transitions));
     }
@@ -40,7 +40,7 @@ public abstract class CommitmentSet<T> {
      *
      * @param transitions
      */
-    public CommitmentSet(Set<T> transitions) {
+    public AbstractCommitmentSet(Set<T> transitions) {
         isTop = false;
         this.transitions = transitions;
     }
@@ -51,7 +51,7 @@ public abstract class CommitmentSet<T> {
      * @param isTop
      * @param transitions
      */
-    protected CommitmentSet(boolean isTop, Set<T> transitions) {
+    protected AbstractCommitmentSet(boolean isTop, Set<T> transitions) {
         this.isTop = isTop;
         if (isTop) {
             this.transitions = null;
@@ -82,7 +82,7 @@ public abstract class CommitmentSet<T> {
 
 //    @Deprecated
 //    public abstract void apply(Symmetry sym);
-    public abstract CommitmentSet<T> apply(Symmetry sym);
+    public abstract AbstractCommitmentSet<T> apply(Symmetry sym);
 
     public String toDot() {
         StringBuilder sb = new StringBuilder();
@@ -134,7 +134,7 @@ public abstract class CommitmentSet<T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final CommitmentSet<?> other = (CommitmentSet<?>) obj;
+        final AbstractCommitmentSet<?> other = (AbstractCommitmentSet<?>) obj;
         if (this.isTop != other.isTop) {
             return false;
         }

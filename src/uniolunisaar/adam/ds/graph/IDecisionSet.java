@@ -1,4 +1,4 @@
-package uniolunisaar.adam.ds.graph.hl;
+package uniolunisaar.adam.ds.graph;
 
 import java.util.Set;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;

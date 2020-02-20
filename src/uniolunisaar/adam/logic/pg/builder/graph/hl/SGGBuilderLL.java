@@ -6,16 +6,17 @@ import java.util.HashSet;
 import java.util.Set;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.graph.hl.IntegerID;
-import uniolunisaar.adam.ds.graph.hl.SGG;
-import uniolunisaar.adam.ds.graph.hl.SGGFlow;
-import uniolunisaar.adam.ds.graph.hl.SGGByHashCode;
-import uniolunisaar.adam.ds.graph.hl.StateIdentifier;
-import uniolunisaar.adam.ds.graph.hl.approachLL.ILLDecision;
-import uniolunisaar.adam.ds.graph.hl.approachLL.LLCommitmentSet;
-import uniolunisaar.adam.ds.graph.hl.approachLL.LLDecisionSet;
-import uniolunisaar.adam.ds.graph.hl.approachLL.LLEnvDecision;
-import uniolunisaar.adam.ds.graph.hl.approachLL.LLSysDecision;
+import uniolunisaar.adam.ds.graph.IntegerID;
+import uniolunisaar.adam.ds.graph.GameGraph;
+import uniolunisaar.adam.ds.graph.GameGraphFlow;
+import uniolunisaar.adam.ds.graph.GameGraphByHashCode;
+import uniolunisaar.adam.ds.graph.StateIdentifier;
+import uniolunisaar.adam.ds.graph.explicit.DecisionSet;
+import uniolunisaar.adam.ds.graph.explicit.ILLDecision;
+import uniolunisaar.adam.ds.graph.hl.llapproach.LLCommitmentSet;
+import uniolunisaar.adam.ds.graph.hl.llapproach.LLDecisionSet;
+import uniolunisaar.adam.ds.graph.hl.llapproach.LLEnvDecision;
+import uniolunisaar.adam.ds.graph.hl.llapproach.LLSysDecision;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
@@ -24,7 +25,7 @@ import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
  *
  * @author Manuel Gieseking
  */
-public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, ? extends StateIdentifier>> {
+public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, ? extends StateIdentifier>> {
 
     private static SGGBuilderLL instance = null;
 
@@ -92,7 +93,7 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, LLD
      *
      */
     @Deprecated
-    public SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> createByHashcode(HLPetriGame hlgame) {
+    public GameGraphByHashCode<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, IntegerID>> createByHashcode(HLPetriGame hlgame) {
         // Convert the high-level game to its low-level version
         PetriGame pgame = HL2PGConverter.convert(hlgame, true);
         // calculate the system transitions
@@ -101,7 +102,7 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, LLD
         LLDecisionSet init = createInitDecisionSet(pgame);
 
         // Create the graph iteratively
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> srg = new SGGByHashCode<>(hlgame.getName() + "_SRG", init);
+        GameGraphByHashCode<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, IntegerID>> srg = new GameGraphByHashCode<>(hlgame.getName() + "_SRG", init);
         addStatesIteratively(hlgame, srg, init, pgame.getTransitions(), sysTransitions);
         return srg;
     }
@@ -118,7 +119,7 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, LLD
      * @param hlgame
      * @return
      */
-    public SGG<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, LLDecisionSet>> create(HLPetriGame hlgame) {
+    public GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> create(HLPetriGame hlgame) {
         // Convert the high-level game to its low-level version
         PetriGame pgame = HL2PGConverter.convert(hlgame, true);
         // calculate the system transitions
@@ -127,7 +128,7 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, LLD
         LLDecisionSet init = createInitDecisionSet(pgame);
 
         // Create the graph iteratively
-        SGG<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, LLDecisionSet>> srg = new SGG<>(hlgame.getName() + "_SRG", init);
+        GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> srg = new GameGraph<>(hlgame.getName() + "_SRG", init);
         addStatesIteratively(hlgame, srg, init, pgame.getTransitions(), sysTransitions);
         return srg;
     }
@@ -143,7 +144,7 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, LLD
     }
 
     @Override
-    Collection<Transition> getTransitions(Collection<Transition> trans, HLPetriGame hlgame) {
+    protected Collection<Transition> getTransitions(Collection<Transition> trans, HLPetriGame hlgame) {
         return trans;
     }
 

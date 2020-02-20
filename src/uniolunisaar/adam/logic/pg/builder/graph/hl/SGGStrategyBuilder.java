@@ -5,10 +5,10 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import uniolunisaar.adam.ds.graph.hl.IDecision;
-import uniolunisaar.adam.ds.graph.hl.IDecisionSet;
-import uniolunisaar.adam.ds.graph.hl.SGG;
-import uniolunisaar.adam.ds.graph.hl.SGGFlow;
+import uniolunisaar.adam.ds.graph.IDecision;
+import uniolunisaar.adam.ds.graph.IDecisionSet;
+import uniolunisaar.adam.ds.graph.GameGraph;
+import uniolunisaar.adam.ds.graph.GameGraphFlow;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 
 /**
@@ -20,11 +20,11 @@ import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
  * @param <S>
  * @param <DC>
  */
-public class SGGStrategyBuilder<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends SGGFlow<T, S>> {
+public class SGGStrategyBuilder<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends GameGraphFlow<T, S>> {
 
-    public SGG<P, T, DC, S, F> calculateGraphStrategy(SGG<P, T, DC, S, F> graph, boolean p1, Set<S> winningRegion) throws CalculationInterruptedException {
+    public GameGraph<P, T, DC, S, F> calculateGraphStrategy(GameGraph<P, T, DC, S, F> graph, boolean p1, Set<S> winningRegion) throws CalculationInterruptedException {
         S init = graph.getInitial();
-        SGG<P, T, DC, S, F> strat = new SGG<>(graph.getName() + "_HLstrat", init);
+        GameGraph<P, T, DC, S, F> strat = new GameGraph<>(graph.getName() + "_HLstrat", init);
         LinkedList<S> added = new LinkedList<>();
         added.add(init);
         while (!added.isEmpty()) {
@@ -57,7 +57,7 @@ public class SGGStrategyBuilder<P, T, DC extends IDecision<P, T>, S extends IDec
      * @param post
      * @return
      */
-    private List<F> getFlow(SGG<P, T, DC, S, F> graph, S pre, S post, boolean one) {
+    private List<F> getFlow(GameGraph<P, T, DC, S, F> graph, S pre, S post, boolean one) {
         List<F> flows = new ArrayList<>();
         for (F f : graph.getFlowsView()) {
             if (f.getSource().equals(pre) && f.getTarget().equals(post)) {

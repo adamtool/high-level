@@ -1,4 +1,4 @@
-package uniolunisaar.adam.ds.graph.hl;
+package uniolunisaar.adam.ds.graph;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -19,7 +19,7 @@ import java.util.Set;
  * @param <T>
  * @param <F>
  */
-public class SGG<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends SGGFlow<T, S>> extends AbstractSymbolicGameGraph<P, T, DC, S, S, F> {
+public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends GameGraphFlow<T, S>> extends AbstractGameGraph<P, T, DC, S, S, F> {
 
     private final Set<S> states;
     private final Set<S> badStates;
@@ -28,7 +28,7 @@ public class SGG<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, 
 //    private final Set<S> V0;
 //    private final Set<S> V1;
 
-    public SGG(String name, S initial) {
+    public GameGraph(String name, S initial) {
         super(name, initial);
         this.states = new HashSet<>();
         this.states.add(initial);

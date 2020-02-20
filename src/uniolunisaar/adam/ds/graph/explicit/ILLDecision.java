@@ -1,8 +1,8 @@
-package uniolunisaar.adam.ds.graph.hl.approachLL;
+package uniolunisaar.adam.ds.graph.explicit;
 
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.graph.hl.IDecision;
+import uniolunisaar.adam.ds.graph.IDecision;
 
 /**
  *

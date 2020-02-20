@@ -1,10 +1,10 @@
-package uniolunisaar.adam.ds.graph.hl.approachLL;
+package uniolunisaar.adam.ds.graph.hl.llapproach;
 
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.graph.hl.CommitmentSet;
+import uniolunisaar.adam.ds.graph.explicit.CommitmentSet;
 import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.Valuation;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
@@ -16,44 +16,26 @@ import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
  *
  * @author Manuel Gieseking
  */
-public class LLCommitmentSet extends CommitmentSet<Transition> {
-
-    private final PetriGame game;
+public class LLCommitmentSet extends CommitmentSet {
 
     public LLCommitmentSet(PetriGame game, boolean isTop) {
-        super(isTop);
-        this.game = game;
+        super(game, isTop);
     }
 
-    /**
-     * Attention this uses just the references of the transitions of the given
-     * list and the list itself. Don't change them afterward, they are saved as
-     * HashSet and thus contains would not longer work!
-     *
-     * @param game
-     * @param transitions
-     */
     public LLCommitmentSet(PetriGame game, Transition... transitions) {
-        super(transitions);
-        this.game = game;
+        super(game, transitions);
     }
 
-    /**
-     * Attention this uses just the references of the transitions of the given
-     * list and the list itself. Don't change them afterward, they are saved as
-     * HashSet and thus contains would not longer work!
-     *
-     * @param game
-     * @param transitions
-     */
     public LLCommitmentSet(PetriGame game, Set<Transition> transitions) {
-        super(transitions);
-        this.game = game;
+        super(game, transitions);
     }
 
     public LLCommitmentSet(LLCommitmentSet c) {
-        super(c.isTop(), c.getTransitions());
-        this.game = c.game;
+        super(c);
+    }
+
+    public LLCommitmentSet(CommitmentSet c) {
+        super(c);
     }
 
 //    @Override
@@ -78,7 +60,7 @@ public class LLCommitmentSet extends CommitmentSet<Transition> {
     @Override
     public LLCommitmentSet apply(Symmetry sym) {
         if (isTop()) {
-            return new LLCommitmentSet(game, true);
+            return new LLCommitmentSet(super.getGame(), true);
         }
         Set<Transition> tr = new HashSet<>();
         for (Transition transition : getTransitions()) {
@@ -90,9 +72,9 @@ public class LLCommitmentSet extends CommitmentSet<Transition> {
                 Color c = entry.getValue();
                 newVal.put(var, sym.get(c));
             }
-            tr.add(game.getTransition(HL2PGConverter.getTransitionID(hlID, newVal)));
+            tr.add(getGame().getTransition(HL2PGConverter.getTransitionID(hlID, newVal)));
         }
-        return new LLCommitmentSet(game, tr);
+        return new LLCommitmentSet(getGame(), tr);
     }
 
     @Override
@@ -107,23 +89,5 @@ public class LLCommitmentSet extends CommitmentSet<Transition> {
         }
         hash = 13 * hash * tr;
         return hash;
-    }
-
-    @Override
-    public String toDot() {
-        StringBuilder sb = new StringBuilder();
-        if (isTop()) {
-            sb.append("T");
-        } else {
-            sb.append("{");
-            for (Transition transition : getTransitions()) {
-                sb.append(transition.getId()).append(",");
-            }
-            if (getTransitions().size() >= 1) {
-                sb.delete(sb.length() - 1, sb.length());
-            }
-            sb.append("}");
-        }
-        return sb.toString();
     }
 }

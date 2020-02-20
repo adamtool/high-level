@@ -1,7 +1,7 @@
-package uniolunisaar.adam.ds.graph.hl.approachHL;
+package uniolunisaar.adam.ds.graph.hl.hlapproach;
 
 import uniol.apt.adt.pn.Place;
-import uniolunisaar.adam.ds.graph.hl.EnvDecision;
+import uniolunisaar.adam.ds.graph.AbstractEnvDecision;
 import uniolunisaar.adam.ds.highlevel.ColorToken;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
@@ -11,7 +11,7 @@ import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
  *
  * @author Manuel Gieseking
  */
-public class HLEnvDecision extends EnvDecision<ColoredPlace, ColoredTransition> implements IHLDecision {
+public class HLEnvDecision extends AbstractEnvDecision<ColoredPlace, ColoredTransition> implements IHLDecision {
 
     public HLEnvDecision(ColoredPlace place) {
         super(place);

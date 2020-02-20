@@ -1,4 +1,4 @@
-package uniolunisaar.adam.ds.graph.hl;
+package uniolunisaar.adam.ds.graph;
 
 import java.util.Objects;
 
@@ -8,11 +8,11 @@ import java.util.Objects;
  * @param <P>
  * @param <T>
  */
-public abstract class EnvDecision<P, T> implements IDecision<P, T> {
+public abstract class AbstractEnvDecision<P, T> implements IDecision<P, T> {
 
     private final P place;
 
-    public EnvDecision(P place) {
+    public AbstractEnvDecision(P place) {
         this.place = place;
     }
 
@@ -64,7 +64,7 @@ public abstract class EnvDecision<P, T> implements IDecision<P, T> {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final EnvDecision<?, ?> other = (EnvDecision<?, ?>) obj;
+        final AbstractEnvDecision<?, ?> other = (AbstractEnvDecision<?, ?>) obj;
         if (!Objects.equals(this.place, other.place)) {
             return false;
         }

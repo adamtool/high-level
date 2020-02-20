@@ -7,10 +7,10 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import uniol.apt.io.parser.ParseException;
-import uniolunisaar.adam.ds.graph.hl.SGG;
-import uniolunisaar.adam.ds.graph.hl.SGGFlow;
-import uniolunisaar.adam.ds.graph.hl.approachHL.HLDecisionSet;
-import uniolunisaar.adam.ds.graph.hl.approachHL.IHLDecision;
+import uniolunisaar.adam.ds.graph.GameGraph;
+import uniolunisaar.adam.ds.graph.GameGraphFlow;
+import uniolunisaar.adam.ds.graph.hl.hlapproach.HLDecisionSet;
+import uniolunisaar.adam.ds.graph.hl.hlapproach.IHLDecision;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
@@ -63,7 +63,7 @@ public class TestASafetyWithoutType2HLSolver {
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM21", hlgame);
         OneEnvHLPG game = new OneEnvHLPG(hlgame, false);
-        SGG<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, HLDecisionSet>> graph = SGGBuilderHL.getInstance().create(game);
+        GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> graph = SGGBuilderHL.getInstance().create(game);
         HLTools.saveGraph2PDF(outputDir + "CM21_hlgg", graph);
 //        HLASafetyWithoutType2Solver<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, HLDecisionSet>> solver = new HLASafetyWithoutType2Solver<>();
         HLASafetyWithoutType2SolverHLApproach solver = (HLASafetyWithoutType2SolverHLApproach) HLSolverFactoryHLApproach.getInstance().getSolver(hlgame, new HLSolverOptions());
@@ -71,7 +71,7 @@ public class TestASafetyWithoutType2HLSolver {
 //        Assert.assertFalse(win);
         Assert.assertTrue(win);
 
-        SGG<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, HLDecisionSet>> strat = solver.calculateGraphStrategy(graph, false);
+        GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> strat = solver.calculateGraphStrategy(graph, false);
         HLTools.saveGraph2PDF(outputDir + "CM21_hl_strat", strat);
 
 //

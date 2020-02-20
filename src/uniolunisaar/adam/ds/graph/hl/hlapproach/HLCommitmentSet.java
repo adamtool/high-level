@@ -1,8 +1,8 @@
-package uniolunisaar.adam.ds.graph.hl.approachHL;
+package uniolunisaar.adam.ds.graph.hl.hlapproach;
 
 import java.util.HashSet;
 import java.util.Set;
-import uniolunisaar.adam.ds.graph.hl.CommitmentSet;
+import uniolunisaar.adam.ds.graph.AbstractCommitmentSet;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 
@@ -10,7 +10,7 @@ import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
  *
  * @author Manuel Gieseking
  */
-public class HLCommitmentSet extends CommitmentSet<ColoredTransition> {
+public class HLCommitmentSet extends AbstractCommitmentSet<ColoredTransition> {
 
     public HLCommitmentSet(boolean isTop) {
         super(isTop);

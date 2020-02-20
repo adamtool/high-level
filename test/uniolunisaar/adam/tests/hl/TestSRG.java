@@ -14,19 +14,20 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.io.parser.ParseException;
 import uniol.apt.module.exception.ModuleException;
-import uniolunisaar.adam.ds.graph.hl.CommitmentSet;
-import uniolunisaar.adam.ds.graph.hl.IntegerID;
-import uniolunisaar.adam.ds.graph.hl.SGGFlow;
-import uniolunisaar.adam.ds.graph.hl.SGGByHashCode;
-import uniolunisaar.adam.ds.graph.hl.approachHL.HLCommitmentSet;
-import uniolunisaar.adam.ds.graph.hl.approachHL.HLDecisionSet;
-import uniolunisaar.adam.ds.graph.hl.approachHL.HLSysDecision;
-import uniolunisaar.adam.ds.graph.hl.approachHL.IHLDecision;
-import uniolunisaar.adam.ds.graph.hl.approachLL.ILLDecision;
-import uniolunisaar.adam.ds.graph.hl.approachLL.LLCommitmentSet;
-import uniolunisaar.adam.ds.graph.hl.approachLL.LLDecisionSet;
-import uniolunisaar.adam.ds.graph.hl.approachLL.LLEnvDecision;
-import uniolunisaar.adam.ds.graph.hl.approachLL.LLSysDecision;
+import uniolunisaar.adam.ds.graph.AbstractCommitmentSet;
+import uniolunisaar.adam.ds.graph.IntegerID;
+import uniolunisaar.adam.ds.graph.GameGraphFlow;
+import uniolunisaar.adam.ds.graph.GameGraphByHashCode;
+import uniolunisaar.adam.ds.graph.explicit.DecisionSet;
+import uniolunisaar.adam.ds.graph.hl.hlapproach.HLDecisionSet;
+import uniolunisaar.adam.ds.graph.hl.hlapproach.HLSysDecision;
+import uniolunisaar.adam.ds.graph.hl.hlapproach.IHLDecision;
+import uniolunisaar.adam.ds.graph.explicit.ILLDecision;
+import uniolunisaar.adam.ds.graph.hl.hlapproach.HLCommitmentSet;
+import uniolunisaar.adam.ds.graph.hl.llapproach.LLCommitmentSet;
+import uniolunisaar.adam.ds.graph.hl.llapproach.LLDecisionSet;
+import uniolunisaar.adam.ds.graph.hl.llapproach.LLEnvDecision;
+import uniolunisaar.adam.ds.graph.hl.llapproach.LLSysDecision;
 import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.ColorToken;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
@@ -122,10 +123,10 @@ public class TestSRG {
 
     @Test
     public void testCommitmentSets() {
-        CommitmentSet<ColoredTransition> c1 = new HLCommitmentSet(true);
-        CommitmentSet<ColoredTransition> c2 = new HLCommitmentSet(true);
+        AbstractCommitmentSet<ColoredTransition> c1 = new HLCommitmentSet(true);
+        AbstractCommitmentSet<ColoredTransition> c2 = new HLCommitmentSet(true);
         Assert.assertEquals(c1, c2);
-        CommitmentSet<ColoredTransition> c3 = new HLCommitmentSet(false);
+        AbstractCommitmentSet<ColoredTransition> c3 = new HLCommitmentSet(false);
         Assert.assertTrue(!c1.equals(c3));
 
         HLPetriGame game = new HLPetriGame("testing");
@@ -139,14 +140,14 @@ public class TestSRG {
         valt3.put(new Variable("y"), new Color("c3"));
         Transition t3 = game.createTransition("asdf2");
         ColoredTransition ct3 = new ColoredTransition(game, t3, valt3);
-        CommitmentSet<ColoredTransition> c4 = new HLCommitmentSet(ct1, ct2, ct3);
-        CommitmentSet<ColoredTransition> c5 = new HLCommitmentSet(ct1, ct2, ct3);
+        AbstractCommitmentSet<ColoredTransition> c4 = new HLCommitmentSet(ct1, ct2, ct3);
+        AbstractCommitmentSet<ColoredTransition> c5 = new HLCommitmentSet(ct1, ct2, ct3);
         Assert.assertEquals(c4, c5);
 
         ct1 = new ColoredTransition(game, t1, new Valuation());
         ct2 = new ColoredTransition(game, t2, valt2);
         ct3 = new ColoredTransition(game, t3, valt3);
-        CommitmentSet<ColoredTransition> c6 = new HLCommitmentSet(ct1, ct2, ct3);
+        AbstractCommitmentSet<ColoredTransition> c6 = new HLCommitmentSet(ct1, ct2, ct3);
         Assert.assertEquals(c5, c6);
 
         ct1 = new ColoredTransition(game, game.getTransition("t0"), new Valuation());
@@ -154,7 +155,7 @@ public class TestSRG {
         valt2.put(new Variable("x"), new Color("c"));
         ct2 = new ColoredTransition(game, game.getTransition("asdf"), valt2);
         ct3 = new ColoredTransition(game, game.getTransition("asdf2"), valt3);
-        CommitmentSet<ColoredTransition> c7 = new HLCommitmentSet(ct3, ct2, ct1);
+        AbstractCommitmentSet<ColoredTransition> c7 = new HLCommitmentSet(ct3, ct2, ct1);
         Assert.assertEquals(c6, c7);
     }
 
@@ -318,7 +319,7 @@ public class TestSRG {
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
         HLTools.saveHLPG2PDF(outputDir + "CM21", hlgame);
         OneEnvHLPG game = new OneEnvHLPG(hlgame, false);
-        SGGByHashCode<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, SGGFlow<ColoredTransition, IntegerID>> graph = SGGBuilderHL.getInstance().createByHashcode(game);
+        GameGraphByHashCode<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, IntegerID>> graph = SGGBuilderHL.getInstance().createByHashcode(game);
         HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
         System.out.println("SIZE: " + graph.getStatesView().size());
     }
@@ -340,7 +341,7 @@ public class TestSRG {
 //        BDDTools.saveGraph2PDF(outputDir + "CM21_bdd_gg", bddgraph, sol);
 
         // Test the new version
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
+        GameGraphByHashCode<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 //        System.out.println("SIZE: " + graph.getStates().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
         Assert.assertEquals(bddgraph.getStates().size(), graph.getStatesView().size());
@@ -389,7 +390,7 @@ public class TestSRG {
     @Test
     public void testCM() throws IOException, InterruptedException {
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
+        GameGraphByHashCode<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 
         System.out.println("SIZE: " + graph.getStatesView().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
@@ -420,7 +421,7 @@ public class TestSRG {
 //        bddgraph = sol.getGraphGame();
 ////        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
 //        BDDTools.saveGraph2PDF(outputDir + "DW" + size + "_bdd_gg", bddgraph, sol);
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
+        GameGraphByHashCode<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 
         System.out.println("SIZE: " + graph.getStatesView().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "DW" + size + "_gg", graph);
@@ -464,7 +465,7 @@ public class TestSRG {
 //        int size = hlgraph.getStates().size();
 //        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HLSGG: " + size);
 //        HLTools.saveGraph2PDF(outputDir + "PDHLExHL11_gg", hlgraph);
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
+        GameGraphByHashCode<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 
         int size = graph.getStatesView().size();
 //        System.out.println("Number of states of the HL two-player game over a finite graph explizit: " + size);
@@ -510,7 +511,7 @@ public class TestSRG {
         }
         HLPetriGame hlgame = getHLGame(elem[elem.length - 1], para);
 
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
+        GameGraphByHashCode<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 
         int size = graph.getStatesView().size();
         System.out.println("Number of states of the HL two-player game over a finite graph explizit: " + size); // todo: fix the logger...

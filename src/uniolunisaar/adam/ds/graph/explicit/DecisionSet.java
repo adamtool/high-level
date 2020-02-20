@@ -1,4 +1,4 @@
-package uniolunisaar.adam.ds.graph.hl.approachLL;
+package uniolunisaar.adam.ds.graph.explicit;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,13 +14,13 @@ import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.tools.CartesianProduct;
 import uniolunisaar.adam.tools.Tools;
-import uniolunisaar.adam.ds.graph.hl.IDecisionSet;
+import uniolunisaar.adam.ds.graph.IDecisionSet;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class LLDecisionSet extends Extensible implements IDecisionSet<Place, Transition, ILLDecision, LLDecisionSet> {
+public class DecisionSet extends Extensible implements IDecisionSet<Place, Transition, ILLDecision, DecisionSet> {
 
     private final Set<ILLDecision> decisions;
     private final boolean mcut;
@@ -32,15 +32,15 @@ public class LLDecisionSet extends Extensible implements IDecisionSet<Place, Tra
 //        this.mcut = false;
 //    }
 
-    public LLDecisionSet(LLDecisionSet dcs) {
+    public DecisionSet(DecisionSet dcs) {
         this.mcut = dcs.mcut;
         this.game = dcs.game;
         this.decisions = new HashSet<>();
         for (ILLDecision decision : dcs.decisions) {
             if (decision.isEnvDecision()) {
-                this.decisions.add(new LLEnvDecision((LLEnvDecision) decision));
+                this.decisions.add(createEnvDecision((EnvDecision) decision));
             } else {
-                this.decisions.add(new LLSysDecision((LLSysDecision) decision));
+                this.decisions.add(createSysDecision((SysDecision) decision));
             }
         }
         this.bad = dcs.bad;
@@ -55,11 +55,43 @@ public class LLDecisionSet extends Extensible implements IDecisionSet<Place, Tra
      * @param bad
      * @param game
      */
-    public LLDecisionSet(Set<ILLDecision> decisions, boolean mcut, boolean bad, PetriGame game) {
+    public DecisionSet(Set<ILLDecision> decisions, boolean mcut, boolean bad, PetriGame game) {
         this.decisions = decisions;
         this.mcut = mcut;
         this.game = game;
         this.bad = bad;
+    }
+
+    public EnvDecision createEnvDecision(EnvDecision decision) {
+        return new EnvDecision(decision);
+    }
+
+    public EnvDecision createEnvDecision(PetriGame game, Place place) {
+        return new EnvDecision(game, place);
+    }
+
+    public SysDecision createSysDecision(SysDecision decision) {
+        return new SysDecision(decision);
+    }
+
+    public SysDecision createSysDecision(PetriGame game, Place place, CommitmentSet c) {
+        return new SysDecision(game, place, c);
+    }
+
+    public CommitmentSet createCommitmentSet(CommitmentSet c) {
+        return new CommitmentSet(c);
+    }
+
+    public CommitmentSet createCommitmentSet(PetriGame game, boolean isTop) {
+        return new CommitmentSet(game, isTop);
+    }
+
+    public CommitmentSet createCommitmentSet(PetriGame game, Set<Transition> transitions) {
+        return new CommitmentSet(game, transitions);
+    }
+
+    public DecisionSet createDecisionSet(Set<ILLDecision> decisions, boolean mcut, boolean bad, PetriGame game) {
+        return new DecisionSet(decisions, mcut, bad, game);
     }
 
     @Override
@@ -78,7 +110,7 @@ public class LLDecisionSet extends Extensible implements IDecisionSet<Place, Tra
     }
 
     @Override
-    public Set<LLDecisionSet> resolveTop() {
+    public Set<DecisionSet> resolveTop() {
         Set<ILLDecision> dcs = new HashSet<>(decisions);
         List<List<Set<Transition>>> commitments = new ArrayList<>();
         List<Place> places = new ArrayList<>();
@@ -127,7 +159,7 @@ public class LLDecisionSet extends Extensible implements IDecisionSet<Place, Tra
      * @return
      */
     @Override
-    public Set<LLDecisionSet> fire(Transition t) {
+    public Set<DecisionSet> fire(Transition t) {
         if (bad) {
             return null;
         }
@@ -164,10 +196,10 @@ public class LLDecisionSet extends Extensible implements IDecisionSet<Place, Tra
         boolean hasTop = false;
         for (Place place : t.getPostset()) {
             if (game.isEnvironment(place)) {
-                ret.add(new LLEnvDecision(game, place));
+                ret.add(createEnvDecision(game, place));
             } else {
                 if (mcut) {
-                    ret.add(new LLSysDecision(game, place, new LLCommitmentSet(game, true)));
+                    ret.add(createSysDecision(game, place, createCommitmentSet(game, true)));
                     hasTop = true;
                 } else {
                     places.add(place);
@@ -176,13 +208,13 @@ public class LLDecisionSet extends Extensible implements IDecisionSet<Place, Tra
             }
         }
         if (mcut) {
-            Set<LLDecisionSet> decisionsets = new HashSet<>();
-            decisionsets.add(new LLDecisionSet(ret, !(hasTop || !checkMcut(ret)), calcBad(ret), game));
+            Set<DecisionSet> decisionsets = new HashSet<>();
+            decisionsets.add(createDecisionSet(ret, !(hasTop || !checkMcut(ret)), calcBad(ret), game));
             return decisionsets;
         } else {
             if (places.isEmpty()) {
-                Set<LLDecisionSet> decisionsets = new HashSet<>();
-                decisionsets.add(new LLDecisionSet(ret, checkMcut(ret), calcBad(ret), game));
+                Set<DecisionSet> decisionsets = new HashSet<>();
+                decisionsets.add(createDecisionSet(ret, checkMcut(ret), calcBad(ret), game));
                 return decisionsets;
             }
             return createDecisionSets(places, commitments, ret);
@@ -205,16 +237,16 @@ public class LLDecisionSet extends Extensible implements IDecisionSet<Place, Tra
         return converted;
     }
 
-    private Set<LLDecisionSet> createDecisionSets(List<Place> places, List<List<Set<Transition>>> commitments, Set<ILLDecision> dcs) {
-        Set<LLDecisionSet> decisionsets = new HashSet<>();
+    private Set<DecisionSet> createDecisionSets(List<Place> places, List<List<Set<Transition>>> commitments, Set<ILLDecision> dcs) {
+        Set<DecisionSet> decisionsets = new HashSet<>();
         CartesianProduct<Set<Transition>> prod = new CartesianProduct<>(commitments);
         for (Iterator<List<Set<Transition>>> iterator = prod.iterator(); iterator.hasNext();) {
             List<Set<Transition>> commitmentset = iterator.next();
             Set<ILLDecision> newdcs = new HashSet<>(dcs);
             for (int i = 0; i < commitmentset.size(); i++) {
-                newdcs.add(new LLSysDecision(game, places.get(i), new LLCommitmentSet(game, commitmentset.get(i)))); // can only be SysDecisions because env should not use commitments
+                newdcs.add(createSysDecision(game, places.get(i), createCommitmentSet(game, commitmentset.get(i)))); // can only be SysDecisions because env should not use commitments
             }
-            decisionsets.add(new LLDecisionSet(newdcs, checkMcut(newdcs), calcBad(newdcs), game));
+            decisionsets.add(createDecisionSet(newdcs, checkMcut(newdcs), calcBad(newdcs), game));
         }
         return decisionsets;
     }
@@ -347,12 +379,12 @@ public class LLDecisionSet extends Extensible implements IDecisionSet<Place, Tra
 //        }
 //    }
     @Override
-    public LLDecisionSet apply(Symmetry sym) {
+    public DecisionSet apply(Symmetry sym) {
         Set<ILLDecision> decs = new HashSet<>();
         for (ILLDecision decision : decisions) {
             decs.add((ILLDecision) decision.apply(sym));
         }
-        return new LLDecisionSet(decs, mcut, bad, game);
+        return createDecisionSet(decs, mcut, bad, game);
     }
 
     @Override
@@ -390,7 +422,7 @@ public class LLDecisionSet extends Extensible implements IDecisionSet<Place, Tra
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final LLDecisionSet other = (LLDecisionSet) obj;
+        final DecisionSet other = (DecisionSet) obj;
         if (this.mcut != other.mcut) {
             return false;
         }

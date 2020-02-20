@@ -9,11 +9,11 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.io.parser.ParseException;
 import uniol.apt.io.renderer.RenderException;
-import uniolunisaar.adam.ds.graph.hl.IntegerID;
-import uniolunisaar.adam.ds.graph.hl.SGGFlow;
-import uniolunisaar.adam.ds.graph.hl.SGGByHashCode;
-import uniolunisaar.adam.ds.graph.hl.approachLL.ILLDecision;
-import uniolunisaar.adam.ds.graph.hl.approachLL.LLDecisionSet;
+import uniolunisaar.adam.ds.graph.IntegerID;
+import uniolunisaar.adam.ds.graph.GameGraphFlow;
+import uniolunisaar.adam.ds.graph.GameGraphByHashCode;
+import uniolunisaar.adam.ds.graph.explicit.DecisionSet;
+import uniolunisaar.adam.ds.graph.explicit.ILLDecision;
 import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcExpression;
@@ -103,7 +103,7 @@ public class TestSGGBDD {
         BDDTools.saveGraph2PDF(outputDir + "CM21_bdd_gg", bddgraph, sol);
 
         // Test the new version
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
+        GameGraphByHashCode<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
         System.out.println("SIZE: " + graph.getStatesView().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
 //        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
@@ -152,7 +152,7 @@ public class TestSGGBDD {
     @Test
     public void testCM() throws IOException, InterruptedException, CalculationInterruptedException, NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
+        GameGraphByHashCode<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 
         System.out.println("SIZE: " + graph.getStatesView().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
@@ -286,7 +286,7 @@ public class TestSGGBDD {
         BDDTools.saveGraph2PDF(outputDir + "toyexmpale2", graph, sol);
         Assert.assertEquals(graph.getStates().size(), graph.getStates().size());
 
-        SGGByHashCode<Place, Transition, ILLDecision, LLDecisionSet, SGGFlow<Transition, IntegerID>> graphEX = SGGBuilderLL.getInstance().createByHashcode(hlgame);
+        GameGraphByHashCode<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, IntegerID>> graphEX = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 
         System.out.println("SIZE: " + graphEX.getStatesView().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "toyexmpleExplixit", graphEX);
