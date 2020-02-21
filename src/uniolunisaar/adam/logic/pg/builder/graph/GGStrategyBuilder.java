@@ -1,4 +1,4 @@
-package uniolunisaar.adam.logic.pg.builder.graph.explicit;
+package uniolunisaar.adam.logic.pg.builder.graph;
 
 import java.util.ArrayList;
 import java.util.Collection;

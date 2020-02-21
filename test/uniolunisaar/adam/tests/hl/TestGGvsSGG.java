@@ -37,6 +37,9 @@ import uniolunisaar.adam.logic.pg.builder.graph.explicit.GGBuilder;
 import uniolunisaar.adam.logic.pg.builder.graph.hl.SGGBuilderHL;
 import uniolunisaar.adam.logic.pg.builder.graph.hl.SGGBuilderLL;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
+import uniolunisaar.adam.logic.pg.solver.explicit.ExplicitASafetyWithoutType2Solver;
+import uniolunisaar.adam.logic.pg.solver.explicit.ExplicitSolverFactory;
+import uniolunisaar.adam.logic.pg.solver.explicit.ExplicitSolverOptions;
 import uniolunisaar.adam.logic.pg.solver.hl.HLSolverOptions;
 import uniolunisaar.adam.logic.pg.solver.hl.bddapproach.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.logic.pg.solver.hl.bddapproach.HLASafetyWithoutType2SolverBDDApproach;
@@ -78,7 +81,7 @@ public class TestGGvsSGG {
     @Test
     public void CM() throws ModuleException, FileNotFoundException, NotSupportedGameException, NetNotSafeException, InvalidPartitionException, NoSuitableDistributionFoundException, CalculationInterruptedException, InterruptedException, IOException, CouldNotFindSuitableConditionException, SolvingException, Exception {
         int machines = 2;
-        int orders = 2;
+        int orders = 1;
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, orders, true);
 //        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersion(machines, orders, true);
 //        compareGraphs("CM" + machines + "_" + orders, hlgame);
@@ -127,15 +130,18 @@ public class TestGGvsSGG {
         HLASafetyWithoutType2SolverLLApproach solverLL = (HLASafetyWithoutType2SolverLLApproach) HLSolverFactoryLLApproach.getInstance().getSolver(hlgame, new HLSolverOptions());
         boolean ll = solverLL.existsWinningStrategy();
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BDD APPROACH
-        HLASafetyWithoutType2SolverBDDApproach solverBDD = (HLASafetyWithoutType2SolverBDDApproach) HLSolverFactoryBDDApproach.getInstance().getSolver(hlgame, new BDDSolverOptions(true));
-        boolean bdd = solverBDD.existsWinningStrategy();
+//        HLASafetyWithoutType2SolverBDDApproach solverBDD = (HLASafetyWithoutType2SolverBDDApproach) HLSolverFactoryBDDApproach.getInstance().getSolver(hlgame, new BDDSolverOptions(true));
+//        boolean bdd = solverBDD.existsWinningStrategy();
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EXPLICIT
-        
-        
+        PetriGame pgame = HL2PGConverter.convert(hlgame, true, true);
+        ExplicitASafetyWithoutType2Solver solverExp = (ExplicitASafetyWithoutType2Solver) ExplicitSolverFactory.getInstance().getSolver(pgame, new ExplicitSolverOptions());
+        boolean expl = solverExp.existsWinningStrategy();
+
         Assert.assertEquals(hl, exists, "HL");
         Assert.assertEquals(ll, exists, "LL");
-        Assert.assertEquals(bdd, exists, "BDD");
+//        Assert.assertEquals(bdd, exists, "BDD");
+        Assert.assertEquals(expl, exists, "expl");
     }
 
     private void compareGraphStrategies(String name, HLPetriGame hlgame) throws Exception {
@@ -151,7 +157,13 @@ public class TestGGvsSGG {
         GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> stratLL = solverLL.calculateGraphStrategy();
         HLTools.saveGraph2PDF(outputDir + name + "LL_strat", stratLL);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BDD APPROACH
-        HLASafetyWithoutType2SolverBDDApproach solverBDD = (HLASafetyWithoutType2SolverBDDApproach) HLSolverFactoryBDDApproach.getInstance().getSolver(hlgame, new BDDSolverOptions(true));
-        BDDGraph stratBDD = solverBDD.calculateGraphStrategy();
+//        HLASafetyWithoutType2SolverBDDApproach solverBDD = (HLASafetyWithoutType2SolverBDDApproach) HLSolverFactoryBDDApproach.getInstance().getSolver(hlgame, new BDDSolverOptions(true));
+//        BDDGraph stratBDD = solverBDD.calculateGraphStrategy();
+
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EXPLICIT
+        PetriGame pgame = HL2PGConverter.convert(hlgame, true, true);
+        ExplicitASafetyWithoutType2Solver solverExp = (ExplicitASafetyWithoutType2Solver) ExplicitSolverFactory.getInstance().getSolver(pgame, new ExplicitSolverOptions());
+        GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> stratExpl = solverExp.calculateGraphStrategy();
+        HLTools.saveGraph2PDF(outputDir + name + "Expl_strat", stratExpl);
     }
 }

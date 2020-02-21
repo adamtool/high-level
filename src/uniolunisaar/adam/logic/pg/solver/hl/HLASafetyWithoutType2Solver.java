@@ -11,7 +11,7 @@ import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.petrinet.objectives.Safety;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.pg.NoStrategyExistentException;
-import uniolunisaar.adam.logic.pg.builder.graph.explicit.GGStrategyBuilder;
+import uniolunisaar.adam.logic.pg.builder.graph.GGStrategyBuilder;
 
 /**
  *
