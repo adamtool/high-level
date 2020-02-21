@@ -11,7 +11,7 @@ import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.petrinet.objectives.Safety;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.pg.NoStrategyExistentException;
-import uniolunisaar.adam.logic.pg.builder.graph.hl.SGGStrategyBuilder;
+import uniolunisaar.adam.logic.pg.builder.graph.explicit.GGStrategyBuilder;
 
 /**
  *
@@ -45,8 +45,9 @@ public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, 
         return winRegionSafety(p1, null).contains(getGraph().getInitial());
     }
 
-    public GameGraph<P, T, DC, S, F> calculateGraphStrategy(GameGraph<P, T, DC, S, F> graph, boolean p1) throws CalculationInterruptedException {
-        SGGStrategyBuilder<P, T, DC, S, F> builder = new SGGStrategyBuilder<>();
+    public GameGraph<P, T, DC, S, F> calculateGraphStrategy() throws CalculationInterruptedException {
+        boolean p1 = false;
+        GGStrategyBuilder<P, T, DC, S, F> builder = new GGStrategyBuilder<>();
         return builder.calculateGraphStrategy(getGraph(), p1, winRegionSafety(p1, null));
     }
 

@@ -6,7 +6,7 @@ import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.Flow;
 import uniolunisaar.adam.logic.pg.solver.hl.bddapproach.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
-import uniolunisaar.adam.logic.pg.builder.graph.symbolic.bddapproach.BDDGraphBuilder;
+import uniolunisaar.adam.logic.pg.builder.graph.symbolic.bddapproach.BDDGraphAndGStrategyBuilder;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDState;
 
 /**
@@ -18,7 +18,7 @@ import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDState;
  * @author Manuel Gieseking
  */
 @Deprecated
-public class BDDSymbolicGraphBuilder extends BDDGraphBuilder {
+public class BDDSymbolicGraphBuilder extends BDDGraphAndGStrategyBuilder {
 
     private static BDDSymbolicGraphBuilder instance = null;
 

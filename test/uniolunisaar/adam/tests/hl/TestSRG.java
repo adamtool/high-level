@@ -335,7 +335,7 @@ public class TestSRG {
         // Test  the old graph game
         BDDSolverOptions opt = new BDDSolverOptions(true);
         opt.setNoType2(true);
-        BDDSolver<? extends Condition> sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), opt);
+        BDDSolver<? extends Condition<?>> sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), opt);
         BDDGraph bddgraph = sol.getGraphGame();
 //        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
 //        BDDTools.saveGraph2PDF(outputDir + "CM21_bdd_gg", bddgraph, sol);
@@ -443,7 +443,7 @@ public class TestSRG {
 //        PGTools.savePG2PDF(outputDir + "DWs" + size + "_ll", game, false, 5); // 1->3, 2->5
 //        BDDSolverOptions opt = new BDDSolverOptions();
 //        opt.setNoType2(true);
-//        BDDSolver<? extends Condition> sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, false, false), false, opt);
+//        BDDSolver<? extends Condition<?>> sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, false, false), false, opt);
 //        BDDGraph bddgraph = sol.getGraphGame();
 //        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
 ////        BDDTools.saveGraph2PDF(outputDir + "DWs" + size + "_bdd_gg", bddgraph, sol);

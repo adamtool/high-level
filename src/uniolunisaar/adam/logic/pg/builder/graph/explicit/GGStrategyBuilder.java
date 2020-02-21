@@ -1,4 +1,4 @@
-package uniolunisaar.adam.logic.pg.builder.graph.hl;
+package uniolunisaar.adam.logic.pg.builder.graph.explicit;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,7 +20,7 @@ import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
  * @param <S>
  * @param <DC>
  */
-public class SGGStrategyBuilder<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends GameGraphFlow<T, S>> {
+public class GGStrategyBuilder<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends GameGraphFlow<T, S>> {
 
     public GameGraph<P, T, DC, S, F> calculateGraphStrategy(GameGraph<P, T, DC, S, F> graph, boolean p1, Set<S> winningRegion) throws CalculationInterruptedException {
         S init = graph.getInitial();

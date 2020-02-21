@@ -20,6 +20,7 @@ import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.pg.InvalidPartitionException;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
+import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.exceptions.pg.NoStrategyExistentException;
 import uniolunisaar.adam.logic.pg.builder.graph.hl.BDDSGGBuilder;
 import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolver;
@@ -376,6 +377,11 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
         Benchmarks.getInstance().stop(Benchmarks.Parts.GRAPH_STRAT);
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS 
         return g;
+    }
+
+    @Override
+    protected PetriGame calculateStrategy() throws NoStrategyExistentException, CalculationInterruptedException {
+        return super.calculateStrategy();
     }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%% END The relevant ability of the solver %%%%%%%%%%%%
