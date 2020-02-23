@@ -8,6 +8,7 @@ import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.petrinet.objectives.Safety;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.pg.NoStrategyExistentException;
+import uniolunisaar.adam.logic.pg.builder.petrigame.PGStrategyBuilder;
 
 /**
  *
@@ -29,7 +30,7 @@ public class ExplicitASafetyWithoutType2Solver extends AbstractExplicitSolver<Sa
 
     @Override
     protected PetriGame calculateStrategy() throws NoStrategyExistentException, CalculationInterruptedException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return PGStrategyBuilder.getInstance().builtStrategy(getGame(), calculateGraphStrategy());
     }
 
 }

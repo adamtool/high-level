@@ -8,7 +8,7 @@ import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
  *
  * @author Manuel Gieseking
  */
-public class ColoredPlace {
+public class ColoredPlace implements IPlace<ColoredTransition> {
 
     private final Place place;
     private final ColorToken color;

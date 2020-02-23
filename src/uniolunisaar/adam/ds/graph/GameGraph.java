@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * ToDo: Merge this class with the Graph in module PetriGames.
+ *
  * Attention: Later modification would yield inconsistent states (pre-,
  * postsets). Think of having a general class which could be used for the
  * framework and a specialized class optimized to performance gains.

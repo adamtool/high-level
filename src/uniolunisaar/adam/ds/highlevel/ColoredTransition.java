@@ -26,7 +26,7 @@ import uniolunisaar.adam.tools.CartesianProduct;
  *
  * @author Manuel Gieseking
  */
-public class ColoredTransition {
+public class ColoredTransition implements ITransition<ColoredPlace> {
 
     private final Transition transition;
     private final Valuation val;
@@ -73,6 +73,7 @@ public class ColoredTransition {
         return hlgame.getPredicate(transition).check(val);
     }
 
+    @Override
     public Set<ColoredPlace> getPreset() {
         Set<ColoredPlace> ret = new HashSet<>();
         for (Flow f : transition.getPresetEdges()) {
@@ -81,6 +82,7 @@ public class ColoredTransition {
         return ret;
     }
 
+    @Override
     public Set<ColoredPlace> getPostset() {
         Set<ColoredPlace> ret = new HashSet<>();
         for (Flow f : transition.getPostsetEdges()) {
