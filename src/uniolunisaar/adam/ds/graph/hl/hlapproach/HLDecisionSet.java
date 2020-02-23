@@ -257,7 +257,12 @@ public class HLDecisionSet extends Extensible implements IDecisionSet<ColoredPla
         return true;
     }
 
-    private Set<ColoredPlace> getMarking(Set<IHLDecision> dcs) {
+    @Override
+    public Set<ColoredPlace> getMarking() {
+        return getMarking(decisions);
+    }
+
+    public Set<ColoredPlace> getMarking(Set<IHLDecision> dcs) {
         Set<ColoredPlace> marking = new HashSet<>();
         for (IHLDecision dc : dcs) {
             marking.add(dc.getPlace());

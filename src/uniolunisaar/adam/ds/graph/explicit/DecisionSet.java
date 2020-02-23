@@ -267,6 +267,11 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
         return true;
     }
 
+    @Override
+    public Set<Place> getMarking() {
+        return getMarking(decisions);
+    }
+
     private Set<Place> getMarking(Set<ILLDecision> dcs) {
         Set<Place> marking = new HashSet<>();
         for (ILLDecision dc : dcs) {

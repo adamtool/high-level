@@ -35,6 +35,8 @@ public interface IDecisionSet<P, T, DC extends IDecision<P, T>, S extends IDecis
 //    public IDecisionSet<P, T, DC> apply(Symmetry sym);
     public S apply(Symmetry sym);
 
+    public Set<P> getMarking();
+
     public boolean isMcut();
 
     public boolean isBad();

@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import uniol.apt.adt.pn.Marking;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.util.Pair;
@@ -16,7 +15,8 @@ import uniolunisaar.adam.ds.graph.GameGraph;
 import uniolunisaar.adam.ds.graph.GameGraphFlow;
 import uniolunisaar.adam.ds.graph.IDecision;
 import uniolunisaar.adam.ds.graph.IDecisionSet;
-import uniolunisaar.adam.ds.graph.StateIdentifier;
+import uniolunisaar.adam.ds.graph.explicit.DecisionSet;
+import uniolunisaar.adam.ds.graph.explicit.ILLDecision;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.PNWTTools;
@@ -43,40 +43,46 @@ public class PGStrategyBuilder {
     PGStrategyBuilder() {
     }
 
+    public PetriGame builtStrategy(PetriGame game, GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy) {
+        PetriGame strategy = builtStrategy(game.getName(), ggStrategy);
+
+        TransitCalculator.copyTokenflowsFromGameToStrategy(game, strategy);
+        return strategy;
+    }
+
     /**
-     * Only meaningful for the explicit graph strategies. The symbolic variant
+     * Only meaningful for the explicit graph strategies.The symbolic variant
      * can be transformed into such an explicit version or a complete different
      * algorithm has to be implemented.
      *
-     * @param <P>
-     * @param <DC>
-     * @param <S>
-     * @param <ID>
-     * @param <F>
-     * @param game
-     * @param graph
+     * @param name
+     * @param ggStrategy
      * @return
      */
-    public <P, DC extends IDecision<P, Transition>, S extends IDecisionSet<P, Transition, DC, S>, ID extends StateIdentifier, F extends GameGraphFlow<Transition, ID>>
-            PetriGame builtStrategy(PetriGame game, GameGraph<P, Transition, DC, S, GameGraphFlow<Transition, S>> graph) {
+//    public <P, DC extends IDecision<P, Transition>, S extends IDecisionSet<P, Transition, DC, S>, ID extends StateIdentifier, F extends GameGraphFlow<Transition, ID>>
+//            PetriGame builtStrategy(PetriGame game, GameGraph<P, Transition, DC, S, GameGraphFlow<Transition, S>> ggStrategy) {
+    public PetriGame builtStrategy(String name, GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy) {
         Logger.getInstance().addMessage("Calculate Petri game strategy.");
-        PetriGame strategy = new PetriGame("Winning strategy of the system players of the net '" + game.getName() + "'.");
-        S init = graph.getInitial();
+        PetriGame strategy = new PetriGame("Winning strategy of the system players of the net '" + name + "'.");
+        DecisionSet init = ggStrategy.getInitial();
         // create the initial places
-        List<Place> initial = new ArrayList<>();
-        Marking initialMarking = game.getInitialMarking();
-        for (Place p : game.getPlaces()) {
-            if (initialMarking.getToken(p).getValue() > 0) {
-                Place place = strategy.createPlace(p.getId() + DELIM + init.getId());
-                strategy.setOrigID(place, p.getId());
-                place.copyExtensions(p);
-                place.setInitialToken(1);
-                initial.add(place);
-            }
-        }
+        List<Place> initial = new ArrayList<>(init.getMarking());
+
+        // old: just done from the initial marking of the game
+//        List<Place> initial = new ArrayList<>();
+//        Marking initialMarking = game.getInitialMarking();
+//        for (Place p : game.getPlaces()) {
+//            if (initialMarking.getToken(p).getValue() > 0) {
+//                Place place = strategy.createPlace(p.getId() + DELIM + init.getId());
+//                strategy.setOrigID(place, p.getId());
+//                place.copyExtensions(p);
+//                place.setInitialToken(1);
+//                initial.add(place);
+//            }
+//        }
         // calculate Petri game
         try { // TODO: debug!
-            calculateStrategyByBFS(graph, strategy, init, initial);
+            calculateStrategyByBFS(ggStrategy, strategy, init, initial);
         } catch (Exception e) {
             try {
                 PNWTTools.savePnwt2PDF("error_petrinet", strategy, true);
@@ -85,19 +91,19 @@ public class PGStrategyBuilder {
             }
         }
 
-        TransitCalculator.copyTokenflowsFromGameToStrategy(game, strategy);
         Logger.getInstance().addMessage("Done calculating Petri game strategy.");
         return strategy;
     }
 
-    private <P, DC extends IDecision<P, Transition>, S extends IDecisionSet<P, Transition, DC, S>, ID extends StateIdentifier, F extends GameGraphFlow<Transition, ID>>
-            void calculateStrategyByBFS(GameGraph<P, Transition, DC, S, GameGraphFlow<Transition, S>> graph, PetriGame strategy, S initialState, List<Place> initialMarking) {
+//    private <P, DC extends IDecision<P, Transition>, S extends IDecisionSet<P, Transition, DC, S>, ID extends StateIdentifier, F extends GameGraphFlow<Transition, ID>>
+//            void calculateStrategyByBFS(GameGraph<P, Transition, DC, S, GameGraphFlow<Transition, S>> ggStrategy, PetriGame strategy, S initialState, List<Place> initialMarking) {
+    private void calculateStrategyByBFS(GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy, PetriGame strategy, DecisionSet initialState, List<Place> initialMarking) {
 
-        Map<S, List<Transition>> transitionMap = new HashMap<>();
-        Map<S, List<Transition>> stratTransitionMap = new HashMap<>();
+        Map<DecisionSet, List<Transition>> transitionMap = new HashMap<>();
+        Map<DecisionSet, List<Transition>> stratTransitionMap = new HashMap<>();
 
         Map<Integer, List<Place>> visitedCuts = new HashMap<>();
-        LinkedList<Pair<S, List<Place>>> todoStates = new LinkedList<>();
+        LinkedList<Pair<DecisionSet, List<Place>>> todoStates = new LinkedList<>();
         todoStates.add(new Pair<>(initialState, initialMarking));
         // add to visited cuts 
         visitedCuts.put(initialState.getId(), initialMarking);
@@ -107,11 +113,11 @@ public class PGStrategyBuilder {
 //                Logger.getInstance().addError(e.getMessage(), e);
 //                throw e;
 //            }
-            Pair<S, List<Place>> state = todoStates.poll();
-            S prevState = state.getFirst();
+            Pair<DecisionSet, List<Place>> state = todoStates.poll();
+            DecisionSet prevState = state.getFirst();
             List<Place> prevMarking = state.getSecond();
-            for (GameGraphFlow<Transition, S> flow : graph.getPostsetView(prevState)) {
-                S succState = graph.getState(flow.getTarget());
+            for (GameGraphFlow<Transition, DecisionSet> flow : ggStrategy.getPostsetView(prevState)) {
+                DecisionSet succState = ggStrategy.getState(flow.getTarget());
                 List<Place> succMarking = new ArrayList<>(prevMarking);
 
                 // Jump over tops (tau transitions)

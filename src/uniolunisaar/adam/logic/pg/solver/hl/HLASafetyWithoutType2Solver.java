@@ -3,15 +3,21 @@ package uniolunisaar.adam.logic.pg.solver.hl;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import uniol.apt.adt.pn.Place;
+import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.IDecision;
 import uniolunisaar.adam.ds.graph.IDecisionSet;
 import uniolunisaar.adam.ds.graph.GameGraph;
 import uniolunisaar.adam.ds.graph.GameGraphFlow;
+import uniolunisaar.adam.ds.graph.explicit.DecisionSet;
+import uniolunisaar.adam.ds.graph.explicit.ILLDecision;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.petrinet.objectives.Safety;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.pg.NoStrategyExistentException;
 import uniolunisaar.adam.logic.pg.builder.graph.GGStrategyBuilder;
+import uniolunisaar.adam.logic.pg.builder.petrigame.PGStrategyBuilder;
+import uniolunisaar.adam.logic.pg.converter.hl.SGStrat2Graphstrategy;
 
 /**
  *
@@ -51,6 +57,10 @@ public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, 
         return builder.calculateGraphStrategy(getGraph(), p1, winRegionSafety(p1, null));
     }
 
+    public GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateLLGraphStrategy() throws CalculationInterruptedException {
+        return SGStrat2Graphstrategy.builtStrategy(calculateGraphStrategy());
+    }
+
     @Override
     protected boolean exWinStrat() throws CalculationInterruptedException {
         return isWinning(true);
@@ -58,7 +68,7 @@ public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, 
 
     @Override
     protected PetriGame calculateStrategy() throws NoStrategyExistentException, CalculationInterruptedException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return PGStrategyBuilder.getInstance().builtStrategy(getGame().getName(), calculateLLGraphStrategy());
     }
 
 }
