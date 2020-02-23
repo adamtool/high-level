@@ -56,12 +56,14 @@ public abstract class AbstractSolver<W extends Condition<W>, G extends IPetriGam
             // all predecessors of the states which had lastly been added
             Set<S> toAdd = new HashSet<>();
             for (S state : lastAdded) {
-                Collection<S> predecessors = getGraph().getPresetView(state);
-                for (S pre : predecessors) { // all predecessors
+                Collection<F> predecessors = getGraph().getPresetView(state);
+                for (F preFlow : predecessors) { // all predecessors
+                    S pre = preFlow.getSource();
                     boolean belongsToThePlayer = (p1 && pre.isMcut()) || (!p1 && !pre.isMcut()); // it belongs to the current player
-                    Collection<S> successors = getGraph().getPostsetView(pre);
+                    Collection<F> successors = getGraph().getPostsetView(pre);
                     boolean allInAttr = true;
-                    for (S succ : successors) { /// all successors
+                    for (F succFlow : successors) { /// all successors
+                        S succ = succFlow.getTarget();
                         if (attr.contains(succ)) { // is in the attractor
                             if (belongsToThePlayer) { // it's belongs to the current player
                                 // thus one successor in the attractor is enough

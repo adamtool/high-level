@@ -23,23 +23,26 @@ import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 public class GGStrategyBuilder<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends GameGraphFlow<T, S>> {
 
     public GameGraph<P, T, DC, S, F> calculateGraphStrategy(GameGraph<P, T, DC, S, F> graph, boolean p1, Set<S> winningRegion) throws CalculationInterruptedException {
-        S init = graph.getInitial();
+        S init = graph.getInitial();// Create the initial state
         GameGraph<P, T, DC, S, F> strat = new GameGraph<>(graph.getName() + "_HLstrat", init);
         LinkedList<S> added = new LinkedList<>();
         added.add(init);
-        while (!added.isEmpty()) {
+        while (!added.isEmpty()) { // as long as new successors had been added
             S state = added.pop();
             boolean belongsToThePlayer = (p1 && state.isMcut()) || (!p1 && !state.isMcut()); // it belongs to the current player
-            Collection<S> successors = graph.getPostsetView(state);
-            for (S successor : successors) {
-                if (winningRegion.contains(successor) && !strat.contains(successor)) {
-                    strat.addState(successor);
-//                    strat.addFlow(new SGGFlow<T,F>(state.getId(), null, successor.getId()));
-                    List<F> flows = getFlow(graph, state, successor, belongsToThePlayer); // todo: replace this, that is expensive
-                    for (F flow : flows) {
-                        strat.addFlow(flow);
+//            Collection<S> successors = graph.getPostsetView(state);
+//            for (S successor : successors) {
+            Collection<F> successors = graph.getPostsetView(state);
+            for (F succFlow : successors) {
+                S successor = succFlow.getTarget();
+                if (winningRegion.contains(successor)) {
+                    if (!strat.contains(successor)) {
+                        strat.addState(successor);
+                        strat.addFlow(succFlow);
+                        added.push(successor);
+                    } else {
+                        strat.addFlow(succFlow);
                     }
-                    added.push(successor);
                     if (belongsToThePlayer) {
                         break;
                     }
@@ -57,6 +60,7 @@ public class GGStrategyBuilder<P, T, DC extends IDecision<P, T>, S extends IDeci
      * @param post
      * @return
      */
+    @Deprecated
     private List<F> getFlow(GameGraph<P, T, DC, S, F> graph, S pre, S post, boolean one) {
         List<F> flows = new ArrayList<>();
         for (F f : graph.getFlowsView()) {

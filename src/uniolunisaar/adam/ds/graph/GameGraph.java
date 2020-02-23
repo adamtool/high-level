@@ -23,8 +23,11 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
 
     private final Set<S> states;
     private final Set<S> badStates;
-    private final Map<S, Set<S>> preSet;
-    private final Map<S, Set<S>> postSet;
+//    private final Map<S, Set<S>> preSet;
+//    private final Map<S, Set<S>> postSet;
+    // better safe the flows
+    private final Map<S, Set<F>> preSet;
+    private final Map<S, Set<F>> postSet;
 //    private final Set<S> V0;
 //    private final Set<S> V1;
 
@@ -90,6 +93,7 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
         return Collections.unmodifiableCollection(getBadStates());
     }
 
+    @Deprecated
     private Set<S> calcPostset(S state) {
         Set<S> post = new HashSet<>();
         for (F flow : getFlows()) {
@@ -100,30 +104,51 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
         return post;
     }
 
+    private Set<F> calculatePostset(S state) {
+        Set<F> post = new HashSet<>();
+        for (F flow : getFlows()) {
+            if (flow.getSource().equals(state)) {
+                post.add(flow);
+            }
+        }
+        return post;
+    }
+
     /**
      * Attention: don't change the set when using this method
      *
      * @param state
      * @return
      */
-    Set<S> getPostset(S state) {
-        Set<S> post = postSet.get(state);
+    Set<F> getPostset(S state) {
+        Set<F> post = postSet.get(state);
         if (post == null) {
-            post = calcPostset(state);
+            post = calculatePostset(state);
             postSet.put(state, post);
         }
         return post;
     }
 
-    public Collection<S> getPostsetView(S state) {
+    public Collection<F> getPostsetView(S state) {
         return Collections.unmodifiableCollection(getPostset(state));
     }
 
+    @Deprecated
     private Set<S> calcPreset(S state) {
         Set<S> pre = new HashSet<>();
         for (F flow : getFlows()) {
             if (flow.getTarget().equals(state)) {
                 pre.add(flow.getSource());
+            }
+        }
+        return pre;
+    }
+
+    private Set<F> calculatePreset(S state) {
+        Set<F> pre = new HashSet<>();
+        for (F flow : getFlows()) {
+            if (flow.getTarget().equals(state)) {
+                pre.add(flow);
             }
         }
         return pre;
@@ -135,16 +160,16 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
      * @param state
      * @return
      */
-    Set<S> getPreset(S state) {
-        Set<S> pre = preSet.get(state);
+    Set<F> getPreset(S state) {
+        Set<F> pre = preSet.get(state);
         if (pre == null) {
-            pre = calcPreset(state);
+            pre = calculatePreset(state);
             preSet.put(state, pre);
         }
         return pre;
     }
 
-    public Collection<S> getPresetView(S state) {
+    public Collection<F> getPresetView(S state) {
         return Collections.unmodifiableCollection(getPreset(state));
     }
 
