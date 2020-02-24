@@ -165,6 +165,8 @@ public class TestGGvsSGG {
     }
 
     private void compareGraphStrategies(String name, HLPetriGame hlgame) throws Exception {
+        HLTools.saveHLPG2PDF(outputDir + name + "PG", hlgame);
+
         long time, diff;
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SYMBOLIC
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HIGH LEVEL
@@ -174,6 +176,8 @@ public class TestGGvsSGG {
         GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> stratHL = solverHL.calculateGraphStrategy();
         diff = System.currentTimeMillis() - time;
         HLTools.saveGraph2PDF(outputDir + name + "HL_Gstrat", stratHL);
+        GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> stratHLlow = solverHL.calculateLLGraphStrategy();
+        HLTools.saveGraph2PDF(outputDir + name + "HL_Gstrat_low", stratHLlow);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOW LEVEL
         time = System.currentTimeMillis();
 //        HLSolver<? extends Condition<?>, ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> solver = HLSolverFactoryHLApproach.getInstance().getSolver(hlgame, new HLSolverOptions());
@@ -181,6 +185,8 @@ public class TestGGvsSGG {
         GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> stratLL = solverLL.calculateGraphStrategy();
         diff = System.currentTimeMillis() - time;
         HLTools.saveGraph2PDF(outputDir + name + "LL_Gstrat", stratLL);
+        GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> stratLLlow = solverLL.calculateLLGraphStrategy();
+        HLTools.saveGraph2PDF(outputDir + name + "LL_Gstrat_low", stratLLlow);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BDD APPROACH
 //        HLASafetyWithoutType2SolverBDDApproach solverBDD = (HLASafetyWithoutType2SolverBDDApproach) HLSolverFactoryBDDApproach.getInstance().getSolver(hlgame, new BDDSolverOptions(true));
 //        BDDGraph stratBDD = solverBDD.calculateGraphStrategy();

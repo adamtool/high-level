@@ -268,7 +268,8 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
     }
 
     /**
-     * This method is only for the creation of the explicit graph strategy.Attention: this returns not a copy but the real object!
+     * This method is only for the creation of the explicit graph
+     * strategy.Attention: this returns not a copy but the real object!
      *
      *
      * @param game
@@ -482,4 +483,9 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
     public String toString() {
         return toDot();
     }
+
+    public PetriGame getGame() {
+        return game;
+    }
+
 }

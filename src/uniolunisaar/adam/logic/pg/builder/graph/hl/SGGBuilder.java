@@ -30,7 +30,7 @@ public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDe
 
     @Override
     protected <ID extends StateIdentifier> void addStatesIteratively(HLPetriGame game, AbstractGameGraph<P, T, DC, S, ID, GameGraphFlow<T, ID>> srg, S init, Collection<Transition> allTransitions, Collection<Transition> systemTransitions) {
-        syms = new Symmetries(game.getBasicColorClasses());
+        syms = game.getSymmetries();
         super.addStatesIteratively(game, srg, init, allTransitions, systemTransitions);
     }
 

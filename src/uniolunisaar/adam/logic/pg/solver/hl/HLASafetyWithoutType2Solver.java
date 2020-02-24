@@ -10,7 +10,6 @@ import uniolunisaar.adam.ds.graph.GameGraphFlow;
 import uniolunisaar.adam.ds.petrinet.objectives.Safety;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 import uniolunisaar.adam.logic.pg.builder.graph.GGStrategyBuilder;
-import uniolunisaar.adam.logic.pg.converter.hl.SGStrat2Graphstrategy;
 
 /**
  *
@@ -51,9 +50,7 @@ public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, 
     }
 
 //    public GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateLLGraphStrategy() throws CalculationInterruptedException {
-    public GameGraph<P, T, DC, S, F> calculateLLGraphStrategy() throws CalculationInterruptedException {
-        return SGStrat2Graphstrategy.builtStrategy(calculateGraphStrategy());
-    }
+    public abstract GameGraph<P, T, DC, S, F> calculateLLGraphStrategy() throws CalculationInterruptedException;
 
     @Override
     protected boolean exWinStrat() throws CalculationInterruptedException {

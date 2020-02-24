@@ -26,6 +26,7 @@ import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcType;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.SetMinusTerm;
 import uniolunisaar.adam.ds.highlevel.predicate.Constants;
 import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
+import uniolunisaar.adam.ds.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.highlevel.terms.SuccessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.petrigame.IPetriGame;
@@ -45,6 +46,7 @@ import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 public class HLPetriGame extends Extensible implements IPetriGame {
 
     private final Map<String, BasicColorClass> colorClasses;
+    private Symmetries symmetries;
     private final PetriGame game;
 
     public HLPetriGame(HLPetriGame hlgame) {
@@ -556,4 +558,16 @@ public class HLPetriGame extends Extensible implements IPetriGame {
         winCon.buffer(game);
     }
 
+    /**
+     * Attention: if you later changed the basic color classes, the symmetries
+     * may possibly not fit anymore.
+     *
+     * @return
+     */
+    public Symmetries getSymmetries() {
+        if (symmetries == null) {
+            symmetries = new Symmetries(getBasicColorClasses());
+        }
+        return symmetries;
+    }
 }
