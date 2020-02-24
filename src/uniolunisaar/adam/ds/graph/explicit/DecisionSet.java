@@ -267,6 +267,19 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
         return true;
     }
 
+    /**
+     * This method is only for the creation of the explicit graph strategy.Attention: this returns not a copy but the real object!
+     *
+     *
+     * @param game
+     * @return
+     */
+    @Override
+    @Deprecated
+    public DecisionSet createLLDecisionSet(PetriGame game) {
+        return this;
+    }
+
     @Override
     public Set<Place> getMarking() {
         return getMarking(decisions);

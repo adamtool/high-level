@@ -1,7 +1,9 @@
 package uniolunisaar.adam.ds.graph;
 
 import java.util.Set;
+import uniolunisaar.adam.ds.graph.explicit.DecisionSet;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
+import uniolunisaar.adam.ds.petrigame.PetriGame;
 
 /**
  *
@@ -36,6 +38,9 @@ public interface IDecisionSet<P, T, DC extends IDecision<P, T>, S extends IDecis
     public S apply(Symmetry sym);
 
     public Set<P> getMarking();
+
+    @Deprecated
+    public DecisionSet createLLDecisionSet(PetriGame game);
 
     public boolean isMcut();
 

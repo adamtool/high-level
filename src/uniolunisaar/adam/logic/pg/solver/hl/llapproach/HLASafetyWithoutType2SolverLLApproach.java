@@ -7,8 +7,12 @@ import uniolunisaar.adam.ds.graph.GameGraphFlow;
 import uniolunisaar.adam.ds.graph.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.explicit.ILLDecision;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
+import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.petrinet.objectives.Safety;
+import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
+import uniolunisaar.adam.exceptions.pg.NoStrategyExistentException;
 import uniolunisaar.adam.logic.pg.builder.graph.hl.SGGBuilderLL;
+import uniolunisaar.adam.logic.pg.builder.petrigame.LLPGStrategyBuilder;
 import uniolunisaar.adam.logic.pg.solver.hl.HLASafetyWithoutType2Solver;
 import uniolunisaar.adam.logic.pg.solver.hl.HLSolverOptions;
 import uniolunisaar.adam.logic.pg.solver.hl.HLSolvingObject;
@@ -26,6 +30,11 @@ public class HLASafetyWithoutType2SolverLLApproach extends HLASafetyWithoutType2
     @Override
     protected GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(HLPetriGame hlgame) {
         return SGGBuilderLL.getInstance().create(hlgame);
+    }
+
+    @Override
+    protected PetriGame calculateStrategy() throws NoStrategyExistentException, CalculationInterruptedException {
+        return LLPGStrategyBuilder.getInstance().builtStrategy(getGame().getName(), calculateLLGraphStrategy());
     }
 
 }

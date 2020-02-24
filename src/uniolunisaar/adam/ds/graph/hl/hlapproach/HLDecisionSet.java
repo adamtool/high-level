@@ -18,6 +18,9 @@ import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.tools.CartesianProduct;
 import uniolunisaar.adam.tools.Tools;
 import uniolunisaar.adam.ds.graph.IDecisionSet;
+import uniolunisaar.adam.ds.graph.explicit.DecisionSet;
+import uniolunisaar.adam.ds.graph.explicit.ILLDecision;
+import uniolunisaar.adam.ds.petrigame.PetriGame;
 
 /**
  *
@@ -260,6 +263,23 @@ public class HLDecisionSet extends Extensible implements IDecisionSet<ColoredPla
     @Override
     public Set<ColoredPlace> getMarking() {
         return getMarking(decisions);
+    }
+
+    /**
+     *
+     * This method is only for the creation of the explicit graph strategy.
+     *
+     * @param game
+     * @return
+     */
+    @Override
+    @Deprecated
+    public DecisionSet createLLDecisionSet(PetriGame game) {
+        Set<ILLDecision> lldecisions = new HashSet<>();
+        for (IHLDecision decision : this.decisions) {
+            lldecisions.add(decision.toLLDecision(game));
+        }
+        return new DecisionSet(lldecisions, mcut, bad, null);
     }
 
     public Set<ColoredPlace> getMarking(Set<IHLDecision> dcs) {

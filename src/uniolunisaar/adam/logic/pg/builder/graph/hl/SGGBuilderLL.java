@@ -116,6 +116,9 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, Dec
      *
      * Compare Huber's et al. algorithm
      *
+     * Here only the number of states are reduced. Not the reduction of the edges
+     * presented in the RvG paper is implemented.
+     * 
      * @param hlgame
      * @return
      */

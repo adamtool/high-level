@@ -2,9 +2,13 @@ package uniolunisaar.adam.ds.graph.hl.hlapproach;
 
 import java.util.HashSet;
 import java.util.Set;
+import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.AbstractCommitmentSet;
+import uniolunisaar.adam.ds.graph.hl.llapproach.LLCommitmentSet;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
+import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 
 /**
  *
@@ -61,6 +65,25 @@ public class HLCommitmentSet extends AbstractCommitmentSet<ColoredTransition> {
             c.add(transition.apply(sym));
         }
         return new HLCommitmentSet(c);
+    }
+
+    /**
+     *
+     * This method is only for the creation of the explicit graph strategy.
+     *
+     * @param game
+     * @return
+     */
+    @Deprecated
+    LLCommitmentSet toLLCommitmentSet(PetriGame game) {
+        if (isTop()) {
+            return new LLCommitmentSet(game, true);
+        }
+        Set<Transition> transitions = new HashSet<>();
+        for (ColoredTransition transition : getTransitions()) {
+            transitions.add(game.getTransition(HL2PGConverter.getTransitionID(transition.getTransition().getId(), transition.getVal())));
+        }
+        return new LLCommitmentSet(game, transitions);
     }
 
 }

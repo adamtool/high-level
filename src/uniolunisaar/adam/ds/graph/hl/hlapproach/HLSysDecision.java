@@ -1,11 +1,16 @@
 package uniolunisaar.adam.ds.graph.hl.hlapproach;
 
+import java.util.concurrent.ForkJoinPool;
 import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.graph.AbstractSysDecision;
+import uniolunisaar.adam.ds.graph.explicit.ILLDecision;
+import uniolunisaar.adam.ds.graph.hl.llapproach.LLSysDecision;
 import uniolunisaar.adam.ds.highlevel.ColorToken;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
+import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 
 /**
  *
@@ -40,6 +45,13 @@ public class HLSysDecision extends AbstractSysDecision<ColoredPlace, ColoredTran
         ColoredPlace place = getPlace().apply(sym);
         HLCommitmentSet c = getC().apply(sym);
         return new HLSysDecision(place, c);
+    }
+
+    @Override
+    @Deprecated
+    public ILLDecision toLLDecision(PetriGame game) {
+        Place p =  game.getPlace(HL2PGConverter.getPlaceID(getPlace().getPlace().getId(), getPlace().getColor()));
+        return new LLSysDecision(game, p, getC().toLLCommitmentSet(game));
     }
 
 }

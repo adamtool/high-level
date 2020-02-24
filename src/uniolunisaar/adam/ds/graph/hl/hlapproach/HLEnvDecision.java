@@ -2,10 +2,15 @@ package uniolunisaar.adam.ds.graph.hl.hlapproach;
 
 import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.graph.AbstractEnvDecision;
+import uniolunisaar.adam.ds.graph.explicit.ILLDecision;
+import uniolunisaar.adam.ds.graph.hl.llapproach.LLEnvDecision;
 import uniolunisaar.adam.ds.highlevel.ColorToken;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
+import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
+import static uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter.getPlaceID;
 
 /**
  *
@@ -35,10 +40,10 @@ public class HLEnvDecision extends AbstractEnvDecision<ColoredPlace, ColoredTran
     }
 
     /**
-     * Attention: it is not checked if t is valid for 
-     * cost saving reasons.
+     * Attention: it is not checked if t is valid for cost saving reasons.
+     *
      * @param t
-     * @return 
+     * @return
      */
     @Override
     public boolean isChoosen(ColoredTransition t) {
@@ -46,5 +51,18 @@ public class HLEnvDecision extends AbstractEnvDecision<ColoredPlace, ColoredTran
 // this above is less expensive and currently seems to deliver the same results,
 // but not sure if this would work in any case
         return t.getPreset().contains(getPlace());
+    }
+
+    /**
+     *
+     * This method is only for the creation of the explicit graph strategy.
+     *
+     * @param game
+     * @return
+     */
+    @Override
+    @Deprecated
+    public ILLDecision toLLDecision(PetriGame game) {
+        return new LLEnvDecision(game, game.getPlace(HL2PGConverter.getPlaceID(getPlace().getPlace().getId(), getPlace().getColor())));
     }
 }
