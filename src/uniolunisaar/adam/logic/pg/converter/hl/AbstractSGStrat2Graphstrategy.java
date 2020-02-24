@@ -57,8 +57,8 @@ public abstract class AbstractSGStrat2Graphstrategy<P, T, DC extends IDecision<P
             if (currentHL.isMcut()) { // is mcut
                 // Add all successor edges
                 for (F f : hlstrat.getPostsetView(currentHL)) {
-//                    T t = applySymmmetry(f.getTransition(), currentSymmetry); // since all are available in the strategy (mcut) no need to add the symmetry
-                    T t = f.getTransition();
+                    T t = applySymmmetry(f.getTransition(), currentSymmetry, hlstrat);
+//                    T t = f.getTransition();
                     Set<S> successorsLL = currentLL.fire(t);
                     // since it is an mcut we have exactly one successor per edge (since we also not use the reduction of the transitions)
                     S succLL = successorsLL.iterator().next();
