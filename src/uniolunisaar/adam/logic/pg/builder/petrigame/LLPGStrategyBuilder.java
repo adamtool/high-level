@@ -52,4 +52,9 @@ public class LLPGStrategyBuilder extends AbstractPGStrategyBuilder<Place, Transi
         return transition.getPreset();
     }
 
+    @Override
+    void copyExtension(Place to, Place from) {
+        to.copyExtensions(from);
+    }
+
 }

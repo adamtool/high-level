@@ -91,6 +91,8 @@ public abstract class AbstractPGStrategyBuilder<P, T, DC extends IDecision<P, T>
 
     abstract Set<P> getPreset(T transition);
 
+    abstract void copyExtension(Place to, P from);
+
     private void calculateStrategyByBFS(GameGraph<P, T, DC, S, GameGraphFlow<T, S>> ggStrategy, PetriGame strategy) {
 //    private void calculateStrategyByBFS(GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy, PetriGame strategy, DecisionSet initialState, List<Place> initialMarking) {
 
@@ -107,7 +109,7 @@ public abstract class AbstractPGStrategyBuilder<P, T, DC extends IDecision<P, T>
             String id = getPlaceID(p);
             Place place = strategy.createPlace(id + DELIM + initialState.getId());
             strategy.setOrigID(place, id);
-//            place.copyExtensions(p); // todo: do I need this?
+            copyExtension(place, p);
             place.setInitialToken(1);
             initialMarking.add(place);
         }
@@ -175,7 +177,7 @@ public abstract class AbstractPGStrategyBuilder<P, T, DC extends IDecision<P, T>
                             String id = getPlaceID(p);
                             Place strat_p = strategy.createPlace(id + DELIM + succState.getId());
                             strategy.setOrigID(strat_p, id);
-//                            strat_p.copyExtensions(p);// todo: do I need this?
+                            copyExtension(strat_p, p);
                             strategy.createFlow(strat_t, strat_p);
                             succMarking.add(strat_p);
                         }

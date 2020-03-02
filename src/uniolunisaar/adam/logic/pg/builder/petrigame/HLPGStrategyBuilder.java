@@ -1,6 +1,7 @@
 package uniolunisaar.adam.logic.pg.builder.petrigame;
 
 import java.util.Set;
+import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.graph.GameGraphFlow;
 import uniolunisaar.adam.ds.graph.hl.hlapproach.HLDecisionSet;
 import uniolunisaar.adam.ds.graph.hl.hlapproach.IHLDecision;
@@ -41,6 +42,11 @@ public class HLPGStrategyBuilder extends AbstractPGStrategyBuilder<ColoredPlace,
     @Override
     Set<ColoredPlace> getPreset(ColoredTransition transition) {
         return transition.getPreset();
+    }
+
+    @Override
+    void copyExtension(Place to, ColoredPlace from) {
+        to.copyExtensions(from.getPlace());
     }
 
 }

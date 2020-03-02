@@ -54,7 +54,7 @@ public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, 
 
     @Override
     protected boolean exWinStrat() throws CalculationInterruptedException {
-        return isWinning(true);
+        return isWinning(false);
     }
 
 }

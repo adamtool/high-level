@@ -46,6 +46,6 @@ public abstract class AbstractExplicitSolver<W extends Condition<W>>
 
     @Override
     protected boolean exWinStrat() throws CalculationInterruptedException {
-        return isWinning(true);
+        return isWinning(false);
     }
 }
