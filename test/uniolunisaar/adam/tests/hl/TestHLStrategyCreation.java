@@ -59,8 +59,10 @@ public class TestHLStrategyCreation {
 
     @Test
     public void PD() throws Exception {
-        int nb_drones = 3;
-        int nb_packages = 2;
+//        int nb_drones = 3;
+        int nb_drones = 2;
+//        int nb_packages = 2;
+        int nb_packages = 1;
         HLPetriGame hlgame = PackageDeliveryHL.generateEwithPool(nb_drones, nb_packages, true);
         create("PD" + nb_drones + "_" + nb_packages, hlgame);
     }
@@ -68,28 +70,33 @@ public class TestHLStrategyCreation {
     @Test
     public void AS() throws Exception {
         int alarmsystems = 2;
+//        int alarmsystems = 1;
         HLPetriGame hlgame = AlarmSystemHL.createSafetyVersionForHLRepWithSetMinus(alarmsystems, true);
         create("AS" + alarmsystems, hlgame);
     }
 
     @Test
     public void CM() throws Exception {
-        int machines = 4;
-        int orders = 2;
+//        int machines = 4;
+        int machines = 2;
+//        int orders = 2;
+        int orders = 1;
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(machines, orders, true);
         create("CM" + machines + "_" + orders, hlgame);
     }
 
     @Test
     public void DW() throws Exception {
-        int clerks = 4;
+//        int clerks = 4;
+        int clerks = 2;
         HLPetriGame hlgame = DocumentWorkflowHL.generateDW(clerks, true);
         create("DW" + clerks, hlgame);
     }
 
     @Test
     public void DWs() throws Exception {
-        int clerks = 4;
+//        int clerks = 4;
+        int clerks = 2;
         HLPetriGame hlgame = DocumentWorkflowHL.generateDWs(clerks, true);
         create("DWs" + clerks, hlgame);
     }
