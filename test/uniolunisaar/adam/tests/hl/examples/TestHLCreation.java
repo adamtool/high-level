@@ -13,13 +13,16 @@ import uniol.apt.util.Pair;
 import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.ColorToken;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
-import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcExpression;
-import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcTuple;
-import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.ds.highlevel.ColorTokens;
-import uniolunisaar.adam.ds.highlevel.terms.ColorClassTerm;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcExpression;
+import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcTuple;
+import uniolunisaar.adam.ds.highlevel.predicate.BasicPredicate;
+import uniolunisaar.adam.ds.highlevel.predicate.BinaryPredicate;
+import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
+import uniolunisaar.adam.ds.highlevel.predicate.UnaryPredicate;
+import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.util.HLTools;
 import uniolunisaar.adam.util.PGTools;
@@ -53,7 +56,7 @@ public class TestHLCreation {
      */
     @Test
     public void symmtricNet() throws FileNotFoundException, IOException, InterruptedException {
-        HLPetriGame hlgame = new HLPetriGame("symmetricNet");
+        HLPetriGame hlgame = new HLPetriGame("Access Policy");
 
         // color classes
         List<Pair<String, String[]>> staticSubClasses = new ArrayList<>();
@@ -65,31 +68,51 @@ public class TestHLCreation {
         hlgame.createBasicColorClass("filesnamed", false, "indexId", "emacsId", "articleId", "etc-passwdId");
 
         String[] filesusersnamed = new String[]{"filesnamed", "usersnamed"};
-        String[] usersfilesnamednamed = new String[]{"usersnamed", "filesnamed"};
+        String[] usersfilesnamed = new String[]{"usersnamed", "filesnamed"};
 
         // variables should not needed to be declared here
         // places
         Place p1 = hlgame.createSysPlace("p1", new String[]{"usersnamed"});
-        hlgame.setColorTokens(p1, "apacheId", "iisId", "chrisId", "deniseId", "rootId");
+        List<Color> usersnamedColors = hlgame.getBasicColorClass("usersnamed").getColors();
+        Color[] unc = new Color[usersnamedColors.size()];
+        hlgame.setColorTokens(p1, usersnamedColors.toArray(unc));
         PetriNetExtensionHandler.setXCoord(p1, 23);
         PetriNetExtensionHandler.setYCoord(p1, 23);
-        //could use this, but then we should think of integrating it better
-        p1.putExtension("label", "Users");
+        PetriNetExtensionHandler.setLabel(p1, "Users");
 
-        Place p2 = hlgame.createSysPlace(filesusersnamed);
+        Place p2 = hlgame.createSysPlace("p2", filesusersnamed);
         PetriNetExtensionHandler.setXCoord(p2, 45);
         PetriNetExtensionHandler.setYCoord(p2, 23);
-        //could use this, but then we should think of integrating it better
-        p1.putExtension("label", "Files");
+        PetriNetExtensionHandler.setLabel(p2, "Files");
+        ColorTokens tokens = new ColorTokens();
+        tokens.add(new ColorToken(new Color("indexId"), new Color("apacheId")));
+        tokens.add(new ColorToken(new Color("emacsId"), new Color("chrisId")));
+        tokens.add(new ColorToken(new Color("articleId"), new Color("chrisId")));
+        tokens.add(new ColorToken(new Color("etc-passwdId"), new Color("rootId")));
+        hlgame.setColorTokens(p2, tokens);
 
-        // not yet adapted to the example    
-        Transition t = hlgame.createTransition();
-        hlgame.createFlow(t, p2, new ArcExpression(new ArcTuple(new Variable("a"), new Variable("b"))));
-        ArcExpression expr = new ArcExpression();
-        expr.add(new Variable("a"));
-        expr.add(new Variable("b"));
-        hlgame.createFlow(p1, t, expr);
-        HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
+        Place p3 = hlgame.createSysPlace("p3", usersfilesnamed);
+        PetriNetExtensionHandler.setXCoord(p3, 34);
+        PetriNetExtensionHandler.setYCoord(p3, 50);
+        PetriNetExtensionHandler.setLabel(p3, "FilesBeingAccessed");
+
+        Transition t1 = hlgame.createTransition("t1");
+        PetriNetExtensionHandler.setXCoord(t1, 34);
+        PetriNetExtensionHandler.setYCoord(t1, 33);
+        t1.setLabel("Grant Access");
+        IPredicate pred = new BinaryPredicate(
+                new BasicPredicate<>(new Variable("u"), BasicPredicate.Operator.EQ, new Variable("v")),
+                BinaryPredicate.Operator.OR,
+                // we dont have the gtp (greater than partition (static subclass operator, so here just some crap for testing s.th.)
+                new UnaryPredicate(UnaryPredicate.Operator.NEG, new BinaryPredicate(new BasicPredicate<>(new Variable("u"), BasicPredicate.Operator.EQ, new Variable("v")), BinaryPredicate.Operator.IMP, new BasicPredicate<>(new Variable("v"), BasicPredicate.Operator.EQ, new Variable("u"))))
+        );
+        hlgame.setPredicate(t1, pred);
+
+        hlgame.createFlow(p1, t1, new ArcExpression(new Variable("u")));
+        hlgame.createFlow(p2, t1, new ArcExpression(new ArcTuple(new Variable("f"), new Variable("v"))));
+        hlgame.createFlow(t1, p3, new ArcExpression(new ArcTuple(new Variable("u"), new Variable("f"))));
+
+        HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame, true);
         PetriGame pg = HL2PGConverter.convert(hlgame);
         PGTools.savePG2PDF(outputDir + pg.getName(), pg, false);
     }

@@ -20,6 +20,7 @@ import uniolunisaar.adam.exceptions.ProcessNotStartedException;
 import uniolunisaar.adam.tools.processHandling.ProcessPool;
 import uniolunisaar.adam.ds.graph.IDecisionSet;
 import uniolunisaar.adam.ds.graph.StateIdentifier;
+import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.tools.AdamProperties;
 
 /**
@@ -28,11 +29,11 @@ import uniolunisaar.adam.tools.AdamProperties;
  */
 public class HLTools {
 
-    public static String hlpg2Dot(HLPetriGame game) {
-        return HLTools.hlpg2Dot(game, null);
+    public static String hlpg2Dot(HLPetriGame game, boolean withLabels) {
+        return HLTools.hlpg2Dot(game, withLabels, null);
     }
 
-    public static String hlpg2Dot(HLPetriGame game, Integer tokencount) {
+    public static String hlpg2Dot(HLPetriGame game, boolean withLabel, Integer tokencount) {
         final String placeShape = "circle";
         final String specialPlaceShape = "doublecircle";
 
@@ -75,9 +76,13 @@ public class HLTools {
             // Initialtoken number
             String tokenString = game.hasColorTokens(place) ? game.getColorTokens(place).toDotString() : "";
             // Drawing
+            String label = place.getId();
+            if (withLabel && PetriNetExtensionHandler.hasLabel(place)) {
+                label += "(" + PetriNetExtensionHandler.getLabel(place) + ")";
+            }
             sb.append("\"").append(place.getId()).append("\"").append("[shape=").append(shape);
             sb.append(", height=0.5, width=0.5, fixedsize=false, margin=0");
-            sb.append(", xlabel=").append("\"").append(place.getId()).append("\\n(").append(game.getColorDomain(place)).append(")").append("\"");
+            sb.append(", xlabel=").append("\"").append(label).append("\\n(").append(game.getColorDomain(place)).append(")").append("\"");
             sb.append(", label=").append("\"").append(tokenString).append("\"");
 
 //            if (game.hasPartition(place)) {
@@ -152,16 +157,16 @@ public class HLTools {
 //        PetriNetWithTransits net = new PetriNetWithTransits(Tools.getPetriNet(input));
 //        HLTools.savePnwt2Dot(output, net, withLabel);
 //    }
-    public static void saveHLPG2Dot(String path, HLPetriGame game) throws FileNotFoundException {
-        saveHLPG2Dot(path, game, -1);
+    public static void saveHLPG2Dot(String path, HLPetriGame game, boolean withLabels) throws FileNotFoundException {
+        saveHLPG2Dot(path, game, withLabels, -1);
     }
 
-    public static void saveHLPG2Dot(String path, HLPetriGame game, Integer tokencount) throws FileNotFoundException {
+    public static void saveHLPG2Dot(String path, HLPetriGame game, boolean withLabels, Integer tokencount) throws FileNotFoundException {
         try (PrintStream out = new PrintStream(path + ".dot")) {
             if (tokencount == -1) {
-                out.println(hlpg2Dot(game));
+                out.println(hlpg2Dot(game, withLabels));
             } else {
-                out.println(hlpg2Dot(game, tokencount));
+                out.println(hlpg2Dot(game, withLabels, tokencount));
             }
         }
         Logger.getInstance().addMessage("Saved to: " + path + ".dot", true);
@@ -171,15 +176,15 @@ public class HLTools {
 //        PetriNetWithTransits net = getPetriNetWithTransitsFromParsedPetriNet(new AptPNParser().parseFile(input), false);
 //        return savePnwt2DotAndPDF(output, net, withLabel);
 //    }
-    public static Thread saveHLPG2DotAndPDF(String path, HLPetriGame game) throws FileNotFoundException {
-        return saveHLPG2DotAndPDF(path, game, -1);
+    public static Thread saveHLPG2DotAndPDF(String path, HLPetriGame game, boolean withLabels) throws FileNotFoundException {
+        return saveHLPG2DotAndPDF(path, game, withLabels, -1);
     }
 
-    public static Thread saveHLPG2DotAndPDF(String path, HLPetriGame game, Integer tokencount) throws FileNotFoundException {
+    public static Thread saveHLPG2DotAndPDF(String path, HLPetriGame game, boolean withLabels, Integer tokencount) throws FileNotFoundException {
         if (tokencount == -1) {
-            saveHLPG2Dot(path, game);
+            saveHLPG2Dot(path, game, withLabels);
         } else {
-            saveHLPG2Dot(path, game, tokencount);
+            saveHLPG2Dot(path, game, withLabels, tokencount);
         }
         String dot = AdamProperties.getInstance().getProperty(AdamProperties.DOT);
         String[] command = {dot, "-Tpdf", path + ".dot", "-o", path + ".pdf"};
@@ -210,17 +215,17 @@ public class HLTools {
         return thread;
     }
 
-    public static Thread saveHLPG2PDF(String path, HLPetriGame game) throws FileNotFoundException {
-        return saveHLPG2PDF(path, game, -1);
+    public static Thread saveHLPG2PDF(String path, HLPetriGame game, boolean withLabels) throws FileNotFoundException {
+        return saveHLPG2PDF(path, game, withLabels, -1);
     }
 
-    public static Thread saveHLPG2PDF(String path, HLPetriGame game, Integer tokencount) throws FileNotFoundException {
+    public static Thread saveHLPG2PDF(String path, HLPetriGame game, boolean withLabels, Integer tokencount) throws FileNotFoundException {
         String bufferpath = path + "_" + System.currentTimeMillis();
         Thread dot;
         if (tokencount == -1) {
-            dot = saveHLPG2DotAndPDF(bufferpath, game);
+            dot = saveHLPG2DotAndPDF(bufferpath, game, withLabels);
         } else {
-            dot = saveHLPG2DotAndPDF(bufferpath, game, tokencount);
+            dot = saveHLPG2DotAndPDF(bufferpath, game, withLabels, tokencount);
         }
         Thread mvPdf = new Thread(() -> {
             try {
@@ -309,4 +314,9 @@ public class HLTools {
         Files.move(new File(bufferpath + ".pdf").toPath(), new File(path + ".pdf").toPath(), REPLACE_EXISTING);
         Logger.getInstance().addMessage("Moved: " + bufferpath + ".pdf --> " + path + ".pdf", true);
     }
+
+    public static void saveHLPG2PDF(String path, HLPetriGame hlgame) throws FileNotFoundException {
+        saveHLPG2PDF(path, hlgame, false);
+    }
+
 }
