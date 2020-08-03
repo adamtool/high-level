@@ -17,8 +17,7 @@ public class BinaryPredicate implements IPredicate {
             @Override
             public String toSymbol() {
 //                return "⋏"; // this symbol is visualized by dot (within the pdf not the dot file itself) as 180 degree turned.
-                return "\u2227";
-//" \u22CF " " \u2227 "; 
+                return "\u2227"; //" \u22CF " " \u2227 "; 
             }
         },
         OR {
