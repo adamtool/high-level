@@ -114,7 +114,7 @@ public class ColoredTransition implements ITransition<ColoredPlace> {
                     SetMinusType setminusType = (SetMinusType) expression.getSecond().getValue(val);
                     BasicColorClass bc = hlgame.getBasicColorClass(setminusType.getColorClass().getId());
                     List<Color> cls = new ArrayList<>(bc.getColors());
-                    cls.remove((Color) setminusType.getColor());
+                    cls.removeAll(setminusType.getColors());
                     for (Color color : cls) {
                         ret.add(new ColoredPlace(f.getPlace(), new ColorToken(color)));
                     }
@@ -145,7 +145,7 @@ public class ColoredTransition implements ITransition<ColoredPlace> {
                                 SetMinusType setminusType = (SetMinusType) value.getSecond().getValue(val);
                                 BasicColorClass bc = hlgame.getBasicColorClass(setminusType.getColorClass().getId());
                                 List<Color> cls = new ArrayList<>(bc.getColors());
-                                cls.remove((Color) setminusType.getColor());
+                                cls.removeAll(setminusType.getColors());
                                 colorClasses.add(cls);
                                 idxs.add(component);
                                 break;

@@ -374,7 +374,10 @@ public class HLPetriGame extends Extensible implements IPetriGame {
                     var2CClass.put(((SuccessorTerm) expresssion.getSecond()).getVariable(), bcs[0].getColors());
                     break;
                 case SETMINUS:
-                    var2CClass.put(((SetMinusTerm) expresssion.getSecond()).getVariable(), bcs[0].getColors());
+                    SetMinusTerm term = (SetMinusTerm) expresssion.getSecond();
+                    for (Variable var : term.getVariables()) {
+                        var2CClass.put(var, bcs[0].getColors());
+                    }
                     break;
                 case TUPLE: {
                     ArcTuple tuple = (ArcTuple) expresssion.getSecond();
@@ -389,7 +392,10 @@ public class HLPetriGame extends Extensible implements IPetriGame {
                                 var2CClass.put(((SuccessorTerm) value.getSecond()).getVariable(), bcs[component].getColors());
                                 break;
                             case SETMINUS:
-                                var2CClass.put(((SetMinusTerm) value.getSecond()).getVariable(), bcs[component].getColors());
+                                term = (SetMinusTerm) value.getSecond();
+                                for (Variable var : term.getVariables()) {
+                                    var2CClass.put(var, bcs[component].getColors());
+                                }
                                 break;
                         }
                         ++component;

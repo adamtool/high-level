@@ -1,7 +1,9 @@
 package uniolunisaar.adam.ds.highlevel.arcexpressions;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.Valuation;
 import uniolunisaar.adam.ds.highlevel.terms.ColorClassTerm;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
@@ -13,41 +15,48 @@ import uniolunisaar.adam.ds.highlevel.terms.Variable;
 public class SetMinusTerm implements IArcTerm<SetMinusType>, IArcTupleElement<SetMinusType> {
 
     private final ColorClassTerm clazz;
-    private final Variable var;
+    private final HashSet<Variable> vars;
 
-    public SetMinusTerm(ColorClassTerm clazz, Variable var) {
+    public SetMinusTerm(ColorClassTerm clazz, Variable... var) {
         this.clazz = clazz;
-        this.var = var;
+        this.vars = new HashSet<>(Arrays.asList(var));
     }
 
     @Override
     public Set<Variable> getVariables() {
-        Set<Variable> vars = new HashSet<>();
-        vars.add(var);
-        return vars;
+        Set<Variable> varOut = new HashSet<>();
+        varOut.addAll(vars);
+        return varOut;
     }
 
     @Override
     public SetMinusType getValue(Valuation valuation) {
-        return new SetMinusType(clazz.getValue(valuation), var.getValue(valuation));
+        Color[] colors = new Color[vars.size()];
+        int i = 0;
+        for (Variable var : vars) {
+            colors[i++] = var.getValue(valuation);
+        }
+        return new SetMinusType(clazz.getValue(valuation), colors);
     }
 
     public ColorClassTerm getClazz() {
         return clazz;
     }
 
-    public Variable getVariable() {
-        return var;
-    }
-
     @Override
     public String toSymbol() {
-        return clazz.toSymbol() + "\\" + var.toSymbol();
+        StringBuilder sb = new StringBuilder();
+        sb.append(clazz.toSymbol()).append("\\{");
+        for (Variable var : vars) {
+            sb.append(var.toSymbol()).append(",");
+        }
+        sb.replace(sb.length(), sb.length(), "}");
+        return sb.toString();
     }
 
     @Override
     public String toString() {
-        return clazz.toSymbol() + "-" + var.toSymbol();
+        return clazz.toSymbol() + "-" + vars.toString();
     }
 
 }

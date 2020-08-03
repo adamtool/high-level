@@ -1,5 +1,8 @@
 package uniolunisaar.adam.ds.highlevel.arcexpressions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import uniolunisaar.adam.ds.highlevel.terms.IColorClassType;
 import uniolunisaar.adam.ds.highlevel.terms.IColorType;
 
@@ -10,19 +13,19 @@ import uniolunisaar.adam.ds.highlevel.terms.IColorType;
 public class SetMinusType implements IArcType, IArcTupleElementType {
 
     private final IColorClassType colorClass;
-    private final IColorType color;
+    private final List<IColorType> colors;
 
-    public SetMinusType(IColorClassType colorClass, IColorType color) {
+    public SetMinusType(IColorClassType colorClass, IColorType... colors) {
         this.colorClass = colorClass;
-        this.color = color;
+        this.colors = new ArrayList<>(Arrays.asList(colors));
     }
 
     public IColorClassType getColorClass() {
         return colorClass;
     }
 
-    public IColorType getColor() {
-        return color;
+    public List<IColorType> getColors() {
+        return colors;
     }
 
 }
