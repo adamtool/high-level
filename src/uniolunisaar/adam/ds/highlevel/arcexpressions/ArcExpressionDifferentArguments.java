@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 import uniol.apt.util.Pair;
 import uniolunisaar.adam.ds.highlevel.terms.ColorClassTerm;
+import uniolunisaar.adam.ds.highlevel.terms.PredecessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.SuccessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 
@@ -35,6 +36,11 @@ public class ArcExpressionDifferentArguments {
         expressions.add(new Pair<>(IArcTerm.Sort.SUCCESSOR, succ));
     }
 
+    public ArcExpressionDifferentArguments(PredecessorTerm pre) {
+        this();
+        expressions.add(new Pair<>(IArcTerm.Sort.PREDECESSOR, pre));
+    }
+
     public ArcExpressionDifferentArguments(ColorClassTerm colorClass) {
         this();
         expressions.add(new Pair<>(IArcTerm.Sort.COLORCLASS, colorClass));
@@ -51,6 +57,10 @@ public class ArcExpressionDifferentArguments {
 
     public boolean add(SuccessorTerm succ) {
         return expressions.add(new Pair<>(IArcTerm.Sort.SUCCESSOR, succ));
+    }
+
+    public boolean add(PredecessorTerm pre) {
+        return expressions.add(new Pair<>(IArcTerm.Sort.PREDECESSOR, pre));
     }
 
     public boolean add(ColorClassTerm colorClass) {

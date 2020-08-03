@@ -6,15 +6,15 @@ import uniol.apt.adt.exception.DatastructureException;
  *
  * @author Manuel Gieseking
  */
-public class NoSuccessorForUnorderedColorClassException extends DatastructureException {
+public class NoNeighbourForUnorderedColorClassException extends DatastructureException {
 
     public static final long serialVersionUID = 0x1l;
 
-    public NoSuccessorForUnorderedColorClassException(String message) {
+    public NoNeighbourForUnorderedColorClassException(String message) {
         super(message);
     }
 
-    public NoSuccessorForUnorderedColorClassException(String message, Throwable cause) {
+    public NoNeighbourForUnorderedColorClassException(String message, Throwable cause) {
         super(message, cause);
     }
 

@@ -12,6 +12,7 @@ public interface IArcTerm<T extends IArcType> extends ITerm<T> {
     public enum Sort {
         VARIABLE,
         SUCCESSOR,
+        PREDECESSOR,
         COLORCLASS,
         SETMINUS,
         TUPLE

@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import uniolunisaar.adam.exceptions.highlevel.NoSuccessorForUnorderedColorClassException;
+import uniolunisaar.adam.exceptions.highlevel.NoNeighbourForUnorderedColorClassException;
 
 /**
  *
@@ -133,21 +133,22 @@ public class BasicColorClass {
     }
 
     /**
-     * Returns the successor of c iff this basic color class contains c.
+     * Returns the predecessor/successor of c iff this basic color class
+     * contains c.Throws NoSuccessorForUnorderedColorClassException iff this
+     * class contains c and it is not ordered.
      *
-     * Throws NoSuccessorForUnorderedColorClassException iff this class contains
-     * c and it is not ordered.
      *
-     * @param c
+     * @param c - color
+     * @param pre - if true predecessor else successor is returned
      * @return null iff this class does not contain c
      */
-    public Color getSuccessorValue(Color c) throws NoSuccessorForUnorderedColorClassException {
+    public Color getNeighbourValue(Color c, boolean pre) throws NoNeighbourForUnorderedColorClassException {
         for (int i = 0; i < colors.size(); i++) {
             if (colors.get(i).equals(c)) {
                 if (!this.isOrdered()) {
-                    throw new NoSuccessorForUnorderedColorClassException("The basic color class " + id + " of color " + c.getId() + " is not ordered. No successor is defined.");
+                    throw new NoNeighbourForUnorderedColorClassException("The basic color class " + id + " of color " + c.getId() + " is not ordered. No predecessor/successor is defined.");
                 }
-                return colors.get((i + 1) % colors.size());
+                return colors.get(((pre) ? (i - 1) : (i + 1)) % colors.size());
             }
         }
         return null;

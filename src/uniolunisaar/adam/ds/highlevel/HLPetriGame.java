@@ -27,6 +27,7 @@ import uniolunisaar.adam.ds.highlevel.arcexpressions.SetMinusTerm;
 import uniolunisaar.adam.ds.highlevel.predicate.Constants;
 import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetries;
+import uniolunisaar.adam.ds.highlevel.terms.PredecessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.SuccessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.petrigame.IPetriGame;
@@ -34,7 +35,7 @@ import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.ds.petrinet.objectives.Condition;
 import uniolunisaar.adam.exceptions.highlevel.IdentifierAlreadyExistentException;
-import uniolunisaar.adam.exceptions.highlevel.NoSuccessorForUnorderedColorClassException;
+import uniolunisaar.adam.exceptions.highlevel.NoNeighbourForUnorderedColorClassException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuchColorDomainException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuchColorException;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
@@ -336,9 +337,9 @@ public class HLPetriGame extends Extensible implements IPetriGame {
         return null;
     }
 
-    public Color getSuccessorValue(Color color) throws NoSuchColorException, NoSuccessorForUnorderedColorClassException {
+    public Color getNeighbourValue(Color color, boolean pre) throws NoSuchColorException, NoNeighbourForUnorderedColorClassException {
         for (BasicColorClass cc : colorClasses.values()) {
-            Color ret = cc.getSuccessorValue(color);
+            Color ret = cc.getNeighbourValue(color, pre);
             if (ret != null) {
                 return ret;
             }
@@ -373,6 +374,9 @@ public class HLPetriGame extends Extensible implements IPetriGame {
                 case SUCCESSOR:
                     var2CClass.put(((SuccessorTerm) expresssion.getSecond()).getVariable(), bcs[0].getColors());
                     break;
+                case PREDECESSOR:
+                    var2CClass.put(((PredecessorTerm) expresssion.getSecond()).getVariable(), bcs[0].getColors());
+                    break;
                 case SETMINUS:
                     SetMinusTerm term = (SetMinusTerm) expresssion.getSecond();
                     for (Variable var : term.getVariables()) {
@@ -390,6 +394,9 @@ public class HLPetriGame extends Extensible implements IPetriGame {
                                 break;
                             case SUCCESSOR:
                                 var2CClass.put(((SuccessorTerm) value.getSecond()).getVariable(), bcs[component].getColors());
+                                break;
+                            case PREDECESSOR:
+                                var2CClass.put(((PredecessorTerm) value.getSecond()).getVariable(), bcs[component].getColors());
                                 break;
                             case SETMINUS:
                                 term = (SetMinusTerm) value.getSecond();

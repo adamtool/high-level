@@ -8,7 +8,7 @@ import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTerm;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcTupleElement;
 import uniolunisaar.adam.ds.highlevel.predicate.IPredicateTerm;
-import uniolunisaar.adam.exceptions.highlevel.NoSuccessorForUnorderedColorClassException;
+import uniolunisaar.adam.exceptions.highlevel.NoNeighbourForUnorderedColorClassException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuchColorException;
 
 /**
@@ -60,8 +60,8 @@ public class SuccessorTerm implements IPredicateTerm<Color>, IArcTerm<Color>, IA
     }
 
     @Override
-    public Color getValue(Valuation valuation) throws NoSuchColorException, NoSuccessorForUnorderedColorClassException {
-        return game.getSuccessorValue(valuation.get(x));
+    public Color getValue(Valuation valuation) throws NoSuchColorException, NoNeighbourForUnorderedColorClassException {
+        return game.getNeighbourValue(valuation.get(x), false);
     }
 
     @Override

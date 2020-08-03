@@ -8,6 +8,7 @@ import java.util.Set;
 import uniol.apt.util.Pair;
 import uniolunisaar.adam.ds.highlevel.Valuation;
 import uniolunisaar.adam.ds.highlevel.terms.ColorClassTerm;
+import uniolunisaar.adam.ds.highlevel.terms.PredecessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.SuccessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 
@@ -34,6 +35,13 @@ public class ArcTuple implements IArcTerm<IArcTupleType> {
         this();
         for (int i = 0; i < succs.length; i++) {
             tuple.add(new Pair<>(IArcTupleElement.Sort.SUCCESSOR, succs[i]));
+        }
+    }
+
+    public ArcTuple(PredecessorTerm... pres) {
+        this();
+        for (int i = 0; i < pres.length; i++) {
+            tuple.add(new Pair<>(IArcTupleElement.Sort.PREDECESSOR, pres[i]));
         }
     }
 
@@ -76,6 +84,14 @@ public class ArcTuple implements IArcTerm<IArcTupleType> {
         boolean ret = true;
         for (int i = 0; i < succs.length; i++) {
             ret &= tuple.add(new Pair<>(IArcTupleElement.Sort.SUCCESSOR, succs[i]));
+        }
+        return ret;
+    }
+
+    public boolean add(PredecessorTerm... pres) {
+        boolean ret = true;
+        for (int i = 0; i < pres.length; i++) {
+            ret &= tuple.add(new Pair<>(IArcTupleElement.Sort.PREDECESSOR, pres[i]));
         }
         return ret;
     }
