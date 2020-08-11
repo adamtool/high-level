@@ -132,6 +132,10 @@ public class BasicColorClass {
         return id;
     }
 
+    public Map<String, StaticColorClass> getStaticSubclasses() {
+        return Collections.unmodifiableMap(this.staticSubclasses);
+    }
+
     /**
      * Returns the predecessor/successor of c iff this basic color class
      * contains c.Throws NoSuccessorForUnorderedColorClassException iff this

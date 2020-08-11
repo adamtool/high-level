@@ -110,4 +110,15 @@ public class BinaryPredicate implements IPredicate {
         return "(" + p1.toSymbol() + " " + operator + " " + p2.toSymbol() + ")";
     }
 
+    public IPredicate getLeftOperand() {
+        return p1;
+    }
+
+    public Operator getOperator() {
+        return op;
+    }
+
+    public IPredicate getRightOperand() {
+        return p2;
+    }
 }
