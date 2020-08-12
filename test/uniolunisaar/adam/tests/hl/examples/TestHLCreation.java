@@ -112,8 +112,9 @@ public class TestHLCreation {
         );
         hlgame.setPredicate(t1, pred);
 
-        hlgame.createFlow(p1, t1, new ArcExpression(new Variable("u")));
+        hlgame.createFlow(p1, t1, new ArcExpression(new Variable("u")));        
         hlgame.createFlow(p2, t1, new ArcExpression(new ArcTuple(new Variable("f"), new Variable("v"))));
+//        hlgame.createFlow(p2, t1, new ArcExpression(new ArcTuple(new Variable("u"), new Variable("v"))));
         hlgame.createFlow(t1, p3, new ArcExpression(new ArcTuple(new Variable("u"), new Variable("f"))));
 
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame, true);

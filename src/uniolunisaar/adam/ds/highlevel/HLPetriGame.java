@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import uniol.apt.adt.IGraphListener;
+import uniol.apt.adt.exception.StructureException;
 import uniol.apt.adt.extension.Extensible;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Node;
@@ -41,6 +42,15 @@ import uniolunisaar.adam.exceptions.highlevel.NoSuchColorException;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 
 /**
+ * This class only provides the features for symmetric set-based high-level
+ * Petri games, i.e., set-based high-level Petri games based on an underlying
+ * symmetric high-level Petri net.
+ *
+ * For example we cannot use constants for arc expressions or transition
+ * predicates. To allow this we have to replace the constant c by a variable x,
+ * split up the corresponding color class into a singleton for this constant c
+ * and the rest and add the predicate D(x)={c}. This leads to significantly less
+ * symmetric behavior.
  *
  * @author Manuel Gieseking
  */
@@ -350,17 +360,21 @@ public class HLPetriGame extends Extensible implements IPetriGame {
     public Valuations getValuations(Transition t) {
         // Get variable to color domain
         Map<Variable, List<Color>> var2CClass = new HashMap<>();
-        for (Flow presetEdge : t.getPresetEdges()) {
-            Place pre = presetEdge.getPlace();
-            BasicColorClass[] bcs = getBasicColorClasses(pre);
-            ArcExpression expr = getArcExpression(presetEdge);
-            addVariableColorClassMapping(var2CClass, expr, bcs);
-        }
-        for (Flow postsetEdge : t.getPostsetEdges()) {
-            Place post = postsetEdge.getPlace();
-            BasicColorClass[] bcs = getBasicColorClasses(post);
-            ArcExpression expr = getArcExpression(postsetEdge);
-            addVariableColorClassMapping(var2CClass, expr, bcs);
+        try {
+            for (Flow presetEdge : t.getPresetEdges()) {
+                Place pre = presetEdge.getPlace();
+                BasicColorClass[] bcs = getBasicColorClasses(pre);
+                ArcExpression expr = getArcExpression(presetEdge);
+                addVariableColorClassMapping(var2CClass, expr, bcs);
+            }
+            for (Flow postsetEdge : t.getPostsetEdges()) {
+                Place post = postsetEdge.getPlace();
+                BasicColorClass[] bcs = getBasicColorClasses(post);
+                ArcExpression expr = getArcExpression(postsetEdge);
+                addVariableColorClassMapping(var2CClass, expr, bcs);
+            }
+        } catch (StructureException e) {
+            throw new StructureException(e.getMessage() + " for transition " + t.getId());
         }
         return new Valuations(var2CClass);
     }
@@ -369,18 +383,18 @@ public class HLPetriGame extends Extensible implements IPetriGame {
         for (Pair<IArcTerm.Sort, IArcTerm<? extends IArcType>> expresssion : expr.getExpresssions()) {
             switch (expresssion.getFirst()) {
                 case VARIABLE:
-                    var2CClass.put((Variable) expresssion.getSecond(), bcs[0].getColors());
+                    putVariable2ColorClassMapping(var2CClass, (Variable) expresssion.getSecond(), bcs[0].getColors());
                     break;
                 case SUCCESSOR:
-                    var2CClass.put(((SuccessorTerm) expresssion.getSecond()).getVariable(), bcs[0].getColors());
+                    putVariable2ColorClassMapping(var2CClass, ((SuccessorTerm) expresssion.getSecond()).getVariable(), bcs[0].getColors());
                     break;
                 case PREDECESSOR:
-                    var2CClass.put(((PredecessorTerm) expresssion.getSecond()).getVariable(), bcs[0].getColors());
+                    putVariable2ColorClassMapping(var2CClass, ((PredecessorTerm) expresssion.getSecond()).getVariable(), bcs[0].getColors());
                     break;
                 case SETMINUS:
                     SetMinusTerm term = (SetMinusTerm) expresssion.getSecond();
                     for (Variable var : term.getVariables()) {
-                        var2CClass.put(var, bcs[0].getColors());
+                        putVariable2ColorClassMapping(var2CClass, var, bcs[0].getColors());
                     }
                     break;
                 case TUPLE: {
@@ -390,18 +404,18 @@ public class HLPetriGame extends Extensible implements IPetriGame {
                         Pair<IArcTupleElement.Sort, IArcTupleElement<? extends IArcTupleElementType>> value = iterator.next();
                         switch (value.getFirst()) {
                             case VARIABLE:
-                                var2CClass.put((Variable) value.getSecond(), bcs[component].getColors());
+                                putVariable2ColorClassMapping(var2CClass, (Variable) value.getSecond(), bcs[component].getColors());
                                 break;
                             case SUCCESSOR:
-                                var2CClass.put(((SuccessorTerm) value.getSecond()).getVariable(), bcs[component].getColors());
+                                putVariable2ColorClassMapping(var2CClass, ((SuccessorTerm) value.getSecond()).getVariable(), bcs[component].getColors());
                                 break;
                             case PREDECESSOR:
-                                var2CClass.put(((PredecessorTerm) value.getSecond()).getVariable(), bcs[component].getColors());
+                                putVariable2ColorClassMapping(var2CClass, ((PredecessorTerm) value.getSecond()).getVariable(), bcs[component].getColors());
                                 break;
                             case SETMINUS:
                                 term = (SetMinusTerm) value.getSecond();
                                 for (Variable var : term.getVariables()) {
-                                    var2CClass.put(var, bcs[component].getColors());
+                                    putVariable2ColorClassMapping(var2CClass, var, bcs[component].getColors());
                                 }
                                 break;
                         }
@@ -410,6 +424,13 @@ public class HLPetriGame extends Extensible implements IPetriGame {
                     break;
                 }
             }
+        }
+    }
+
+    private void putVariable2ColorClassMapping(Map<Variable, List<Color>> var2CClass, Variable var, List<Color> colors) {
+        List<Color> oldColors = var2CClass.put(var, colors);
+        if (oldColors != null && !oldColors.equals(colors)) {
+            throw new StructureException("The variable '" + var + "' is mapped to two different color classes '" + colors.toString() + "' and '" + oldColors.toString() + "'");
         }
     }
 
