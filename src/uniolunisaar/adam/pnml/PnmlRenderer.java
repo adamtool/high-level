@@ -24,6 +24,7 @@ import uniolunisaar.adam.ds.highlevel.arcexpressions.SetMinusTerm;
 import uniolunisaar.adam.ds.highlevel.predicate.BasicPredicate;
 import uniolunisaar.adam.ds.highlevel.predicate.BinaryPredicate;
 import uniolunisaar.adam.ds.highlevel.predicate.Constants;
+import uniolunisaar.adam.ds.highlevel.predicate.DomainTerm;
 import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
 import uniolunisaar.adam.ds.highlevel.predicate.IPredicateTerm;
 import uniolunisaar.adam.ds.highlevel.predicate.IPredicateType;
@@ -64,6 +65,7 @@ public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Rende
 
 	private static final class Renderer {
 		private boolean omitTrueCondition = true;
+		private boolean allowDomainTerm = true;
 
 		private final Document dom;
 		private final HLPetriGame game;
@@ -484,18 +486,26 @@ public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Rende
 				return operator;
 			} else if (predicate instanceof BasicPredicate) {
 				BasicPredicate<?> equality = (BasicPredicate<?>) predicate;
-				Element operator = dom.createElement(equality.getOperator() == BasicPredicate.Operator.EQ ? "equality" : "inequality");
-				Element left = dom.createElement("subterm");
-				Element right = dom.createElement("subterm");
-				left.appendChild(renderPredicateTerm(equality.getLeftOperand()));
-				right.appendChild(renderPredicateTerm(equality.getRightOperand()));
-
-				operator.appendChild(left);
-				operator.appendChild(right);
-				return operator;
+				if (equality.getLeftOperand() instanceof DomainTerm) {
+					return renderEqualityDomainTermEqColorClassTerm(equality);
+				} else {
+					return renderEquality(equality);
+				}
 			} else {
 				throw new UnsupportedOperationException("This predicate (" + predicate + ") cannot yet be rendered to pnml");
 			}
+		}
+
+		private Element renderEquality(BasicPredicate<?> equality) {
+			Element operator = dom.createElement(equality.getOperator() == BasicPredicate.Operator.EQ ? "equality" : "inequality");
+			Element left = dom.createElement("subterm");
+			Element right = dom.createElement("subterm");
+			left.appendChild(renderPredicateTerm(equality.getLeftOperand()));
+			right.appendChild(renderPredicateTerm(equality.getRightOperand()));
+
+			operator.appendChild(left);
+			operator.appendChild(right);
+			return operator;
 		}
 
 		private <T extends IPredicateType> Element renderPredicateTerm(IPredicateTerm<T> term) {
@@ -505,17 +515,79 @@ public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Rende
 				return renderNeighbourTerm(((PredecessorTerm) term).getVariable(), true);
 			} else if (term instanceof SuccessorTerm) {
 				return renderNeighbourTerm(((SuccessorTerm) term).getVariable(), false);
-			} else if (term instanceof ColorClassTerm) {
-				/* this is not useful without the DomainTerm, which we cannot render */
-				return renderColorClassTerm((ColorClassTerm) term);
-//			} else if (term instanceof DomainTerm) {
-				/* no examples of this exist
-				 * and the meta model does not talk about getting the domain of a variable,
-				 * so this feature likely does not exist in pnml
+			} else if (term instanceof ColorClassTerm || term instanceof DomainTerm) {
+				/*
+				 * The ColorClassTerm only makes sense in combination with the DomainTerm.
+				 * Apparently there is no equivalent for the DomainTerm in PNML.
+				 * renderEqualityDomainTermEqColorClassTerm compensates for that.
+				 * This line thus cannot be reached.
 				 */
+				throw new AssertionError("Unreachable statement");
 			} else {
 				throw new UnsupportedOperationException("This predicate term (" + term + ") cannot yet be rendered to pnml");
 			}
+		}
+
+		private Element renderEqualityDomainTermEqColorClassTerm(BasicPredicate<?> equality) {
+			if (!allowDomainTerm) {
+				throw new UnsupportedOperationException("Rendering DomainTerms is disabled.");
+			}
+			DomainTerm domainTerm;
+			ColorClassTerm colorClassTerm;
+			{
+				IPredicateTerm<?> left = equality.getLeftOperand();
+				IPredicateTerm<?> right = equality.getRightOperand();
+				if (left instanceof DomainTerm && right instanceof ColorClassTerm) {
+					domainTerm = (DomainTerm) left;
+					colorClassTerm = (ColorClassTerm) right;
+				} else if (left instanceof ColorClassTerm && right instanceof DomainTerm) {
+					domainTerm = (DomainTerm) right;
+					colorClassTerm = (ColorClassTerm) left;
+				} else {
+					throw new IllegalArgumentException("ON places DomainTerm and ColorClassTerm must come together");
+				}
+			}
+
+			Variable variable = domainTerm.getVariables().iterator().next();
+			String classId = colorClassTerm.getClassId();
+			List<Color> colors;
+			if (game.hasStaticSubclass(classId)) {
+				colors = game.getBasicColorClassOfStaticSubclass(classId)
+						.getStaticSubclasses()
+						.get(classId)
+						.getColors();
+			} else {
+				colors = game.getBasicColorClass(classId).getColors();
+			}
+
+			List<Element> equalities = new LinkedList<>();
+			for (Color color : colors) {
+				Element operator = dom.createElement(equality.getOperator() == BasicPredicate.Operator.EQ ? "equality" : "inequality");
+				Element left = dom.createElement("subterm");
+				Element right = dom.createElement("subterm");
+				left.appendChild(renderVariableReference(variable));
+				right.appendChild(renderUseroperatorReference(color.getId()));
+
+				operator.appendChild(left);
+				operator.appendChild(right);
+				equalities.add(operator);
+			}
+			Iterator<Element> subterms = equalities.iterator();
+			return renderNaryPredicate(equality.getOperator() == BasicPredicate.Operator.EQ ? "or" : "and", subterms.next(), subterms);
+		}
+
+		private Element renderNaryPredicate(String operator, Element current, Iterator<Element> rest) {
+			if (!rest.hasNext()) {
+				return current;
+			}
+			Element operatorElement = dom.createElement(operator);
+			Element left = dom.createElement("subterm");
+			Element right = dom.createElement("subterm");
+			left.appendChild(current);
+			right.appendChild(renderNaryPredicate(operator, rest.next(), rest));
+			operatorElement.appendChild(left);
+			operatorElement.appendChild(right);
+			return operatorElement;
 		}
 
 		private Element renderArc(Flow flow) {
