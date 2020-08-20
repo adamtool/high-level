@@ -804,22 +804,16 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 				return parseEqualityPredicate(elem, BasicPredicate.Operator.EQ);
 			} else if ((elem = getOptionalChildElement(termElem, "inequality")) != null) {
 				return parseEqualityPredicate(elem, BasicPredicate.Operator.NEQ);
+			} else if ((elem = getOptionalChildElement(termElem, "booleanconstant")) != null) {
+				return parseBooleanConstant(elem);
 			} else if ((elem = getOptionalChildElement(termElem, "lessthan")) != null) {
-				IPredicate iPredicate = parseOrderingPredicate(elem, OrderingOperator.LESS);
-				System.out.println(iPredicate.toSymbol());
-				return iPredicate;
+				return parseOrderingPredicate(elem, OrderingOperator.LESS);
 			} else if ((elem = getOptionalChildElement(termElem, "lessthanorequal")) != null) {
-				IPredicate iPredicate = parseOrderingPredicate(elem, OrderingOperator.LESS_EQUAL);
-				System.out.println(iPredicate.toSymbol());
-				return iPredicate;
+				return parseOrderingPredicate(elem, OrderingOperator.LESS_EQUAL);
 			} else if ((elem = getOptionalChildElement(termElem, "greaterthan")) != null) {
-				IPredicate iPredicate = parseOrderingPredicate(elem, OrderingOperator.GREATER);
-				System.out.println(iPredicate.toSymbol());
-				return iPredicate;
+				return parseOrderingPredicate(elem, OrderingOperator.GREATER);
 			} else if ((elem = getOptionalChildElement(termElem, "greaterthanorequal")) != null) {
-				IPredicate iPredicate = parseOrderingPredicate(elem, OrderingOperator.GREATER_EQUAL);
-				System.out.println(iPredicate.toSymbol());
-				return iPredicate;
+				return parseOrderingPredicate(elem, OrderingOperator.GREATER_EQUAL);
 			} else {
 				throw new ParseException(new UnsupportedOperationException("Unknown condition operator"));
 			}
@@ -876,6 +870,17 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 			BasicPredicate<ColorClassType> variableRestrictionTerm = new BasicPredicate<>(
 					new DomainTerm(variable, game), BasicPredicate.Operator.EQ, new ColorClassTerm(subclass));
 			return new Pair<>(variable, variableRestrictionTerm);
+		}
+
+		private IPredicate parseBooleanConstant(Element booleanvalue) throws ParseException {
+			String value = getAttribute(booleanvalue, "value");
+			if (value.equalsIgnoreCase("true")) {
+				return Constants.TRUE;
+			} else if (value.equalsIgnoreCase("false")) {
+				return Constants.FALSE;
+			} else {
+				throw new ParseException("a booleanconstants value must be true or false");
+			}
 		}
 
 		private enum OrderingOperator {
