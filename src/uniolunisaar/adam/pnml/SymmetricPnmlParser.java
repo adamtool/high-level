@@ -932,9 +932,9 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 					allowedColorClasses.add(new ColorClassTerm(getColorSubClassByColorId(currentColorId)));
 				}
 				Variable variable = new Variable(variableId);
-				return naryPredicate(BinaryPredicate.Operator.OR, allowedColorClasses.stream()
+				return BinaryPredicate.createPredicate(allowedColorClasses.stream()
 						.map(colorClassTerm -> new BasicPredicate<>(new DomainTerm(variable, game), BasicPredicate.Operator.EQ, colorClassTerm))
-						.iterator());
+						.collect(Collectors.toList()), BinaryPredicate.Operator.OR);
 			}
 		}
 
@@ -950,22 +950,7 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 						createOrderPredicateForVariableAndColor(leftId, operator, colorId)
 				));
 			}
-			return naryPredicate(BinaryPredicate.Operator.OR, cases.iterator());
-		}
-
-		/**
-		 * Turn (AND, [a, b, c]) into (a AND (b AND c))
-		 */
-		private IPredicate naryPredicate(BinaryPredicate.Operator operator, Iterator<? extends IPredicate> termsToOr) {
-			if (!termsToOr.hasNext()) {
-				return Constants.TRUE;
-			} else {
-				IPredicate current = termsToOr.next();
-				while (termsToOr.hasNext()) {
-					current = new BinaryPredicate(current, operator, termsToOr.next());
-				}
-				return current;
-			}
+			return BinaryPredicate.createPredicate(cases, BinaryPredicate.Operator.OR);
 		}
 
 		/**
