@@ -34,6 +34,7 @@ import uniolunisaar.adam.ds.highlevel.terms.PredecessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.SuccessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
+import uniolunisaar.adam.tools.CartesianProduct;
 import uniolunisaar.adam.util.AdamExtensions;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -549,19 +550,8 @@ public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Rende
 			}
 
 			Variable variable = domainTerm.getVariables().iterator().next();
-			String classId = colorClassTerm.getClassId();
-			List<Color> colors;
-			if (game.hasStaticSubclass(classId)) {
-				colors = game.getBasicColorClassOfStaticSubclass(classId)
-						.getStaticSubclasses()
-						.get(classId)
-						.getColors();
-			} else {
-				colors = game.getBasicColorClass(classId).getColors();
-			}
-
 			List<Element> equalities = new LinkedList<>();
-			for (Color color : colors) {
+			for (Color color : getColorsOfClass(colorClassTerm.getClassId())) {
 				Element operator = dom.createElement(equality.getOperator() == BasicPredicate.Operator.EQ ? "equality" : "inequality");
 				Element left = dom.createElement("subterm");
 				Element right = dom.createElement("subterm");
@@ -654,40 +644,122 @@ public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Rende
 					/* this is not wrapped in a numberof term */
 					return renderSetMinusTerm(((SetMinusTerm) expression.getSecond()));
 				case TUPLE:
-					return wrapInNumberof(renderArcTuple((ArcTuple) expression.getSecond()));
+					/* the potential numberof term is is rendered by the called method */
+					return renderArcTuple((ArcTuple) expression.getSecond());
 				default:
 					throw new UnsupportedOperationException("unknown arc expression type");
 			}
 		}
 
 		private Element renderArcTuple(ArcTuple tuple) {
-			Element tupleDomElement = dom.createElement("tuple");
 			var tupleElements = tuple.getValues();
+
+			/*
+			 * first: the things that are added up to make the set
+			 * second: the things that are subtracted
+			 */
+			List<Pair<List<Element>, List<Element>>> plusMinus = new LinkedList<>();
+
+			boolean subtracting = false;
 			for (var tupleElement : tupleElements) {
-				Element subterm = dom.createElement("subterm");
 				switch (tupleElement.getFirst()) {
 					case VARIABLE:
-						subterm.appendChild(renderVariableReference((Variable) tupleElement.getSecond()));
+						Element variableReference = renderVariableReference((Variable) tupleElement.getSecond());
+						plusMinus.add(new Pair<>(
+								List.of(variableReference),
+								List.of(variableReference)
+						));
 						break;
 					case PREDECESSOR:
-						subterm.appendChild(renderNeighbourTerm(((PredecessorTerm) tupleElement.getSecond()).getVariable(), true));
+						Element predecessorReference = renderNeighbourTerm(((PredecessorTerm) tupleElement.getSecond()).getVariable(), true);
+						plusMinus.add(new Pair<>(
+								List.of(predecessorReference),
+								List.of(predecessorReference)
+						));
 						break;
 					case SUCCESSOR:
-						subterm.appendChild(renderNeighbourTerm(((SuccessorTerm) tupleElement.getSecond()).getVariable(), false));
+						Element successorReference = renderNeighbourTerm(((SuccessorTerm) tupleElement.getSecond()).getVariable(), false);
+						plusMinus.add(new Pair<>(
+								List.of(successorReference),
+								List.of(successorReference)
+						));
 						break;
-					case COLORCLASS:
-						// TODO explicitly enumerate all colors of that colorclass
-					case SETMINUS:
-						// TODO also enumerate all colors that are not subtracted
-						subterm.appendChild(dom.createElement("WIP"));
+					case COLORCLASS: {
+						List<Element> colors = getColorsOfClass(((ColorClassTerm) tupleElement.getSecond()).getClassId()).stream()
+								.map(Color::getId)
+								.map(this::renderUseroperatorReference)
+								.collect(Collectors.toUnmodifiableList());
+						plusMinus.add(new Pair<>(
+								colors,
+								colors
+						));
 						break;
+					}
+					case SETMINUS: {
+						SetMinusTerm setMinus = (SetMinusTerm) tupleElement.getSecond();
+						plusMinus.add(new Pair<>(
+								getColorsOfClass(setMinus.getClazz().getClassId()).stream()
+										.map(Color::getId)
+										.map(this::renderUseroperatorReference)
+										.collect(Collectors.toUnmodifiableList()),
+								setMinus.getVariables().stream()
+										.map(this::renderVariableReference)
+										.collect(Collectors.toUnmodifiableList()))
+						);
+						subtracting = true;
+						break;
+					}
 					default:
 						throw new UnsupportedOperationException("unknown arc tuple expression type");
 				}
-
-				tupleDomElement.appendChild(subterm);
 			}
-			return tupleDomElement;
+
+
+			boolean adding = plusMinus.stream()
+					.anyMatch(pm -> pm.getFirst().size() > 1);
+
+			if (!adding && !subtracting) {
+				Element tupleDomElement = dom.createElement("tuple");
+				for (Pair<List<Element>, List<Element>> element : plusMinus) {
+					tupleDomElement.appendChild(wrapInSubterm(element.getFirst().get(0)));
+				}
+				return wrapInNumberof(tupleDomElement);
+			} else {
+				CartesianProduct<Element> toAdd = new CartesianProduct<>(
+						plusMinus.stream()
+								.map(Pair::getFirst)
+								.collect(Collectors.toUnmodifiableList())
+				);
+				Element add = dom.createElement("add");
+				for (List<Element> elements : toAdd) {
+					Element tupleDomElement = dom.createElement("tuple");
+					for (Element element : elements) {
+						tupleDomElement.appendChild(wrapInSubterm((Element) element.cloneNode(true)));
+					}
+					add.appendChild(wrapInSubterm(wrapInNumberof(tupleDomElement)));
+				}
+				if (!subtracting) {
+					return add;
+				}
+
+				Element subtract = dom.createElement("subtract");
+				subtract.appendChild(wrapInSubterm(add));
+
+				CartesianProduct<Element> toSubtract = new CartesianProduct<>(
+						plusMinus.stream()
+								.map(Pair::getSecond)
+								.collect(Collectors.toUnmodifiableList())
+				);
+				for (List<Element> elements : toSubtract) {
+					Element tupleDomElement = dom.createElement("tuple");
+					for (Element element : elements) {
+						tupleDomElement.appendChild(wrapInSubterm((Element) element.cloneNode(true)));
+					}
+					subtract.appendChild(wrapInSubterm(wrapInNumberof(tupleDomElement)));
+				}
+
+				return subtract;
+			}
 		}
 
 		private Element renderNeighbourTerm(Variable var, boolean predecessor) {
@@ -774,6 +846,27 @@ public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Rende
 		/* a one-tuple's name is just the only color class name */
 		private String tupleName(ColorDomain domain) {
 			return String.join("*", domain);
+		}
+
+		private Element wrapIn(String tagName, Element element) {
+			Element subterm = dom.createElement(tagName);
+			subterm.appendChild(element);
+			return subterm;
+		}
+
+		private Element wrapInSubterm(Element element) {
+			return wrapIn("subterm", element);
+		}
+
+		private List<Color> getColorsOfClass(String classOrSubClassId) {
+			if (game.hasStaticSubclass(classOrSubClassId)) {
+				return game.getBasicColorClassOfStaticSubclass(classOrSubClassId)
+						.getStaticSubclasses()
+						.get(classOrSubClassId)
+						.getColors();
+			} else {
+				return game.getBasicColorClass(classOrSubClassId).getColors();
+			}
 		}
 
 	}
