@@ -709,6 +709,7 @@ public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Rende
 			Element subtract = dom.createElement("subtract");
 			Element setSubterm = dom.createElement("subterm");
 			setSubterm.appendChild(wrapInNumberof(renderColorClassTerm(term.getClazz())));
+			subtract.appendChild(setSubterm);
 			for (Variable variable : term.getVariables()) {
 				Element minusSubterm = dom.createElement("subterm");
 				minusSubterm.appendChild(wrapInNumberof(renderVariableReference(variable)));
@@ -716,7 +717,6 @@ public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Rende
 				subtract.appendChild(minusSubterm);
 			}
 
-			subtract.appendChild(setSubterm);
 			return subtract;
 		}
 
