@@ -4,7 +4,7 @@ import uniolunisaar.adam.ds.graph.IDecision;
 import uniolunisaar.adam.ds.graph.IDecisionSet;
 import uniolunisaar.adam.ds.graph.GameGraphFlow;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
-import uniolunisaar.adam.ds.petrinet.objectives.Condition;
+import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.logic.pg.solver.AbstractSolver;
 
 /**

@@ -14,7 +14,7 @@ import uniolunisaar.adam.ds.highlevel.symmetries.SymmetryIterator;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.exceptions.pnwt.NetNotSafeException;
 import uniolunisaar.adam.exceptions.pg.NoSuitableDistributionFoundException;
-import uniolunisaar.adam.ds.petrinet.objectives.Safety;
+import uniolunisaar.adam.ds.objectives.Safety;
 import uniolunisaar.adam.exceptions.pg.NotSupportedGameException;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.pg.InvalidPartitionException;

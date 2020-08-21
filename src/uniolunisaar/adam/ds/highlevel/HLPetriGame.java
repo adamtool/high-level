@@ -33,7 +33,7 @@ import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.petrigame.IPetriGame;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
-import uniolunisaar.adam.ds.petrinet.objectives.Condition;
+import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.exceptions.highlevel.IdentifierAlreadyExistentException;
 import uniolunisaar.adam.exceptions.highlevel.NoNeighbourForUnorderedColorClassException;
 import uniolunisaar.adam.exceptions.highlevel.NoSuchColorDomainException;

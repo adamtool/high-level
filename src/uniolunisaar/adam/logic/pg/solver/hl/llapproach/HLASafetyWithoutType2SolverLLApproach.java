@@ -8,7 +8,7 @@ import uniolunisaar.adam.ds.graph.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.explicit.ILLDecision;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
-import uniolunisaar.adam.ds.petrinet.objectives.Safety;
+import uniolunisaar.adam.ds.objectives.Safety;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.pg.NoStrategyExistentException;
 import uniolunisaar.adam.logic.pg.builder.graph.hl.SGGBuilderLL;

@@ -6,7 +6,7 @@ import uniolunisaar.adam.ds.graph.hl.hlapproach.IHLDecision;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
-import uniolunisaar.adam.ds.petrinet.objectives.Safety;
+import uniolunisaar.adam.ds.objectives.Safety;
 import uniolunisaar.adam.exceptions.pg.SolvingException;
 import uniolunisaar.adam.logic.pg.solver.hl.AbstractHLSolverFactory;
 import uniolunisaar.adam.logic.pg.solver.hl.HLSolverOptions;

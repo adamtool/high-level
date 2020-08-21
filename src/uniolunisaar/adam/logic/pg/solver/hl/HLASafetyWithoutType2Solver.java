@@ -7,7 +7,7 @@ import uniolunisaar.adam.ds.graph.IDecision;
 import uniolunisaar.adam.ds.graph.IDecisionSet;
 import uniolunisaar.adam.ds.graph.GameGraph;
 import uniolunisaar.adam.ds.graph.GameGraphFlow;
-import uniolunisaar.adam.ds.petrinet.objectives.Safety;
+import uniolunisaar.adam.ds.objectives.Safety;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 import uniolunisaar.adam.logic.pg.builder.graph.GGStrategyBuilder;
 
