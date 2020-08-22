@@ -29,12 +29,17 @@ import uniolunisaar.adam.ds.highlevel.arcexpressions.IArcType;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.SetMinusTerm;
 import uniolunisaar.adam.ds.highlevel.predicate.BasicPredicate;
 import uniolunisaar.adam.ds.highlevel.predicate.BinaryPredicate;
+import uniolunisaar.adam.ds.highlevel.predicate.Constants;
+import uniolunisaar.adam.ds.highlevel.predicate.DomainTerm;
 import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
+import uniolunisaar.adam.ds.highlevel.predicate.IPredicateTerm;
 import uniolunisaar.adam.ds.highlevel.predicate.UnaryPredicate;
 import uniolunisaar.adam.ds.highlevel.terms.ColorClassTerm;
+import uniolunisaar.adam.ds.highlevel.terms.ColorClassType;
 import uniolunisaar.adam.ds.highlevel.terms.PredecessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.SuccessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
+import uniolunisaar.adam.tools.CartesianProduct;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.AdamExtensions;
 
@@ -47,6 +52,7 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.LongStream;
+import java.util.stream.StreamSupport;
 
 /**
  * Parser for symmetric set based nets described by pnml.
@@ -68,7 +74,9 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 	private static class Parser {
 
 		public boolean consistencyCheck = true;
-		public boolean ignoreNumberofIfOmitted = false;
+		public boolean ignoreNumberofIfOmitted = true;
+		public boolean allowExplicitlyReferencedColors = true;
+		public boolean allowOrderingRelations = true;
 
 		private HLPetriGame game;
 		private Map<String, String> safeIdMap;
@@ -93,6 +101,7 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 			parseDeclarations(net);
 			parsePagesForNodes(net);
 			parsePagesForEdges(net);
+			this.colorClassPrototypes.forEach((id, prototype) -> prototype.createSubclasses(game));
 			return this.game;
 		}
 
@@ -110,8 +119,12 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 		}
 
 		private void init(Element net) throws ParseException {
-			String pnName = getAttribute(net, "id");
-			this.game = new HLPetriGame(pnName);
+			String netId = getAttribute(net, "id");
+			this.game = new HLPetriGame(netId);
+			String name = parseName(net);
+			if (name != null) {
+				game.putExtension(EXTENSION_KEY_NAME, name, ExtensionProperty.WRITE_TO_FILE);
+			}
 			this.safeIdMap = new HashMap<>();
 			this.idCounter = 0;
 			checkNetType(net);
@@ -232,13 +245,18 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 			for (Element partition : partitions) {
 				parsePartition(partition);
 			}
-			this.colorClassPrototypes.forEach((id, prototype) -> {
-				if (game.getBasicColorClass(id) == null) {
-					prototype.create(game);
-				}
-			});
+			/*
+			 * at this point all color classes are read,
+			 * but the may still be partitioned to allow for color references.
+			 */
+			this.colorClassPrototypes.forEach((id, prototype) -> prototype.createColorClass(game));
 
-			// variabledecl is ignored
+			List<Element> variables = getChildElements(declarations, "variabledecl");
+			for (Element variableElement : variables) {
+				String variableId = toSafeIdentifier(getAttribute(variableElement, "id"));
+				String colorClassId = toSafeIdentifier(getAttribute(getChildElement(variableElement, "usersort"), "declaration"));
+				this.variableIdToColorClassId.put(variableId, colorClassId);
+			}
 
 			log.addMessage(" End  <declaration>");
 		}
@@ -252,8 +270,20 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 		 * Since we cannot overwrite an already created color class
 		 * the actual creation of them in the game is postponed
 		 * until all partitions have been created.
+		 * <p>
+		 * BasicColorClasses are created
+		 * after all declarations have been parsed.
+		 * They are needed for parsing places.
+		 * Transitions and arcs are created after places,
+		 * but they may produce StaticColorClasses,
+		 * to allow for references to a color
+		 * via a variable that can only hold that specific color.
+		 * Thus creation of StaticColorClasses is postponed
+		 * until everything is parsed.
 		 */
 		private final Map<String, ColorClassPrototype> colorClassPrototypes = new HashMap<>();
+
+		private final Map<String, String> variableIdToColorClassId = new HashMap<>();
 
 		private void addColorClassPrototype(String id, boolean ordered, List<String> colors) throws ParseException {
 			if (this.colorClassPrototypes.containsKey(id) || game.getBasicColorClass(id) != null) {
@@ -266,6 +296,9 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 			public String id;
 			public boolean ordered;
 			public List<String> colors;
+			public List<Pair<String, Set<String>>> subclasses = new ArrayList<>();
+			boolean createdColorClass = false;
+			boolean createdSubclasses = false;
 
 			public ColorClassPrototype(String id, boolean ordered, List<String> colors) {
 				this.id = id;
@@ -273,12 +306,97 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 				this.colors = colors;
 			}
 
-			public void create(HLPetriGame game) {
+			public void createColorClass(HLPetriGame game) {
+				if (this.createdColorClass) {
+					throw new IllegalStateException("Already created color class from prototype");
+				}
 				List<Color> actualColors = this.colors.stream()
 						.map(Color::new)
 						.collect(Collectors.toUnmodifiableList());
 				game.createBasicColorClass(this.id, this.ordered, actualColors);
+				this.createdColorClass = true;
 			}
+
+			public void createSubclasses(HLPetriGame game) {
+				if (this.createdSubclasses) {
+					throw new IllegalStateException("Already created subclasses from prototype");
+				}
+				if (!this.subclasses.isEmpty()) {
+					List<Pair<String, String[]>> subclasses = new ArrayList<>(this.subclasses.stream()
+							.map(pair -> new Pair<>(pair.getFirst(), pair.getSecond().toArray(String[]::new)))
+							.collect(Collectors.toUnmodifiableList()));
+					Set<String> alreadyPartitioned = subclasses.stream()
+							.flatMap(pair -> Arrays.stream(pair.getSecond()))
+							.collect(Collectors.toUnmodifiableSet());
+					List<String> colorsCopy = new ArrayList<>(this.colors);
+					colorsCopy.removeAll(alreadyPartitioned);
+					String[] rest = colorsCopy.toArray(String[]::new);
+					subclasses.add(new Pair<>(id + "-rest", rest));
+					game.addStaticSubClasses(this.id, subclasses);
+				}
+				this.createdSubclasses = true;
+			}
+
+			public void setSubclasses(List<Pair<String, Set<String>>> subclasses) {
+				if (!this.subclasses.isEmpty()) {
+					throw new IllegalStateException("Color class '" + this.id + "' is already partitioned");
+				}
+				this.subclasses = subclasses;
+			}
+
+			public void addSingletonSubclass(String colorId) {
+				Optional<Pair<String, Set<String>>> subclass = getSubclass(colorId);
+				if (subclass.isEmpty()) {
+					this.subclasses.add(new Pair<>(colorId + "-singleton", Collections.singleton(colorId)));
+				} else if (subclass.get().getSecond().size() != 1) {
+					throw new IllegalStateException("Color '" + colorId + "' already has a subclass, that is not a singleton");
+				}
+			}
+
+			private Optional<Pair<String, Set<String>>> getSubclass(String colorId) {
+				return this.subclasses.stream()
+						.filter(pair -> pair.getSecond().contains(colorId))
+						.findFirst();
+			}
+		}
+
+		/* not null */
+		private ColorClassPrototype getColorClassById(String colorClassId) throws ParseException {
+			ColorClassPrototype ret = this.colorClassPrototypes.get(colorClassId);
+			if (ret == null) {
+				throw new ParseException("ColorClass '" + colorClassId + "' does not exists");
+			}
+			return ret;
+		}
+
+		private ColorClassPrototype getColorClassByVariableId(String variableId) throws ParseException {
+			String colorClassId = this.variableIdToColorClassId.get(variableId);
+			if (colorClassId == null) {
+				throw new ParseException(new NoSuchElementException("Variable '" + variableId + "' is not declared"));
+			}
+			return this.getColorClassById(colorClassId);
+		}
+
+		/* not null */
+		private ColorClassPrototype getColorClassByColorId(String colorId, boolean createPartition) throws ParseException {
+			if (!allowExplicitlyReferencedColors && createPartition) {
+				throw new ParseException(new UnsupportedOperationException("Explicitly referencing a color breaks symmetries and the workaround is disabled"));
+			}
+			ColorClassPrototype ret = this.colorClassPrototypes.values().stream()
+					.filter(colorClass -> colorClass.colors.contains(colorId))
+					.findFirst()
+					.orElseThrow(() -> new ParseException("Color '" + colorId + "' has no color class"));
+			if (createPartition) {
+				ret.addSingletonSubclass(colorId);
+			}
+			return ret;
+		}
+
+		private String getColorSubClassByColorId(String colorId) throws ParseException {
+			return getColorClassByColorId(colorId, true)
+					.getSubclass(colorId)
+					.orElseThrow(() -> new ParseException("Color '" + colorId + "' has no color class"))
+					.getFirst();
 		}
 
 		/**
@@ -298,20 +416,20 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 						+ partitionedColorClassId + ", which does not exist");
 			}
 			List<Element> partitionelements = getChildElements(partition, "partitionelement");
-			List<Pair<String, String[]>> partitionedClasses = new ArrayList<>();
+			List<Pair<String, Set<String>>> partitionedClasses = new ArrayList<>();
 			for (Element partitionelement : partitionelements) {
 				String classId = toSafeIdentifier(getAttribute(partitionelement, "id"));
 				List<Element> useroperators = getChildElements(partitionelement, "useroperator");
-				List<String> colors = new ArrayList<>();
+				Set<String> colors = new HashSet<>();
 				for (Element useroperator : useroperators) {
 					colors.add(toSafeIdentifier(getAttribute(useroperator, "declaration")));
 				}
-				partitionedClasses.add(new Pair<>(classId, colors.toArray(String[]::new)));
+				partitionedClasses.add(new Pair<>(classId, colors));
 			}
 
 			if (consistencyCheck) {
 				Set<Map.Entry<String, Long>> duplicates = partitionedClasses.stream()
-						.flatMap(pair -> Arrays.stream(pair.getSecond()))
+						.flatMap(pair -> pair.getSecond().stream())
 						.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
 						.entrySet().stream()
 						.filter(entry -> entry.getValue() > 1)
@@ -322,7 +440,7 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 
 				List<String> partitionedClassIds = partitionedClasses.stream()
 						.map(Pair::getSecond)
-						.flatMap(Arrays::stream)
+						.flatMap(Collection::stream)
 						.sorted()
 						.collect(Collectors.toList());
 				List<String> classIdsToPartition = partitionedColorClass.colors.stream()
@@ -332,7 +450,7 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 					throw new ParseException(id + " is not a partition because it is not complete");
 				}
 			}
-			game.createBasicColorClassByStaticSubClass(partitionedColorClassId, false, partitionedClasses);
+			partitionedColorClass.setSubclasses(partitionedClasses);
 			log.addMessage(" End  <partition id=\"" + id + "\">");
 		}
 
@@ -577,9 +695,11 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 			if (subterms.size() != 2) {
 				throw new ParseException("<numberof> must have 2 subterms");
 			}
-			long amount = parseLong(getAttribute(getChildElement(subterms.get(0), "numberconstant"), "value"));
-			if (amount != 1) {
-				throw new ParseException("Only set based nets allowed");
+			if (consistencyCheck) {
+				long amount = parseLong(getAttribute(getChildElement(subterms.get(0), "numberconstant"), "value"));
+				if (amount != 1) {
+					throw new ParseException("Only set based nets allowed");
+				}
 			}
 
 			return parseInitialMarkingTerm(subterms.get(1));
@@ -591,16 +711,11 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 				String referencedColor = toSafeIdentifier(getAttribute(elem, "declaration"));
 				return new ColorTokens(Collections.singleton(new ColorToken(new Color(referencedColor))));
 			} else if ((elem = getOptionalChildElement(containingElement, "tuple")) != null) {
-				// TODO <all>
-				ColorToken token = new ColorToken();
-				for (Element subterm : getChildElements(elem, "subterm")) {
-					String referenced = toSafeIdentifier(getAttribute(getChildElement(subterm, "useroperator"), "declaration"));
-					token.add(new Color(referenced));
-				}
-				return new ColorTokens(Collections.singleton(token));
+				return parseInitialMarkingTupleTerm(elem);
 			} else if ((elem = getOptionalChildElement(containingElement, "all")) != null) {
 				String referencedColorClassId = toSafeIdentifier(getAttribute(getChildElement(elem, "usersort"), "declaration"));
-				Set<ColorToken> tokens = game.getBasicColorClass(referencedColorClassId).getColors().stream()
+				Set<ColorToken> tokens = this.getColorClassById(referencedColorClassId).colors.stream()
+						.map(Color::new)
 						.map(ColorToken::new)
 						.collect(Collectors.toSet());
 				return new ColorTokens(tokens);
@@ -613,9 +728,34 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 				 */
 				return new ColorTokens(Collections.singleton(DOT_CONSTANT_TOKEN));
 			} else {
+				// TODO setminus
 				throw new ParseException(new UnsupportedOperationException("Unknown term in initial marking"));
 			}
 		}
+
+		private ColorTokens parseInitialMarkingTupleTerm(Element tupleElement) throws ParseException {
+			List<List<String>> cartesianFactors = new ArrayList<>();
+			for (Element subterm : getChildElements(tupleElement, "subterm")) {
+				Element innerElem;
+				if ((innerElem = getOptionalChildElement(subterm, "useroperator")) != null) {
+					String referenced = toSafeIdentifier(getAttribute(innerElem, "declaration"));
+					cartesianFactors.add(List.of(referenced));
+				} else if ((innerElem = getOptionalChildElement(subterm, "all")) != null) {
+					String referencedColorClassId = toSafeIdentifier(getAttribute(getChildElement(innerElem, "usersort"), "declaration"));
+					cartesianFactors.add(this.getColorClassById(referencedColorClassId).colors);
+				}
+			}
+
+			Set<ColorToken> tuples = StreamSupport.stream(new CartesianProduct<>(cartesianFactors).spliterator(), false)
+					.map(colorIds -> colorIds.stream()
+							.map(Color::new)
+							.collect(Collectors.toList()))
+					.map(ColorToken::new)
+					.collect(Collectors.toSet());
+			return new ColorTokens(tuples);
+		}
+
+		Set<IPredicate> additionalTermsForCurrentTransition = new HashSet<>();
 
 		/**
 		 * Creates a transition corresponding to the given
@@ -636,13 +776,18 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 		}
 
 		private void parseCondition(Element transitionElem) throws ParseException {
+			this.additionalTermsForCurrentTransition.clear();
 			String placeId = toSafeIdentifier(getAttribute(transitionElem, "id"));
 			Transition transition = game.getTransition(placeId);
 			Element conditionElem = getOptionalChildElement(transitionElem, "condition");
 			if (conditionElem == null) {
 				return;
 			}
-			game.setPredicate(transition, parsePredicate(getChildElement(conditionElem, "structure")));
+			IPredicate predicate = parsePredicate(getChildElement(conditionElem, "structure"));
+			for (IPredicate additionalTerm : this.additionalTermsForCurrentTransition) {
+				predicate = new BinaryPredicate(predicate, BinaryPredicate.Operator.AND, additionalTerm);
+			}
+			game.setPredicate(transition, predicate);
 		}
 
 		private IPredicate parsePredicate(Element termElem) throws ParseException {
@@ -659,6 +804,22 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 				return parseEqualityPredicate(elem, BasicPredicate.Operator.EQ);
 			} else if ((elem = getOptionalChildElement(termElem, "inequality")) != null) {
 				return parseEqualityPredicate(elem, BasicPredicate.Operator.NEQ);
+			} else if ((elem = getOptionalChildElement(termElem, "lessthan")) != null) {
+				IPredicate iPredicate = parseOrderingPredicate(elem, OrderingOperator.LESS);
+				System.out.println(iPredicate.toSymbol());
+				return iPredicate;
+			} else if ((elem = getOptionalChildElement(termElem, "lessthanorequal")) != null) {
+				IPredicate iPredicate = parseOrderingPredicate(elem, OrderingOperator.LESS_EQUAL);
+				System.out.println(iPredicate.toSymbol());
+				return iPredicate;
+			} else if ((elem = getOptionalChildElement(termElem, "greaterthan")) != null) {
+				IPredicate iPredicate = parseOrderingPredicate(elem, OrderingOperator.GREATER);
+				System.out.println(iPredicate.toSymbol());
+				return iPredicate;
+			} else if ((elem = getOptionalChildElement(termElem, "greaterthanorequal")) != null) {
+				IPredicate iPredicate = parseOrderingPredicate(elem, OrderingOperator.GREATER_EQUAL);
+				System.out.println(iPredicate.toSymbol());
+				return iPredicate;
 			} else {
 				throw new ParseException(new UnsupportedOperationException("Unknown condition operator"));
 			}
@@ -685,31 +846,162 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 			if (subterms.size() != 2) {
 				throw new ParseException("<" + equalityOperatorElement.getNodeName() + "> is a binary operator");
 			}
-			/* first check if its equality on variables */
-			Element v1Elem = getOptionalChildElement(subterms.get(0), "variable");
-			if (v1Elem != null) {
-				String v1 = toSafeIdentifier(getAttribute(v1Elem, "refvariable"));
-				Element v2Elem = getOptionalChildElement(subterms.get(1), "variable");
-				if (v2Elem != null) {
-					String v2 = toSafeIdentifier(getAttribute(v2Elem, "refvariable"));
-					return new BasicPredicate<>(new Variable(v1), operator, new Variable(v2));
-				}
-				Element c2Elem = getOptionalChildElement(subterms.get(1), "useroperator");
-				if (c2Elem != null) {
-					/*
-					 * variable == color is not supported,
-					 * because this would destroy the symmetric behavior.
-					 * To allow this
-					 * one has to put each of the colors
-					 * appearing as constants in a separate subclass
-					 * and this can then be checked
-					 * with the variable\in\domain term.
-					 */
-					throw new ParseException(new UnsupportedOperationException("Equality between variable and color breaks symmetries"));
-				}
+			return new BasicPredicate<>(parseEqualityPredicateTerm(subterms.get(0)), operator, parseEqualityPredicateTerm(subterms.get(1)));
+		}
 
+		public IPredicateTerm<Color> parseEqualityPredicateTerm(Element containingElement) throws ParseException {
+			Element elem;
+			if ((elem = getOptionalChildElement(containingElement, "variable")) != null) {
+				return new Variable(toSafeIdentifier(getAttribute(elem, "refvariable")));
+			} else if ((elem = getOptionalChildElement(containingElement, "predecessor")) != null) {
+				return new PredecessorTerm(new Variable(toSafeIdentifier(getAttribute(getChildElement(getChildElement(elem,
+						"subterm"), "variable"), "refvariable"))), game);
+			} else if ((elem = getOptionalChildElement(containingElement, "successor")) != null) {
+				return new SuccessorTerm(new Variable(toSafeIdentifier(getAttribute(getChildElement(getChildElement(elem,
+						"subterm"), "variable"), "refvariable"))), game);
+			} else if ((elem = getOptionalChildElement(containingElement, "useroperator")) != null) {
+				log.addWarning("Equality between variable and color breaks symmetries");
+				String referencedColorId = toSafeIdentifier(getAttribute(elem, "declaration"));
+				Pair<Variable, BasicPredicate<ColorClassType>> antisymmetryTerms = createAntisymmetryTerms(referencedColorId);
+				this.additionalTermsForCurrentTransition.add(antisymmetryTerms.getSecond());
+				return antisymmetryTerms.getFirst();
+			} else {
+				throw new ParseException(new UnsupportedOperationException("Unknown term in equality"));
 			}
-			throw new ParseException(new UnsupportedOperationException("Unknown type of equality"));
+		}
+
+		private Pair<Variable, BasicPredicate<ColorClassType>> createAntisymmetryTerms(String referencedColorId) throws ParseException {
+			String subclass = this.getColorSubClassByColorId(referencedColorId);
+			Variable variable = new Variable(subclass + "-variable");
+			BasicPredicate<ColorClassType> variableRestrictionTerm = new BasicPredicate<>(
+					new DomainTerm(variable, game), BasicPredicate.Operator.EQ, new ColorClassTerm(subclass));
+			return new Pair<>(variable, variableRestrictionTerm);
+		}
+
+		private enum OrderingOperator {
+			LESS("<", true, true),
+			LESS_EQUAL("<=", true, false),
+			GREATER(">", false, true),
+			GREATER_EQUAL(">=", false, false);
+
+			private final String symbol;
+			private final boolean falling;
+			private final boolean skipBound;
+
+			OrderingOperator(String symbol, boolean falling, boolean skipBound) {
+				this.symbol = symbol;
+				this.falling = falling;
+				this.skipBound = skipBound;
+			}
+
+			@Override
+			public String toString() {
+				return this.symbol;
+			}
+		}
+
+		private IPredicate parseOrderingPredicate(Element containingElement, OrderingOperator operator) throws ParseException {
+			if (!allowOrderingRelations) {
+				throw new ParseException(new UnsupportedOperationException("ColorClasses cannot be partially ordered sets, because they are cyclic. The workaround is disabled."));
+			}
+			List<Element> subterms = getChildElements(containingElement, "subterm");
+			if (subterms.size() != 2) {
+				throw new ParseException("<" + containingElement.getNodeName() + "> is a binary operator");
+			}
+
+			String variableId = toSafeIdentifier(getAttribute(getChildElement(subterms.get(0), "variable"), "refvariable"));
+			Element elem;
+			if ((elem = getOptionalChildElement(subterms.get(1), "useroperator")) != null) {
+				String colorId = toSafeIdentifier(getAttribute(elem, "declaration"));
+				return createOrderPredicateForVariableAndColor(variableId, operator, colorId);
+			} else if ((elem = getOptionalChildElement(subterms.get(1), "variable")) != null) {
+				String otherVariableId = toSafeIdentifier(getAttribute(elem, "refvariable"));
+				return createOrderPredicateForVariableAndVariable(variableId, operator, otherVariableId);
+			} else {
+				throw new ParseException("Unknown term in ordering predicate");
+			}
+		}
+
+		private IPredicate createOrderPredicateForVariableAndColor(String variableId, OrderingOperator operator, String colorId) throws ParseException {
+			List<String> allowedColorIds = getRange(colorId, operator);
+			if (allowedColorIds.isEmpty()) {
+				return Constants.FALSE;
+			} else {
+				List<ColorClassTerm> allowedColorClasses = new LinkedList<>();
+				for (String currentColorId : allowedColorIds) {
+					allowedColorClasses.add(new ColorClassTerm(getColorSubClassByColorId(currentColorId)));
+				}
+				Variable variable = new Variable(variableId);
+				return naryPredicate(BinaryPredicate.Operator.OR, allowedColorClasses.stream()
+						.map(colorClassTerm -> new BasicPredicate<>(new DomainTerm(variable, game), BasicPredicate.Operator.EQ, colorClassTerm))
+						.iterator());
+			}
+		}
+
+		private IPredicate createOrderPredicateForVariableAndVariable(String leftId, OrderingOperator operator, String rightId) throws ParseException {
+			ColorClassPrototype colorClass = getColorClassByVariableId(rightId);
+			Variable variable = new Variable(leftId);
+
+			List<IPredicate> cases = new LinkedList<>();
+			for (String colorId : colorClass.colors) {
+				cases.add(new BinaryPredicate(
+						new BasicPredicate<>(new DomainTerm(variable, game), BasicPredicate.Operator.EQ, new ColorClassTerm(getColorSubClassByColorId(colorId))),
+						BinaryPredicate.Operator.AND,
+						createOrderPredicateForVariableAndColor(leftId, operator, colorId)
+				));
+			}
+			return naryPredicate(BinaryPredicate.Operator.OR, cases.iterator());
+		}
+
+		/**
+		 * Turn (AND, [a, b, c]) into (a AND (b AND c))
+		 */
+		private IPredicate naryPredicate(BinaryPredicate.Operator operator, Iterator<? extends IPredicate> termsToOr) {
+			if (!termsToOr.hasNext()) {
+				return Constants.TRUE;
+			} else {
+				IPredicate current = termsToOr.next();
+				while (termsToOr.hasNext()) {
+					current = new BinaryPredicate(current, operator, termsToOr.next());
+				}
+				return current;
+			}
+		}
+
+		/**
+		 * Get all colors, that satisfy the given ordering relation.
+		 * <p>
+		 * Assume that the color that was given first is the minimum and the color given last is the maximum.
+		 * <p>
+		 * For x in [1, 2, 3, 4] and the expression x < 3 return [1, 2]
+		 */
+		private List<String> getRange(String referencedColorId, OrderingOperator operator) throws ParseException {
+			List<String> ret = new LinkedList<>();
+			ColorClassPrototype colorClass = getColorClassByColorId(referencedColorId, false);
+			String end = operator.falling ? colorClass.colors.get(0) : colorClass.colors.get(colorClass.colors.size() - 1);
+			if (operator.skipBound && referencedColorId.equals(end)) {
+				return Collections.emptyList();
+			}
+			String current = operator.skipBound ? getNeighbour(referencedColorId, operator.falling) : referencedColorId;
+			while (!current.equals(end)) {
+				ret.add(current);
+				current = getNeighbour(current, operator.falling);
+			}
+			ret.add(current);
+			return ret;
+		}
+
+		private String getNeighbour(String colorId, boolean wantPredecessor) throws ParseException {
+			List<String> colors = this.getColorClassByColorId(colorId, false).colors;
+			int colorIndex = colors.indexOf(colorId);
+			/* 2 * because java's modulo can return negative numbers */
+			if (colorIndex == 0 && wantPredecessor) {
+				return colors.get(colors.size() - 1);
+			} else if (colorIndex == colors.size() - 1 && !wantPredecessor) {
+				return colors.get(0);
+			} else {
+				return colors.get(colorIndex + (wantPredecessor ? -1 : +1));
+			}
 		}
 
 		/**
@@ -733,11 +1025,28 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 			String id = toSafeIdentifier(getAttribute(arc, "id"));
 			String sourceId = toSafeIdentifier(getAttribute(arc, "source"));
 			String targetId = toSafeIdentifier(getAttribute(arc, "target"));
+			this.additionalTermsForCurrentTransition.clear();
 			log.addMessage("Begin <arc id=\"" + id + "\">");
 
-			Flow flow = game.createFlow(game.getNode(sourceId), game.getNode(targetId),
+			uniol.apt.adt.pn.Node source = game.getNode(sourceId);
+			uniol.apt.adt.pn.Node target = game.getNode(targetId);
+			Transition transition;
+			if (source instanceof Transition) {
+				transition = (Transition) source;
+			} else if (target instanceof Transition) {
+				transition = (Transition) target;
+			} else {
+				throw new ParseException("An arc must be between a place and a transition");
+			}
+			Flow flow = game.createFlow(source, target,
 					parseArcInscription(getChildElement(getChildElement(arc,
 							"hlinscription"), "structure")));
+
+			IPredicate predicate = game.getPredicate(transition);
+			for (IPredicate additionalTerm : this.additionalTermsForCurrentTransition) {
+				predicate = new BinaryPredicate(predicate, BinaryPredicate.Operator.AND, additionalTerm);
+			}
+			game.setPredicate(transition, predicate);
 
 			String name = parseName(arc);
 			if (name != null) {
@@ -756,6 +1065,8 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 					addToArcExpression(arcExpression, parseNumberofArc(getChildElement(subterm, "numberof")));
 				}
 				return arcExpression;
+			} else if ((elem = getOptionalChildElement(structure, "subtract")) != null) {
+				return parseArcSetMinusTerm(elem);
 			} else {
 				if (ignoreNumberofIfOmitted) {
 					return addToArcExpression(new ArcExpression(), parseArcTerm(structure));
@@ -769,6 +1080,129 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 		 * Parse the numberof tag of an arc's hlinscription structure.
 		 */
 		private Pair<IArcTerm.Sort, IArcTerm<? extends IArcType>> parseNumberofArc(Element numberofElem) throws ParseException {
+			return parseArcTerm(unwrapNumberofArc(numberofElem));
+		}
+
+		private ArcExpression parseArcSetMinusTerm(Element containingElement) throws ParseException {
+			List<Element> subterms = getChildElements(containingElement, "subterm");
+			if (subterms.size() < 2) {
+				throw new ParseException("A <subtract> term must have at least 2 subterms");
+			}
+			Iterator<Element> subtermIterator = subterms.iterator();
+			Element setSubterm = subtermIterator.next();
+			Element elem;
+			if ((elem = getOptionalChildElement(setSubterm, "numberof")) != null) {
+				String referencedColorClassId = toSafeIdentifier(getAttribute(getChildElement(getChildElement(unwrapNumberofArc(elem),
+						"all"), "usersort"), "declaration"));
+				return new ArcExpression(new SetMinusTerm(new ColorClassTerm(referencedColorClassId), parseArcSetMinusSubtractedPartSingle(subtermIterator).toArray(Variable[]::new)));
+			} else if ((elem = getOptionalChildElement(setSubterm, "add")) != null) {
+				List<Object> parseArcSetMinusSetPartWithAdd = parseArcSetMinusSetPartWithAdd(elem);
+				List<List<Variable>> variableTuples = parseArcSetMinusSubtractedPartTuple(subtermIterator);
+
+				ArcTuple arcTuple = new ArcTuple();
+				for (int i = 0, size = parseArcSetMinusSetPartWithAdd.size(); i < size; i++) {
+					Object tupleMemberInSet = parseArcSetMinusSetPartWithAdd.get(i);
+					if (tupleMemberInSet instanceof ColorClassTerm) {
+						List<Variable> list = new ArrayList<>();
+						for (List<Variable> tupleMembers : variableTuples) {
+							list.add(tupleMembers.get(i));
+						}
+						Variable[] variables = list.toArray(Variable[]::new);
+						arcTuple.add(new SetMinusTerm((ColorClassTerm) tupleMemberInSet, variables));
+					} else {
+						assert tupleMemberInSet instanceof Variable;
+						Variable variable = (Variable) tupleMemberInSet;
+						for (List<Variable> tupleMembers : variableTuples) {
+							if (!variable.equals(tupleMembers.get(i))) {
+								throw new ParseException("Cannot subtract variable from another variable");
+							}
+						}
+						arcTuple.add(variable);
+					}
+				}
+				return new ArcExpression(arcTuple);
+			} else {
+				throw new ParseException(new UnsupportedOperationException("Unknown description of the set for <subtract>"));
+			}
+		}
+
+		private List<Variable> parseArcSetMinusSubtractedPartSingle(Iterator<Element> subtractedIterator) throws ParseException {
+			List<Variable> subtractedVariables = new LinkedList<>();
+			while (subtractedIterator.hasNext()) {
+				Element subtractedSubterm = subtractedIterator.next();
+				Element numberofSubtracted = getChildElement(subtractedSubterm, "numberof");
+				Element numberofSubtermContainingVariableReference = unwrapNumberofArc(numberofSubtracted);
+				subtractedVariables.add(parseVariableArcTerm(getChildElement(numberofSubtermContainingVariableReference, "variable")));
+			}
+			return subtractedVariables;
+		}
+
+		/**
+		 * Outer list: the tuple to remove, inner list: tuple members
+		 */
+		private List<List<Variable>> parseArcSetMinusSubtractedPartTuple(Iterator<Element> subtractedIterator) throws ParseException {
+			List<List<Variable>> subtractedTuples = new LinkedList<>();
+			while (subtractedIterator.hasNext()) {
+				Element subtractedSubterm = subtractedIterator.next();
+				Element numberofSubtracted = getChildElement(subtractedSubterm, "numberof");
+				Element numberofSubtermContainingTupleOfVariables = unwrapNumberofArc(numberofSubtracted);
+				List<Element> tupleMemberElements = getChildElements(getChildElement(numberofSubtermContainingTupleOfVariables, "tuple"), "subterm");
+				List<Variable> tupleMembers = new LinkedList<>();
+				for (Element tupleMemberElement : tupleMemberElements) {
+					tupleMembers.add(parseVariableArcTerm(getChildElement(tupleMemberElement, "variable")));
+				}
+				subtractedTuples.add(tupleMembers);
+			}
+			return subtractedTuples;
+		}
+
+		/**
+		 * Return a list of variables and color classes
+		 */
+		private List<Object> parseArcSetMinusSetPartWithAdd(Element add) throws ParseException {
+			List<Element> addSubterms = getChildElements(add, "subterm");
+			if (addSubterms.size() < 2) {
+				throw new ParseException("Must add at least 2 elements");
+			}
+			Element secondSubtermInFirstNumberof = unwrapNumberofArc(getChildElement(addSubterms.get(0), "numberof"));
+			List<Element> tupleMemberElements = getChildElements(getChildElement(secondSubtermInFirstNumberof, "tuple"), "subterm");
+			String[] variables = new String[addSubterms.size()];
+			String[] colors = new String[addSubterms.size()];
+			for (int i = 0, size = tupleMemberElements.size(); i < size; i++) {
+				Element tupleMemberElement = tupleMemberElements.get(i);
+				Element elem;
+				if ((elem = getOptionalChildElement(tupleMemberElement, "variable")) != null) {
+					String referencedVariableId = getAttribute(elem, "refvariable");
+					variables[i] = referencedVariableId;
+				} else if ((elem = getOptionalChildElement(tupleMemberElement, "useroperator")) != null) {
+					String referencedColorId = getAttribute(elem, "declaration");
+					colors[i] = referencedColorId;
+				} else {
+					throw new ParseException(new UnsupportedOperationException("Unknown reference in <add> inside <subtract> for arcs"));
+				}
+			}
+			/* now for every index i variables[i] != null xor colors[i] != null */
+
+			List<Object> ret = new ArrayList<>();
+			for (int i = 0; i < variables.length; i++) {
+				if (variables[i] != null) {
+					ret.add(new Variable(variables[i]));
+				} else {
+					assert colors[i] != null;
+					ColorClassPrototype colorClass = this.getColorClassByColorId(colors[i], false);
+					ret.add(new ColorClassTerm(colorClass.id));
+				}
+			}
+			// TODO validate that we guessed the color classes correct
+			return ret;
+		}
+
+		/**
+		 * Check if the numberof tag of an arc's hlinscription structure
+		 * is tolerable in a set based net,
+		 * then return the second subterm.
+		 */
+		private Element unwrapNumberofArc(Element numberofElem) throws ParseException {
 			List<Element> subterms = getChildElements(numberofElem, "subterm");
 			if (subterms.size() != 2) {
 				throw new ParseException("<numberof> must have 2 subterms, found " + subterms.size());
@@ -777,10 +1211,10 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 				long amount = parseLong(getAttribute(getChildElement(subterms.get(0), "numberconstant"), "value"));
 				if (amount != 1) {
 					throw new ParseException("Expected 1, but got " + amount + " as multiplicity for arc expression.",
-							new UnsupportedOperationException("We only support set based nets."));
+							new UnsupportedOperationException("Only set based nets allowed"));
 				}
 			}
-			return parseArcTerm(subterms.get(1));
+			return subterms.get(1);
 		}
 
 		private Pair<IArcTerm.Sort, IArcTerm<? extends IArcType>> parseArcTerm(Element containingElement) throws ParseException {
@@ -795,10 +1229,11 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 				return new Pair<>(IArcTerm.Sort.COLORCLASS, parseColorClassArcTerm(elem));
 			} else if ((elem = getOptionalChildElement(containingElement, "tuple")) != null) {
 				return new Pair<>(IArcTerm.Sort.TUPLE, parseArcTuple(elem));
+			} else if ((elem = getOptionalChildElement(containingElement, "useroperator")) != null) {
+				return new Pair<>(IArcTerm.Sort.VARIABLE, parseColorReferenceArc(elem));
 			} else if (getOptionalChildElement(containingElement, "dotconstant") != null) {
 				return new Pair<>(IArcTerm.Sort.VARIABLE, DOT_CONSTANT_VARIABLE);
 			} else {
-				// TODO setminus
 				throw new ParseException(new UnsupportedOperationException("Unknown arc expression type"));
 			}
 		}
@@ -861,6 +1296,13 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 			return arcTuple;
 		}
 
+		private Variable parseColorReferenceArc(Element useroperator) throws ParseException {
+			String referencedColorId = toSafeIdentifier(getAttribute(useroperator, "declaration"));
+			Pair<Variable, BasicPredicate<ColorClassType>> antisymmetryTerms = createAntisymmetryTerms(referencedColorId);
+			this.additionalTermsForCurrentTransition.add(antisymmetryTerms.getSecond());
+			return antisymmetryTerms.getFirst();
+		}
+
 		private ArcTuple addToArcTuple(ArcTuple arcTuple, Pair<IArcTupleElement.Sort, IArcTupleElement<? extends IArcTupleElementType>> term) throws ParseException {
 			switch (term.getFirst()) {
 				case VARIABLE:
@@ -892,8 +1334,13 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 				return new Pair<>(IArcTupleElement.Sort.PREDECESSOR, parsePredecessorArcTerm(elem));
 			} else if ((elem = getOptionalChildElement(containingElement, "successor")) != null) {
 				return new Pair<>(IArcTupleElement.Sort.SUCCESSOR, parseSuccessorArcTerm(elem));
+			} else if ((elem = getOptionalChildElement(containingElement, "all")) != null) {
+				/* there is no example using this, maybe this is not allowed. */
+				return new Pair<>(IArcTupleElement.Sort.COLORCLASS, parseColorClassArcTerm(elem));
+			} else if ((elem = getOptionalChildElement(containingElement, "useroperator")) != null) {
+				return new Pair<>(IArcTupleElement.Sort.VARIABLE, parseColorReferenceArc(elem));
 			} else {
-				// TODO colorclass and setminus
+				// TODO setminus
 				throw new ParseException(new UnsupportedOperationException("Unknown arc tuple expression type"));
 			}
 		}

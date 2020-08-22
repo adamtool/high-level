@@ -140,6 +140,30 @@ public class HLPetriGame extends Extensible implements IPetriGame {
         }
     }
 
+    public void addStaticSubClasses(String basicColorClassId, List<Pair<String, String[]>> staticSubClasses) throws IdentifierAlreadyExistentException, IllegalStateException {
+        BasicColorClass bcc = getBasicColorClass(basicColorClassId);
+        if (!bcc.getStaticSubclasses().isEmpty()) {
+            throw new IllegalStateException("The basic color class '" + basicColorClassId + " already has static subclasses in the Petri game '" + game.getName() + "'.");
+        }
+        Set<Color> addedColors = new HashSet<>();
+        for (Pair<String, String[]> staticSubClass : staticSubClasses) {
+            String subClassID = staticSubClass.getFirst();
+            if (hasStaticSubclass(subClassID)) {
+                throw new IdentifierAlreadyExistentException("The static subclass identifier " + subClassID + " already exists in the Petri game '" + game.getName() + "'.");
+            }
+            List<Color> cls = new ArrayList<>();
+            String[] colors = staticSubClass.getSecond();
+            for (int i = 0; i < colors.length; i++) {
+                cls.add(new Color(colors[i]));
+            }
+            addedColors.addAll(cls);
+            bcc.addStaticColorClass(subClassID, new StaticColorClass(subClassID, cls));
+        }
+        if (!addedColors.equals(new HashSet<>(bcc.getColors()))) {
+            throw new IllegalStateException("The static subclasses dont make a partition of the colors in the basic color class '" + basicColorClassId + "'.");
+        }
+    }
+
 // %%%%%%%%%%%%%%%%%% PLACES    
     public Place createSysPlace(String... colorClasses) throws NoSuchColorDomainException {
         Place p = game.createPlace();
