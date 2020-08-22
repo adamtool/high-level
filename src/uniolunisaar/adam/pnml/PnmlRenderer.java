@@ -6,6 +6,9 @@ import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Node;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
+import uniol.apt.io.renderer.RenderException;
+import uniol.apt.io.renderer.Renderer;
+import uniol.apt.io.renderer.impl.AbstractRenderer;
 import uniol.apt.util.Pair;
 import uniolunisaar.adam.ds.highlevel.BasicColorClass;
 import uniolunisaar.adam.ds.highlevel.Color;
@@ -40,12 +43,17 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.OutputStream;
+import java.io.Writer;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class PnmlRenderer {
+/**
+ * Render {@link HLPetriGame} to pnml
+ *
+ * @author Lukas Panneke
+ */
+public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Renderer<HLPetriGame> {
 
 	public static boolean renderGameExtensions = true;
 
@@ -54,19 +62,9 @@ public class PnmlRenderer {
 
 	public static final String EXTENSION_KEY_NAME = AdamExtensions.label.name();
 
-	public void render(HLPetriGame game, OutputStream out) throws ParserConfigurationException, TransformerException {
-		Document dom = new Renderer(game).dom;
-		Transformer tr = TransformerFactory.newInstance().newTransformer();
-		tr.setOutputProperty(OutputKeys.INDENT, "yes");
-		tr.setOutputProperty(OutputKeys.METHOD, "xml");
-		tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-		tr.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-
-		// send DOM to file
-		tr.transform(new DOMSource(dom), new StreamResult(out));
-	}
-
 	private static final class Renderer {
+		private boolean omitTrueCondition = true;
+
 		private final Document dom;
 		private final HLPetriGame game;
 
@@ -81,9 +79,12 @@ public class PnmlRenderer {
 
 		private Element renderNet() {
 			Element net = dom.createElement("net");
-			net.setAttribute("id", "n1");
+			net.setAttribute("id", game.getName());
 			net.setAttribute("type", NET_TYPE);
-			net.appendChild(renderName(game.getName()));
+			if (game.hasExtension(EXTENSION_KEY_NAME)) {
+				String name = (String) game.getExtension(EXTENSION_KEY_NAME);
+				net.appendChild(renderName(name));
+			}
 
 			net.appendChild(renderDeclaration());
 			net.appendChild(renderPage());
@@ -247,7 +248,6 @@ public class PnmlRenderer {
 		private List<Element> renderVariableDeclaration() {
 			Set<Pair<String, String>> variableNamesWithColorClass = getVariableNamesWithColorClass();
 			Function<Pair<String, String>, String> idChooser;
-			// TODO ansprechen: HL2PGConverter mag keine Netzt, bei denen ein variablenname mehrere colorclasses hat.
 			if (isSecondUniquelyIdentifiedByFirst(variableNamesWithColorClass)) {
 				idChooser = Pair::getFirst;
 			} else {
@@ -406,7 +406,10 @@ public class PnmlRenderer {
 
 			renderGraphics(transition).ifPresent(transitionElement::appendChild);
 
-			transitionElement.appendChild(renderCondition(game.getPredicate(transition)));
+			IPredicate condition = game.getPredicate(transition);
+			if (!(omitTrueCondition && condition instanceof Constants && condition.equals(Constants.TRUE))) {
+				transitionElement.appendChild(renderCondition(condition));
+			}
 
 			return transitionElement;
 		}
@@ -503,9 +506,13 @@ public class PnmlRenderer {
 			} else if (term instanceof SuccessorTerm) {
 				return renderNeighbourTerm(((SuccessorTerm) term).getVariable(), false);
 			} else if (term instanceof ColorClassTerm) {
-				return renderColorClassTerm((ColorClassTerm) term); // TODO kann kein Beispiel finden. Was würde das bedeuten?
+				/* this is not useful without the DomainTerm, which we cannot render */
+				return renderColorClassTerm((ColorClassTerm) term);
 //			} else if (term instanceof DomainTerm) {
-//				// TODO kann kein Beispiel finden, kenne also die syntax nicht.
+				/* no examples of this exist
+				 * and the meta model does not talk about getting the domain of a variable,
+				 * so this feature likely does not exist in pnml
+				 */
 			} else {
 				throw new UnsupportedOperationException("This predicate term (" + term + ") cannot yet be rendered to pnml");
 			}
@@ -535,15 +542,15 @@ public class PnmlRenderer {
 				return renderSingleArcExpressionSubterm(expressions.iterator().next());
 			} else if (expressions.size() > 1) {
 				Element add = dom.createElement("add");
-				Element subterm = dom.createElement("subterm");
 				for (var expression : expressions) {
+					Element subterm = dom.createElement("subterm");
 					subterm.appendChild(renderSingleArcExpressionSubterm(expression));
-				}
 
-				add.appendChild(subterm);
+					add.appendChild(subterm);
+				}
 				return add;
 			} else /* expressions.size() == 0 */ {
-				// TODO no expression means dot expression?
+				// no expression sometimes means dot variable.
 				throw new UnsupportedOperationException("every arc must have at least one arc expression");
 			}
 		}
@@ -622,7 +629,7 @@ public class PnmlRenderer {
 
 		private Element renderColorClassTerm(ColorClassTerm term) {
 			Element all = dom.createElement("all");
-			all.appendChild(renderUsersortReference(term.toSymbol())); // TODO das ist nicht sicher, toSymbol könnte sich ändern
+			all.appendChild(renderUsersortReference(term.getClassId()));
 			return all;
 		}
 
@@ -697,5 +704,32 @@ public class PnmlRenderer {
 			return String.join("*", domain);
 		}
 
+	}
+
+	@Override
+	public String getFormat() {
+		return "pnml";
+	}
+
+	@Override
+	public List<String> getFileExtensions() {
+		return List.of("pnml", "xml");
+	}
+
+	@Override
+	public void render(HLPetriGame game, Writer writer) throws RenderException {
+		try {
+			Document dom = new Renderer(game).dom;
+			Transformer tr = TransformerFactory.newInstance().newTransformer();
+			tr.setOutputProperty(OutputKeys.INDENT, "yes");
+			tr.setOutputProperty(OutputKeys.METHOD, "xml");
+			tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+			tr.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+
+			// send DOM to file
+			tr.transform(new DOMSource(dom), new StreamResult(writer));
+		} catch (TransformerException | ParserConfigurationException e) {
+			throw new RenderException(e);
+		}
 	}
 }

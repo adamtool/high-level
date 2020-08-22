@@ -24,7 +24,6 @@ import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
 import uniolunisaar.adam.ds.highlevel.predicate.UnaryPredicate;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
-import uniolunisaar.adam.pnml.PnmlRenderer;
 import uniolunisaar.adam.util.HLTools;
 import uniolunisaar.adam.util.PGTools;
 
@@ -120,7 +119,6 @@ public class TestHLCreation {
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame, true);
         PetriGame pg = HL2PGConverter.convert(hlgame);
         PGTools.savePG2PDF(outputDir + pg.getName(), pg, false);
-        new PnmlRenderer().render(hlgame, System.out);
     }
 
 }
