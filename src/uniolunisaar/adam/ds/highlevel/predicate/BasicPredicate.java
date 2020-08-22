@@ -62,4 +62,16 @@ public class BasicPredicate<TT extends IPredicateType> implements IPredicate {
     public String toSymbol() {
         return "(" + t1.toSymbol() + " " + op.toSymbol() + " " + t2.toSymbol() + ")";
     }
+
+    public IPredicateTerm<TT> getLeftOperand() {
+        return t1;
+    }
+
+    public Operator getOperator() {
+        return op;
+    }
+
+    public IPredicateTerm<TT> getRightOperand() {
+        return t2;
+    }
 }
