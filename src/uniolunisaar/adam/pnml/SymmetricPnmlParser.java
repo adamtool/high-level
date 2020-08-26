@@ -322,19 +322,30 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 					throw new IllegalStateException("Already created subclasses from prototype");
 				}
 				if (!this.subclasses.isEmpty()) {
-					List<Pair<String, String[]>> subclasses = new ArrayList<>(this.subclasses.stream()
+					this.finalizeSubclasses();
+					game.addStaticSubClasses(this.id, this.subclasses.stream()
 							.map(pair -> new Pair<>(pair.getFirst(), pair.getSecond().toArray(String[]::new)))
 							.collect(Collectors.toUnmodifiableList()));
-					Set<String> alreadyPartitioned = subclasses.stream()
-							.flatMap(pair -> Arrays.stream(pair.getSecond()))
-							.collect(Collectors.toUnmodifiableSet());
-					List<String> colorsCopy = new ArrayList<>(this.colors);
-					colorsCopy.removeAll(alreadyPartitioned);
-					String[] rest = colorsCopy.toArray(String[]::new);
-					subclasses.add(new Pair<>(id + "-rest", rest));
-					game.addStaticSubClasses(this.id, subclasses);
 				}
 				this.createdSubclasses = true;
+			}
+
+			private void finalizeSubclasses() {
+				Set<String> alreadyPartitioned = this.subclasses.stream()
+						.flatMap(subclass -> subclass.getSecond().stream())
+						.collect(Collectors.toUnmodifiableSet());
+				Set<String> rest = new HashSet<>(this.colors);
+				rest.removeAll(alreadyPartitioned);
+
+				if (rest.isEmpty()) {
+					return;
+				}
+				boolean partitionForRestAlreadyExists = this.subclasses.stream()
+						.anyMatch(subclass -> rest.equals(subclass.getSecond()));
+				if (partitionForRestAlreadyExists) {
+					return;
+				}
+				this.subclasses.add(new Pair<>(this.id + "-rest", rest));
 			}
 
 			public void setSubclasses(List<Pair<String, Set<String>>> subclasses) {
@@ -357,6 +368,13 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 				return this.subclasses.stream()
 						.filter(pair -> pair.getSecond().contains(colorId))
 						.findFirst();
+			}
+
+			@Override
+			public String toString() {
+				return this.id + ": " + this.colors.stream().collect(Collectors.joining(", ", "{", "}")) + "\n\t" + this.subclasses.stream()
+						.map(pair -> pair.getFirst() + " = " + pair.getSecond().stream().collect(Collectors.joining(", ", "{", "}")))
+						.collect(Collectors.joining("\n\t"));
 			}
 		}
 
