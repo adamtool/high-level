@@ -71,6 +71,7 @@ public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Rende
 
 		private final Document dom;
 		private final HLPetriGame game;
+		private boolean renderPredicateText = false;
 
 		public Renderer(HLPetriGame game) throws ParserConfigurationException {
 			this.game = game;
@@ -395,9 +396,11 @@ public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Rende
 
 		private Element renderCondition(IPredicate predicate) {
 			Element condition = dom.createElement("condition");
-			Element text = dom.createElement("text");
-			text.setTextContent(predicate.toString());
-			condition.appendChild(text);
+			if (renderPredicateText) {
+				Element text = dom.createElement("text");
+				text.setTextContent(predicate.toString());
+				condition.appendChild(text);
+			}
 			condition.appendChild(wrapIn("structure", renderPredicate(predicate)));
 			return condition;
 		}
