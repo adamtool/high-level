@@ -71,16 +71,72 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 	private static final ColorToken DOT_CONSTANT_TOKEN = new ColorToken(DOT);
 	private static final Variable DOT_CONSTANT_VARIABLE = new Variable("dotconstant");
 
+	public static class Configuration {
+
+		/**
+		 * Validate for every partition,
+		 * that the color class is a disjoint union of all its subclasses.
+		 */
+		public boolean checkPartitions = true;
+
+		/**
+		 * Since we only support set based nets
+		 * we can ignore multiplicities.
+		 * With this option enabled all multiplicities must be 1.
+		 */
+		public boolean checkSetBased = true;
+
+		/**
+		 * Sometimes the numberof tag is omitted.
+		 * Since we only support set based nets
+		 * we can infer, that the multiplicity must always be 1.
+		 * Thus a omitted numberof tag can be ignored.
+		 */
+		public boolean ignoreNumberofIfOmitted = true;
+
+		/**
+		 * Referencing one color specifically breaks symmetries.
+		 * We don't like working with those nets,
+		 * because they are expensive to analyse.
+		 * <p>
+		 * We can simulate explicit color references in terms of the form
+		 * variable == color
+		 * by creating a subclass for just that color
+		 * and then checking if the variables domain is that of the singleton subclass.
+		 */
+		public boolean allowExplicitlyReferencedColors = true;
+
+		/**
+		 * Color classes are ordered,
+		 * but the predecessor of the "first" color is the "last" color.
+		 * Without a minimum and a maximum you cannot have an ordering relation.
+		 * <p>
+		 * This option *defines* the color that was created first to be the minimum
+		 * and the last created color as the maximum.
+		 */
+		public boolean allowOrderingRelations = true;
+	}
+
+	private final Configuration config;
+
+	public SymmetricPnmlParser() {
+		this(new Configuration());
+	}
+
+	public SymmetricPnmlParser(Configuration config) {
+		this.config = config;
+	}
+
 	private static class Parser {
 
-		public boolean consistencyCheck = true;
-		public boolean ignoreNumberofIfOmitted = true;
-		public boolean allowExplicitlyReferencedColors = true;
-		public boolean allowOrderingRelations = true;
-
+		private final Configuration config;
 		private HLPetriGame game;
 		private Map<String, String> safeIdMap;
 		private int idCounter;
+
+		private Parser(Configuration config) {
+			this.config = config;
+		}
 
 		/**
 		 * Parses symmetric nets in PNML notation.
@@ -397,7 +453,7 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 
 		/* not null */
 		private ColorClassPrototype getColorClassByColorId(String colorId, boolean createPartition) throws ParseException {
-			if (!allowExplicitlyReferencedColors && createPartition) {
+			if (!this.config.allowExplicitlyReferencedColors && createPartition) {
 				throw new ParseException(new UnsupportedOperationException("Explicitly referencing a color breaks symmetries and the workaround is disabled"));
 			}
 			ColorClassPrototype ret = this.colorClassPrototypes.values().stream()
@@ -445,7 +501,7 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 				partitionedClasses.add(new Pair<>(classId, colors));
 			}
 
-			if (consistencyCheck) {
+			if (this.config.checkPartitions) {
 				Set<Map.Entry<String, Long>> duplicates = partitionedClasses.stream()
 						.flatMap(pair -> pair.getSecond().stream())
 						.collect(Collectors.groupingBy(Function.identity(), Collectors.counting()))
@@ -701,7 +757,7 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 				}
 				game.setColorTokens(place, tokens);
 			} else {
-				if (ignoreNumberofIfOmitted) {
+				if (this.config.ignoreNumberofIfOmitted) {
 					game.setColorTokens(place, parseInitialMarkingTerm(structureElem));
 				} else {
 					throw new ParseException(new UnsupportedOperationException("Place " + placeId + " has an unsupported initial marking structure"));
@@ -714,7 +770,7 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 			if (subterms.size() != 2) {
 				throw new ParseException("<numberof> must have 2 subterms");
 			}
-			if (consistencyCheck) {
+			if (this.config.checkSetBased) {
 				long amount = parseLong(getAttribute(getChildElement(subterms.get(0), "numberconstant"), "value"));
 				if (amount != 1) {
 					throw new ParseException("Only set based nets allowed");
@@ -925,7 +981,7 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 		}
 
 		private IPredicate parseOrderingPredicate(Element containingElement, OrderingOperator operator) throws ParseException {
-			if (!allowOrderingRelations) {
+			if (!this.config.allowOrderingRelations) {
 				throw new ParseException(new UnsupportedOperationException("ColorClasses cannot be partially ordered sets, because they are cyclic. The workaround is disabled."));
 			}
 			List<Element> subterms = getChildElements(containingElement, "subterm");
@@ -1077,7 +1133,7 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 			} else if ((elem = getOptionalChildElement(structure, "subtract")) != null) {
 				return parseArcSetMinusTerm(elem);
 			} else {
-				if (ignoreNumberofIfOmitted) {
+				if (this.config.ignoreNumberofIfOmitted) {
 					return addToArcExpression(new ArcExpression(), parseArcTerm(structure));
 				} else {
 					throw new ParseException(new UnsupportedOperationException("Unknown root structure of arc inscription"));
@@ -1216,7 +1272,7 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 			if (subterms.size() != 2) {
 				throw new ParseException("<numberof> must have 2 subterms, found " + subterms.size());
 			}
-			if (consistencyCheck) {
+			if (this.config.checkSetBased) {
 				long amount = parseLong(getAttribute(getChildElement(subterms.get(0), "numberconstant"), "value"));
 				if (amount != 1) {
 					throw new ParseException("Expected 1, but got " + amount + " as multiplicity for arc expression.",
@@ -1428,6 +1484,6 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 
 	@Override
 	public HLPetriGame parse(InputStream input) throws IOException, ParseException {
-		return new Parser().parse(input);
+		return new Parser(this.config).parse(input);
 	}
 }

@@ -65,15 +65,57 @@ public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Rende
 
 	public static final String EXTENSION_KEY_NAME = AdamExtensions.label.name();
 
-	private static final class Renderer {
-		private boolean omitTrueCondition = true;
-		private boolean allowDomainTerm = true;
+	public static class Configuration {
 
+		/**
+		 * If a condition can always fire
+		 * it is usually represented as having no condition.
+		 * But technically it's condition is TRUE.
+		 * With this option enabled
+		 * no condition will be rendered,
+		 * if the transitions condition is just TRUE.
+		 */
+		public boolean omitTrueCondition = true;
+
+		/**
+		 * The condition of a transition can
+		 * - in addition to the pnml structure -
+		 * also be rendered as text.
+		 * This is useful for a human
+		 * to see the meaning of a transition at a glance,
+		 * but rendering it can cause a stack overflow for huge conditions.
+		 */
+		public boolean renderConditionText = true;
+
+		/**
+		 * PNML has no representation for our DomainTerm (as far as we know).
+		 * But in PNML you can compare a variable to a color.
+		 * Thus
+		 * Domain(variable) == ColorClass
+		 * can be represented as
+		 * variable == color1 OR variable == color2...
+		 */
+		public boolean allowDomainTerm = true;
+	}
+
+	private final Configuration config;
+
+	public PnmlRenderer() {
+		this(new Configuration());
+	}
+
+	public PnmlRenderer(Configuration config) {
+		this.config = config;
+	}
+
+	private static final class Renderer {
+
+		private final Configuration config;
 		private final Document dom;
 		private final HLPetriGame game;
-		private boolean renderPredicateText = false;
 
-		public Renderer(HLPetriGame game) throws ParserConfigurationException {
+		public Renderer(Configuration config, HLPetriGame game) throws ParserConfigurationException {
+			this.config = config;
 			this.game = game;
 			this.dom = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
 			Element root = this.dom.createElement("pnml");
@@ -387,7 +429,7 @@ public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Rende
 			renderGraphics(transition).ifPresent(transitionElement::appendChild);
 
 			IPredicate condition = game.getPredicate(transition);
-			if (!(omitTrueCondition && condition instanceof Constants && condition.equals(Constants.TRUE))) {
+			if (!(this.config.omitTrueCondition && condition instanceof Constants && condition.equals(Constants.TRUE))) {
 				transitionElement.appendChild(renderCondition(condition));
 			}
 
@@ -396,7 +438,7 @@ public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Rende
 
 		private Element renderCondition(IPredicate predicate) {
 			Element condition = dom.createElement("condition");
-			if (renderPredicateText) {
+			if (this.config.renderConditionText) {
 				Element text = dom.createElement("text");
 				text.setTextContent(predicate.toString());
 				condition.appendChild(text);
@@ -491,7 +533,7 @@ public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Rende
 		}
 
 		private Element renderEqualityDomainTermEqColorClassTerm(BasicPredicate<?> equality) {
-			if (!allowDomainTerm) {
+			if (!this.config.allowDomainTerm) {
 				throw new UnsupportedOperationException("Rendering DomainTerms is disabled.");
 			}
 			DomainTerm domainTerm;
@@ -506,7 +548,7 @@ public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Rende
 					domainTerm = (DomainTerm) right;
 					colorClassTerm = (ColorClassTerm) left;
 				} else {
-					throw new IllegalArgumentException("ON places DomainTerm and ColorClassTerm must come together");
+					throw new IllegalArgumentException("On places DomainTerm and ColorClassTerm must come together");
 				}
 			}
 
@@ -822,7 +864,7 @@ public class PnmlRenderer extends AbstractRenderer<HLPetriGame> implements Rende
 	@Override
 	public void render(HLPetriGame game, Writer writer) throws RenderException {
 		try {
-			Document dom = new Renderer(game).dom;
+			Document dom = new Renderer(this.config, game).dom;
 			Transformer tr = TransformerFactory.newInstance().newTransformer();
 			tr.setOutputProperty(OutputKeys.INDENT, "yes");
 			tr.setOutputProperty(OutputKeys.METHOD, "xml");
