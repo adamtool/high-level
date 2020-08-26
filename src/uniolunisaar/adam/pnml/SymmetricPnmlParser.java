@@ -903,6 +903,9 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 			if (subterms.size() != 2) {
 				throw new ParseException("<" + equalityOperatorElement.getNodeName() + "> is a binary operator");
 			}
+			if (hasVariable(subterms.get(0)) && hasUseroperator(subterms.get(1))) {
+				return createEqualityPredicateForVariableAndColor(unwrapVariable(subterms.get(0)), operator, unwrapUseroperator(subterms.get(1)));
+			}
 			return new BasicPredicate<>(parseEqualityPredicateTerm(subterms.get(0)), operator, parseEqualityPredicateTerm(subterms.get(1)));
 		}
 
@@ -914,14 +917,14 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 				return new PredecessorTerm(unwrapVariable(getChildElement(elem, "subterm")), game);
 			} else if ((elem = getOptionalChildElement(containingElement, "successor")) != null) {
 				return new SuccessorTerm(unwrapVariable(getChildElement(elem, "subterm")), game);
-			} else if (hasUseroperator(containingElement)) {
-				log.addWarning("Equality between variable and color breaks symmetries");
-				Pair<Variable, BasicPredicate<ColorClassType>> antisymmetryTerms = createAntisymmetryTerms(unwrapUseroperator(containingElement));
-				this.additionalTermsForCurrentTransition.add(antisymmetryTerms.getSecond());
-				return antisymmetryTerms.getFirst();
 			} else {
 				throw new ParseException(new UnsupportedOperationException("Unknown term in equality"));
 			}
+		}
+
+		private IPredicate createEqualityPredicateForVariableAndColor(Variable variable, BasicPredicate.Operator operator, String colorId) throws ParseException {
+			log.addWarning("Equality between variable and color breaks symmetries");
+			return new BasicPredicate<>(new DomainTerm(variable, game), operator, new ColorClassTerm(getColorSubClassByColorId(colorId)));
 		}
 
 		private Pair<Variable, BasicPredicate<ColorClassType>> createAntisymmetryTerms(String referencedColorId) throws ParseException {
