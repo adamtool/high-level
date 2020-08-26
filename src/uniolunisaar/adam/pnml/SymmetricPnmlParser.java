@@ -479,6 +479,7 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 			long end = parseLong(getAttribute(finiteintrange, "end"));
 			List<String> range = LongStream.rangeClosed(start, end)
 					.mapToObj(Long::toString)
+					.map(this::toSafeIdentifier)
 					.collect(Collectors.toList());
 			this.addColorClassPrototype(id, true, range);
 		}
@@ -1404,13 +1405,13 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 			input = input.replaceAll("^[0-9]", "_");
 			// Guarantee uniqueness
 			String unique = input;
-			while (safeIdMap.containsKey(unique)) {
-				unique = input + "_" + idCounter;
+			while (safeIdMap.containsValue(unique)) {
+				unique = unique + "_" + idCounter;
 				idCounter += 1;
 			}
 
 			safeIdMap.put(key, unique);
-			return input;
+			return unique;
 		}
 
 	}
