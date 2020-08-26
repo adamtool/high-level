@@ -401,7 +401,7 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 				if (partitionForRestAlreadyExists) {
 					return;
 				}
-				this.subclasses.add(new Pair<>(this.id + "-rest", rest));
+				this.subclasses.add(new Pair<>(this.id + "_rest", rest));
 			}
 
 			public void setSubclasses(List<Pair<String, Set<String>>> subclasses) {
@@ -414,7 +414,7 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 			public void addSingletonSubclass(String colorId) {
 				Optional<Pair<String, Set<String>>> subclass = getSubclass(colorId);
 				if (subclass.isEmpty()) {
-					this.subclasses.add(new Pair<>(colorId + "-singleton", Collections.singleton(colorId)));
+					this.subclasses.add(new Pair<>(colorId + "_singleton", Collections.singleton(colorId)));
 				} else if (subclass.get().getSecond().size() != 1) {
 					throw new IllegalStateException("Color '" + colorId + "' already has a subclass, that is not a singleton");
 				}
@@ -941,7 +941,7 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 
 		private Pair<Variable, BasicPredicate<ColorClassType>> createAntisymmetryTerms(String referencedColorId) throws ParseException {
 			String subclass = this.getColorSubClassByColorId(referencedColorId);
-			Variable variable = new Variable(subclass + "-variable");
+			Variable variable = new Variable(subclass + "_variable");
 			BasicPredicate<ColorClassType> variableRestrictionTerm = new BasicPredicate<>(
 					new DomainTerm(variable, game), BasicPredicate.Operator.EQ, new ColorClassTerm(subclass));
 			return new Pair<>(variable, variableRestrictionTerm);
