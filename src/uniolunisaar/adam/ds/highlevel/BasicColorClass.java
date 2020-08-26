@@ -152,7 +152,7 @@ public class BasicColorClass {
                 if (!this.isOrdered()) {
                     throw new NoNeighbourForUnorderedColorClassException("The basic color class " + id + " of color " + c.getId() + " is not ordered. No predecessor/successor is defined.");
                 }
-                return colors.get(((pre) ? (i - 1) : (i + 1)) % colors.size());
+                return colors.get(Math.floorMod(((pre) ? (i - 1) : (i + 1)), colors.size()));
             }
         }
         return null;
