@@ -26,7 +26,7 @@ public class TestHighLevelRendererAndParserOnGeneratedGames {
 	}
 
 	private static void testGame(HLPetriGame game, String... exclude) throws Exception {
-		doAllTests(game, render(game), List.of());
+		doAllTests(game, render(game), List.of(exclude));
 	}
 
 	@Test
