@@ -716,7 +716,28 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 			String typeDeclaration = unwrapUsersort(getChildElement(getChildElement(place,
 					"type"), "structure"));
 			String[] type = products.getOrDefault(typeDeclaration, new String[] { typeDeclaration });
-			Place pnPlace = game.createSysPlace(id, type);
+
+			Place pnPlace;
+			{
+				Element gameExtensions = getOptionalChildElement(place, "game");
+				if (gameExtensions != null) {
+					pnPlace = getOptionalChildElement(gameExtensions, "env") != null
+							? this.game.createEnvPlace(id, type)
+							: this.game.createSysPlace(id, type);
+					if (getOptionalChildElement(gameExtensions, "bad") != null) {
+						game.setBad(pnPlace);
+					}
+					if (getOptionalChildElement(gameExtensions, "buchi") != null) {
+						game.setBuchi(pnPlace);
+					}
+					if (getOptionalChildElement(gameExtensions, "reach") != null) {
+						game.setBuchi(pnPlace);
+					}
+				} else {
+					pnPlace = this.game.createSysPlace(id, type);
+				}
+			}
+
 			parseInitialMarking(place);
 			if (name != null) {
 				pnPlace.putExtension(EXTENSION_KEY_NAME, name, ExtensionProperty.WRITE_TO_FILE);

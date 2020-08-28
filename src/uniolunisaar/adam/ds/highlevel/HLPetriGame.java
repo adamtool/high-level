@@ -595,6 +595,14 @@ public class HLPetriGame extends Extensible implements IPetriGame {
         game.setBad(place);
     }
 
+    public void setReach(Place place) {
+        game.setReach(place);
+    }
+
+    public void setBuchi(Place place) {
+        game.setBuchi(place);
+    }
+
     public String getProcessFamilyID() {
         return PetriNetExtensionHandler.getProcessFamilyID(game);
     }
