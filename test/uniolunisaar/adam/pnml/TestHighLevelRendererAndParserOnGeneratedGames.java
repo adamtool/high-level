@@ -2,8 +2,6 @@ package uniolunisaar.adam.pnml;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import uniol.apt.io.parser.ParseException;
-import uniol.apt.io.renderer.RenderException;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.generators.hl.AlarmSystemHL;
 import uniolunisaar.adam.generators.hl.ConcurrentMachinesHL;
@@ -11,30 +9,24 @@ import uniolunisaar.adam.generators.hl.ContainerHabourHL;
 import uniolunisaar.adam.generators.hl.DocumentWorkflowHL;
 import uniolunisaar.adam.generators.hl.PackageDeliveryHL;
 import uniolunisaar.adam.tools.Logger;
-import uniolunisaar.adam.util.HLTools;
 
-import java.io.FileNotFoundException;
+import java.util.*;
 
-public class PnmlRendererTest {
+import static uniolunisaar.adam.pnml.HighLevelSymmetricPetriNetsTests.doAllTests;
+import static uniolunisaar.adam.pnml.HighLevelSymmetricPetriNetsTests.render;
 
-	private static final String outputDir = System.getProperty("testoutputfolder") + "/hlcreation/";
+public class TestHighLevelRendererAndParserOnGeneratedGames {
+
+	private static final Logger log = Logger.getInstance();
 
 	@BeforeClass
 	public void configureLogger() {
-		Logger.getInstance().setVerbose(true);
+		log.setVerbose(false);
+		log.setWarningStream(null);
 	}
 
-	/**
-	 * Render and parse again to see (with human eyes) if that works
-	 */
-	private void testGame(HLPetriGame game) throws RenderException, ParseException, FileNotFoundException {
-		PnmlRenderer renderer = new PnmlRenderer();
-		SymmetricPnmlParser parser = new SymmetricPnmlParser();
-
-		String renderedGame = renderer.render(game);
-		System.out.println(renderedGame);
-		HLPetriGame parsedGame = parser.parseString(renderedGame);
-		HLTools.saveHLPG2PDF(outputDir + parsedGame.getName(), game, true);
+	private static void testGame(HLPetriGame game, String... exclude) throws Exception {
+		doAllTests(game, render(game), List.of());
 	}
 
 	@Test
@@ -50,7 +42,8 @@ public class PnmlRendererTest {
 
 	@Test
 	public void testContainerHarbour() throws Exception {
-		testGame(ContainerHabourHL.generateD(4, 2, 1, 1, true));
+		// isomorphism moderately slow (~5m)
+		testGame(ContainerHabourHL.generateD(4, 2, 1, 1, true), "-isomorphism");
 	}
 
 	@Test
