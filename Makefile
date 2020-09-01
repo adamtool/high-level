@@ -45,7 +45,7 @@ endef
 all: $(FRAMEWORK_TARGETS) $(SYNTHESIZER_TARGETS)
 
 check_dependencies:
-	if [ ! -d "dependencies" ]; then \
+	@if [ ! -d "dependencies" ]; then \
 		echo "The dependencies folder is missing. Please execute make pull_dependencies first.";\
 	fi
 
