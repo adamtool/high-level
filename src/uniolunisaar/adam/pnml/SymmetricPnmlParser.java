@@ -291,6 +291,7 @@ public class SymmetricPnmlParser extends AbstractParser<HLPetriGame> implements 
 							 * http://www.pnml.org/version-2009/grammar/dots.rng
 							 */
 							game.createBasicColorClass("dot", false, "dot");
+							break;
 						default:
 							break;
 					}
