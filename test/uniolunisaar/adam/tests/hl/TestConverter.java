@@ -28,10 +28,10 @@ import uniolunisaar.adam.generators.hl.PackageDeliveryHL;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.logic.pg.solver.hl.bddapproach.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolver;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolverFactory;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolverOptions;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolvingObject;
+import uniolunisaar.adam.ds.solver.symbolic.bddapproach.BDDSolverOptions;
+import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;
+import uniolunisaar.adam.ds.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolvingObject;
+import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
 import uniolunisaar.adam.util.symbolic.bddapproach.BDDTools;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.HLTools;
@@ -110,7 +110,7 @@ public class TestConverter {
         PGTools.saveAPT(outputDir + pg.getName(), pg, true);
         BDDSolverOptions opt = new BDDSolverOptions(false);
         opt.setNoType2(true);
-        BDDSolver<? extends Condition<?>> sol = BDDSolverFactory.getInstance().getSolver(pg, opt);
+        DistrSysBDDSolver<? extends Condition<?>> sol = DistrSysBDDSolverFactory.getInstance().getSolver(pg, opt);
 
         sol.initialize();
 
@@ -132,7 +132,7 @@ public class TestConverter {
 
         BDDSolverOptions opt = new BDDSolverOptions(true);
         opt.setNoType2(true);
-        BDDSolver<? extends Condition<?>> sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(pg, true, false), opt);
+        DistrSysBDDSolver<? extends Condition<?>> sol = DistrSysBDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(pg, true, false), opt);
         sol.initialize();
 
         double sizeBDDLow = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1; // for the additional init state
@@ -144,10 +144,10 @@ public class TestConverter {
 
 //        BDDSolverOptions opt = new BDDSolverOptions();
 //        opt.setNoType2(true);
-//        BDDSolver<? extends Condition<?>> sol = BDDSolverFactory.getInstance().getSolver(pg, false, opt);
+//        DistrSysBDDSolver<? extends Condition<?>> sol = BDDSolverFactory.getInstance().getSolver(pg, false, opt);
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
         opt = new BDDSolverOptions(false);
-        BDDASafetyWithoutType2HLSolver solBDD = new BDDASafetyWithoutType2HLSolver(new BDDSolvingObject<>(pg, new Safety()), syms, opt);
+        BDDASafetyWithoutType2HLSolver solBDD = new BDDASafetyWithoutType2HLSolver(new DistrSysBDDSolvingObject<>(pg, new Safety()), syms, opt);
         solBDD.initialize();
 
         double sizeBDD = solBDD.getBufferedDCSs().satCount(solBDD.getFirstBDDVariables()) + 1;

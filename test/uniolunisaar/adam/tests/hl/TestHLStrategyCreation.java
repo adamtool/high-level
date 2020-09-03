@@ -18,6 +18,7 @@ import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.objectives.Condition;
+import uniolunisaar.adam.ds.solver.symbolic.bddapproach.BDDSolverOptions;
 import uniolunisaar.adam.generators.hl.AlarmSystemHL;
 import uniolunisaar.adam.generators.hl.ConcurrentMachinesHL;
 import uniolunisaar.adam.generators.hl.DocumentWorkflowHL;
@@ -31,9 +32,8 @@ import uniolunisaar.adam.logic.pg.solver.hl.hlapproach.HLASafetyWithoutType2Solv
 import uniolunisaar.adam.logic.pg.solver.hl.hlapproach.HLSolverFactoryHLApproach;
 import uniolunisaar.adam.logic.pg.solver.hl.llapproach.HLASafetyWithoutType2SolverLLApproach;
 import uniolunisaar.adam.logic.pg.solver.hl.llapproach.HLSolverFactoryLLApproach;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolver;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolverFactory;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolverOptions;
+import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;
+import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.HLTools;
 import uniolunisaar.adam.util.PGTools;
@@ -160,7 +160,7 @@ public class TestHLStrategyCreation {
         time = System.currentTimeMillis();
         BDDSolverOptions opt = new BDDSolverOptions(true);
         opt.setNoType2(true);
-        BDDSolver<? extends Condition<?>> solverExplBDD = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(pgame, true, false), opt);
+        DistrSysBDDSolver<? extends Condition<?>> solverExplBDD = DistrSysBDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(pgame, true, false), opt);
         BDDGraph graphBDD = solverExplBDD.getGraphStrategy();
         diff = System.currentTimeMillis() - time;
         timeExplBDDApproach += diff;

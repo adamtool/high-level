@@ -21,11 +21,11 @@ import uniolunisaar.adam.exceptions.pg.InvalidPartitionException;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.solver.symbolic.bddapproach.BDDSolverOptions;
 import uniolunisaar.adam.exceptions.pg.NoStrategyExistentException;
 import uniolunisaar.adam.logic.pg.builder.graph.hl.BDDSGGBuilder;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolver;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolverOptions;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolvingObject;
+import uniolunisaar.adam.ds.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolvingObject;
+import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
 import uniolunisaar.adam.util.benchmarks.Benchmarks;
 import uniolunisaar.adam.tools.Logger;
 
@@ -36,7 +36,7 @@ import uniolunisaar.adam.tools.Logger;
  *
  * @author Manuel Gieseking
  */
-public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
+public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
 
     private final Symmetries syms;
 
@@ -54,7 +54,7 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
      * able to detect it on its own.
      * @throws uniolunisaar.adam.exceptions.pg.InvalidPartitionException
      */
-    public BDDASafetyWithoutType2HLSolver(BDDSolvingObject<Safety> obj, Symmetries syms, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
+    public BDDASafetyWithoutType2HLSolver(DistrSysBDDSolvingObject<Safety> obj, Symmetries syms, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
         super(obj, opts);
         this.syms = syms;
     }
@@ -311,7 +311,8 @@ public class BDDASafetyWithoutType2HLSolver extends BDDSolver<Safety> {
         return symsBDD;
     }
 
-    BDD attractor(BDD F, boolean p1, BDD gameGraph, Map<Integer, BDD> distance) throws CalculationInterruptedException {
+    @Override
+    protected BDD attractor(BDD F, boolean p1, BDD gameGraph, Map<Integer, BDD> distance) throws CalculationInterruptedException {
         // also all symmetric are bad
         gameGraph = getSuccs(gameGraph.and(getSymmetries()));
         // Calculate the possibly restricted transitions to the given game graph

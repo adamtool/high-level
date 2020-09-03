@@ -7,6 +7,7 @@ import uniolunisaar.adam.ds.objectives.Buchi;
 import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.ds.objectives.Reachability;
 import uniolunisaar.adam.ds.objectives.Safety;
+import uniolunisaar.adam.ds.solver.symbolic.bddapproach.BDDSolverOptions;
 import uniolunisaar.adam.exceptions.pg.InvalidPartitionException;
 import uniolunisaar.adam.exceptions.pg.NoSuitableDistributionFoundException;
 import uniolunisaar.adam.exceptions.pg.NotSupportedGameException;
@@ -14,7 +15,6 @@ import uniolunisaar.adam.exceptions.pg.SolvingException;
 import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
 import uniolunisaar.adam.exceptions.pnwt.NetNotSafeException;
 import uniolunisaar.adam.logic.pg.solver.SolverFactory;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolverOptions;
 
 /**
  *

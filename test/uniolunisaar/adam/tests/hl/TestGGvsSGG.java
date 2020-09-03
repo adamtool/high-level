@@ -23,6 +23,7 @@ import uniolunisaar.adam.ds.highlevel.oneenv.OneEnvHLPG;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.objectives.Safety;
+import uniolunisaar.adam.ds.solver.symbolic.bddapproach.BDDSolverOptions;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.pg.InvalidPartitionException;
 import uniolunisaar.adam.exceptions.pg.NoSuitableDistributionFoundException;
@@ -45,8 +46,7 @@ import uniolunisaar.adam.logic.pg.solver.hl.hlapproach.HLASafetyWithoutType2Solv
 import uniolunisaar.adam.logic.pg.solver.hl.hlapproach.HLSolverFactoryHLApproach;
 import uniolunisaar.adam.logic.pg.solver.hl.llapproach.HLASafetyWithoutType2SolverLLApproach;
 import uniolunisaar.adam.logic.pg.solver.hl.llapproach.HLSolverFactoryLLApproach;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolverOptions;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolvingObject;
+import uniolunisaar.adam.ds.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolvingObject;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.HLTools;
 import uniolunisaar.adam.util.PGTools;
@@ -111,7 +111,7 @@ public class TestGGvsSGG {
         PetriGame pgame = HL2PGConverter.convert(hlgame, true, true);
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
         BDDSolverOptions opt = new BDDSolverOptions(true);
-        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(new BDDSolvingObject<>(pgame, new Safety()), syms, opt);
+        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(new DistrSysBDDSolvingObject<>(pgame, new Safety()), syms, opt);
         sol.initialize();
         BDD states = sol.getBufferedDCSs();
         double sizeBDD = states.satCount(sol.getFirstBDDVariables()) + 1;

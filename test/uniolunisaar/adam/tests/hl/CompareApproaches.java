@@ -43,8 +43,8 @@ import uniolunisaar.adam.logic.pg.builder.graph.hl.SGGBuilderHL;
 import uniolunisaar.adam.logic.pg.builder.graph.hl.SGGBuilderLL;
 import uniolunisaar.adam.logic.pg.solver.hl.bddapproach.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolverOptions;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.BDDSolvingObject;
+import uniolunisaar.adam.ds.solver.symbolic.bddapproach.BDDSolverOptions;
+import uniolunisaar.adam.ds.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolvingObject;
 import uniolunisaar.adam.util.symbolic.bddapproach.BDDTools;
 import uniolunisaar.adam.util.HLTools;
 
@@ -161,7 +161,7 @@ public class CompareApproaches {
 
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
         PetriGame llgame = HL2PGConverter.convert(hlgame, true, true);
-        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(new BDDSolvingObject<>(llgame, new Safety()), syms, new BDDSolverOptions(false));
+        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(new DistrSysBDDSolvingObject<>(llgame, new Safety()), syms, new BDDSolverOptions(false));
         sol.initialize();
 //
         double size = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
@@ -616,7 +616,7 @@ public class CompareApproaches {
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
 
         BDDSolverOptions opt = new BDDSolverOptions(true);
-        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(new BDDSolvingObject<>(bddgame, new Safety()), syms, opt);
+        BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(new DistrSysBDDSolvingObject<>(bddgame, new Safety()), syms, opt);
         sol.initialize();
 
         BDD states = sol.getBufferedDCSs();
