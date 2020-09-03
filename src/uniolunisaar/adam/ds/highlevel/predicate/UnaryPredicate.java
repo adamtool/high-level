@@ -47,4 +47,11 @@ public class UnaryPredicate implements IPredicate {
         return (p1 == Constants.TRUE) ? Constants.FALSE.toSymbol() : (p1 == Constants.FALSE) ? Constants.TRUE.toSymbol() : op.toSymbol() + " " + p1.toSymbol();
     }
 
+    public Operator getOperator() {
+        return op;
+    }
+
+    public IPredicate getOperand() {
+        return p1;
+    }
 }

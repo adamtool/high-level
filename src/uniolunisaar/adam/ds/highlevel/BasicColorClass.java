@@ -132,6 +132,10 @@ public class BasicColorClass {
         return id;
     }
 
+    public Map<String, StaticColorClass> getStaticSubclasses() {
+        return Collections.unmodifiableMap(this.staticSubclasses);
+    }
+
     /**
      * Returns the predecessor/successor of c iff this basic color class
      * contains c.Throws NoSuccessorForUnorderedColorClassException iff this
@@ -148,7 +152,7 @@ public class BasicColorClass {
                 if (!this.isOrdered()) {
                     throw new NoNeighbourForUnorderedColorClassException("The basic color class " + id + " of color " + c.getId() + " is not ordered. No predecessor/successor is defined.");
                 }
-                return colors.get(((pre) ? (i - 1) : (i + 1)) % colors.size());
+                return colors.get(Math.floorMod(((pre) ? (i - 1) : (i + 1)), colors.size()));
             }
         }
         return null;

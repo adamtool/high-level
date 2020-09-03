@@ -39,4 +39,8 @@ public class ColorClassTerm implements IPredicateTerm<ColorClassType>, IArcTerm<
         return classID;
     }
 
+    public String getClassId() {
+        return classID;
+    }
+
 }

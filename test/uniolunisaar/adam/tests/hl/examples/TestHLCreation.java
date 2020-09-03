@@ -27,6 +27,9 @@ import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.util.HLTools;
 import uniolunisaar.adam.util.PGTools;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+
 /**
  *
  * @author Manuel Gieseking
@@ -55,7 +58,7 @@ public class TestHLCreation {
      * @throws InterruptedException
      */
     @Test
-    public void symmtricNet() throws FileNotFoundException, IOException, InterruptedException {
+    public void symmtricNet() throws FileNotFoundException, IOException, InterruptedException, TransformerException, ParserConfigurationException {
         HLPetriGame hlgame = new HLPetriGame("Access Policy");
 
         // color classes
@@ -104,12 +107,13 @@ public class TestHLCreation {
                 new BasicPredicate<>(new Variable("u"), BasicPredicate.Operator.EQ, new Variable("v")),
                 BinaryPredicate.Operator.OR,
                 // we dont have the gtp (greater than partition (static subclass operator, so here just some crap for testing s.th.)
-                new UnaryPredicate(UnaryPredicate.Operator.NEG, new BinaryPredicate(new BasicPredicate<>(new Variable("u"), BasicPredicate.Operator.EQ, new Variable("v")), BinaryPredicate.Operator.IMP, new BasicPredicate<>(new Variable("v"), BasicPredicate.Operator.EQ, new Variable("u"))))
+                new UnaryPredicate(UnaryPredicate.Operator.NEG, new BinaryPredicate(new BasicPredicate<>(new Variable("u"), BasicPredicate.Operator.EQ, new Variable("v")), BinaryPredicate.Operator.AND, new BasicPredicate<>(new Variable("v"), BasicPredicate.Operator.EQ, new Variable("u"))))
         );
         hlgame.setPredicate(t1, pred);
 
-        hlgame.createFlow(p1, t1, new ArcExpression(new Variable("u")));
+        hlgame.createFlow(p1, t1, new ArcExpression(new Variable("u")));        
         hlgame.createFlow(p2, t1, new ArcExpression(new ArcTuple(new Variable("f"), new Variable("v"))));
+//        hlgame.createFlow(p2, t1, new ArcExpression(new ArcTuple(new Variable("u"), new Variable("v"))));
         hlgame.createFlow(t1, p3, new ArcExpression(new ArcTuple(new Variable("u"), new Variable("f"))));
 
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame, true);
