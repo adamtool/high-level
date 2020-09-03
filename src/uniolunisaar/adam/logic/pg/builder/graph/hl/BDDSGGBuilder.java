@@ -79,7 +79,7 @@ public class BDDSGGBuilder {
             while (!init.isZero()) {
                 BDDState initSucc = graph.addState(init, solver);
                 // mark mcut
-                initSucc.setMcut(solver.isEnvState(init));
+                initSucc.setEnvState(solver.isEnvState(init));
                 initSucc.setBad(solver.isBadState(init));
                 initSucc.setSpecial(solver.isSpecialState(init));
                 graph.addFlow(in, initSucc, null);
@@ -99,7 +99,7 @@ public class BDDSGGBuilder {
             }
             ++count;
             BDDState prev = todoStates.poll();
-            boolean envState = prev.isMcut();
+            boolean envState = prev.isEnvState();
 //            System.out.println("state" );
 //                BDDTools.printDecodedDecisionSets(prev.getState(), solver, true);
 //            System.out.println("mcut "+ envState);
@@ -136,7 +136,7 @@ public class BDDSGGBuilder {
     <S extends BDDASafetyWithoutType2HLSolver> void addOneInitState(S solver, BDDGraph graph, BDD inits, LinkedList<BDDState> todoStates) {
         BDD init = inits.satOne(solver.getFirstBDDVariables(), false);
         BDDState in = graph.addState(init, solver);
-        in.setMcut(solver.isEnvState(init));
+        in.setEnvState(solver.isEnvState(init));
         in.setBad(solver.isBadState(init));
         in.setSpecial(solver.isSpecialState(init));
         graph.setInitial(in);
@@ -182,7 +182,7 @@ public class BDDSGGBuilder {
             addFlow(solver, graph, prev, oldSuccState);
         } else {
             BDDState succState = graph.addState(succ);
-            succState.setMcut(solver.isEnvState(succ.getState()));
+            succState.setEnvState(solver.isEnvState(succ.getState()));
             succState.setBad(solver.isBadState(succ.getState()));
             succState.setSpecial(solver.isSpecialState(succ.getState()));
             addFlow(solver, graph, prev, succState);
