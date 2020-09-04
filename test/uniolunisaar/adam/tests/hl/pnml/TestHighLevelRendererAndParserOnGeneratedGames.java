@@ -1,4 +1,4 @@
-package uniolunisaar.adam.pnml;
+package uniolunisaar.adam.tests.hl.pnml;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -12,8 +12,8 @@ import uniolunisaar.adam.tools.Logger;
 
 import java.util.*;
 
-import static uniolunisaar.adam.pnml.HighLevelSymmetricPetriNetsTests.doAllTests;
-import static uniolunisaar.adam.pnml.HighLevelSymmetricPetriNetsTests.render;
+import static uniolunisaar.adam.tests.hl.pnml.HighLevelSymmetricPetriNetsTests.doAllTests;
+import static uniolunisaar.adam.tests.hl.pnml.HighLevelSymmetricPetriNetsTests.render;
 
 @Test
 public class TestHighLevelRendererAndParserOnGeneratedGames {

@@ -1,4 +1,4 @@
-package uniolunisaar.adam.pnml;
+package uniolunisaar.adam.tests.hl.pnml;
 
 import uniol.apt.analysis.coverability.CoverabilityGraph;
 import uniol.apt.analysis.exception.UnboundedException;
@@ -11,6 +11,8 @@ import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.tools.Logger;
 
 import java.util.*;
+import uniolunisaar.adam.pnml.PnmlRenderer;
+import uniolunisaar.adam.pnml.SymmetricPnmlParser;
 
 import static org.testng.Assert.assertTrue;
 

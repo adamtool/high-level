@@ -1,4 +1,4 @@
-package uniolunisaar.adam.pnml;
+package uniolunisaar.adam.tests.hl.pnml;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -8,8 +8,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-import static uniolunisaar.adam.pnml.HighLevelSymmetricPetriNetsTests.doAllTests;
-import static uniolunisaar.adam.pnml.HighLevelSymmetricPetriNetsTests.parse;
+import static uniolunisaar.adam.tests.hl.pnml.HighLevelSymmetricPetriNetsTests.doAllTests;
+import static uniolunisaar.adam.tests.hl.pnml.HighLevelSymmetricPetriNetsTests.parse;
 
 /**
  * These are all the colored nets from the model checking contest 2020.
