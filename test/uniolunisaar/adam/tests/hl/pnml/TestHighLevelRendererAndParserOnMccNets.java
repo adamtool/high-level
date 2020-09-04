@@ -116,7 +116,7 @@ public class TestHighLevelRendererAndParserOnMccNets {
         testNet("philo_dyn-3.pnml");
     }
 
-    //@Test
+    @Test(enabled = false) // not setbased
     public void testPolyORBLF() throws Exception {
         // Not set based.
         // SetMinus in initial marking
@@ -160,7 +160,7 @@ public class TestHighLevelRendererAndParserOnMccNets {
         testNet("TokenRing-5.pnml", "-isomorphism");
     }
 
-    //@Test
+    @Test(enabled = false)
     public void testVehicularWifi() throws Exception {
         // initial marking: add inside add inside add ...
         testNet("VehicIEEE80211.pnml");

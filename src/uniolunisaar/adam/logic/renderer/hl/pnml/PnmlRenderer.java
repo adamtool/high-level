@@ -1,4 +1,4 @@
-package uniolunisaar.adam.pnml;
+package uniolunisaar.adam.logic.renderer.hl.pnml;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

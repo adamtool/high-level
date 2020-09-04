@@ -11,8 +11,8 @@ import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.tools.Logger;
 
 import java.util.*;
-import uniolunisaar.adam.pnml.PnmlRenderer;
-import uniolunisaar.adam.pnml.SymmetricPnmlParser;
+import uniolunisaar.adam.logic.renderer.hl.pnml.PnmlRenderer;
+import uniolunisaar.adam.logic.parser.hl.pnml.SymmetricPnmlParser;
 
 import static org.testng.Assert.assertTrue;
 
@@ -61,13 +61,13 @@ public class HighLevelSymmetricPetriNetsTests {
     }
 
     private static boolean doesPnmlLengthStabilize(String pnml) throws ParseException, RenderException {
-        System.out.println("begin test doesPnmlLengthStabilize");
+        Logger.getInstance().addMessage("begin test doesPnmlLengthStabilize");
         for (int i = 0; i < MAXIMUM_ITERATIONS_FOR_STABILISATION; i++) {
             log.addMessage(pnml);
             int lastLength = pnml.length();
             pnml = renderer.render(parser.parseString(pnml));
             if (pnml.length() == lastLength) {
-                System.out.println("pnml stabilised after rendering " + (i + 1) + " times");
+                Logger.getInstance().addMessage("pnml stabilised after rendering " + (i + 1) + " times");
                 return true;
             }
         }
@@ -75,13 +75,13 @@ public class HighLevelSymmetricPetriNetsTests {
     }
 
     private static boolean doesPnmlStabilize(String pnml) throws ParseException, RenderException {
-        System.out.println("begin test doesPnmlStabilize");
+        Logger.getInstance().addMessage("begin test doesPnmlStabilize");
         for (int i = 0; i < MAXIMUM_ITERATIONS_FOR_STABILISATION; i++) {
             log.addMessage(pnml);
             String lastPnml = pnml;
             pnml = renderer.render(parser.parseString(pnml));
             if (pnml.equals(lastPnml)) {
-                System.out.println("pnml stabilised after rendering " + (i + 1) + " times");
+                Logger.getInstance().addMessage("pnml stabilised after rendering " + (i + 1) + " times");
                 return true;
             }
         }
@@ -89,12 +89,12 @@ public class HighLevelSymmetricPetriNetsTests {
     }
 
     private static boolean isIsomorphicAfterOneRenderParseCycle(HLPetriGame game) throws RenderException, ParseException, UnboundedException {
-        System.out.println("begin test isIsomorphicAfterOneRenderParseCycle");
+        Logger.getInstance().addMessage("begin test isIsomorphicAfterOneRenderParseCycle");
         return isIsomorphic(game, parser.parseString(renderer.render(game)));
     }
 
     private static boolean isIsomorphicAfterTwoRenderParseCycles(HLPetriGame game) throws RenderException, ParseException, UnboundedException {
-        System.out.println("begin test isIsomorphicAfterTwoRenderParseCycles");
+        Logger.getInstance().addMessage("begin test isIsomorphicAfterTwoRenderParseCycles");
         return isIsomorphic(game, parser.parseString(renderer.render(parser.parseString(renderer.render(game)))));
     }
 
