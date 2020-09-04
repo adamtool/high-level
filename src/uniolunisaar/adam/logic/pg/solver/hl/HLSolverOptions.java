@@ -20,8 +20,8 @@ public class HLSolverOptions extends SolverOptions {
         super("hl");
     }
 
-    public HLSolverOptions(String name) {
-        super(name);
+    public HLSolverOptions(boolean skipTests) {
+        super("hl", skipTests);
     }
 
     public Approach getApproach() {

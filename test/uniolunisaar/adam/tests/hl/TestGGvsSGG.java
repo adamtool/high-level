@@ -62,7 +62,7 @@ public class TestGGvsSGG {
 
     @BeforeClass
     public void createFolder() {
-        Logger.getInstance().setVerbose(true);
+//        Logger.getInstance().setVerbose(true);
 //        Logger.getInstance().setShortMessageStream(null);
 //        Logger.getInstance().setVerboseMessageStream(null);
 //        Logger.getInstance().setWarningStream(null);
@@ -98,13 +98,13 @@ public class TestGGvsSGG {
         time = System.currentTimeMillis();
         GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> graph = SGGBuilderHL.getInstance().create(game);
         diff = System.currentTimeMillis() - time;
-        System.out.println("Size HL: " + graph.getStatesView().size() + "(time " + diff / 1000 + ")");
+        Logger.getInstance().addMessage("Size HL: " + graph.getStatesView().size() + "(time " + diff / 1000 + ")");
 //        HLTools.saveGraph2PDF(outputDir + name + "HL_sgg", graph);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOW LEVEL
         time = System.currentTimeMillis();
         GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> graphll = SGGBuilderLL.getInstance().create(hlgame);
         diff = System.currentTimeMillis() - time;
-        System.out.println("Size LL: " + graphll.getStatesView().size() + "(time " + diff / 1000 + ")");
+        Logger.getInstance().addMessage("Size LL: " + graphll.getStatesView().size() + "(time " + diff / 1000 + ")");
 //        HLTools.saveGraph2PDF(outputDir + name + "LL_sgg", graphll);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BDD APPROACH
         time = System.currentTimeMillis();
@@ -116,14 +116,14 @@ public class TestGGvsSGG {
         BDD states = sol.getBufferedDCSs();
         double sizeBDD = states.satCount(sol.getFirstBDDVariables()) + 1;
         diff = System.currentTimeMillis() - time;
-        System.out.println("Size BDD: " + sizeBDD + "(time " + diff / 1000 + ")");
+        Logger.getInstance().addMessage("Size BDD: " + sizeBDD + "(time " + diff / 1000 + ")");
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EXPLICIT      
         time = System.currentTimeMillis();
         GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> explicitGraph = GGBuilder.getInstance().create(pgame);
         diff = System.currentTimeMillis() - time;
 //        HLTools.saveGraph2PDF(outputDir + name + "explicit_gg", explicitGraph);
-        System.out.println("Size explicit: " + explicitGraph.getStatesView().size() + "(time " + diff / 1000 + ")");
+        Logger.getInstance().addMessage("Size explicit: " + explicitGraph.getStatesView().size() + "(time " + diff / 1000 + ")");
     }
 
     private void compareExWinStrat(HLPetriGame hlgame, boolean exists) throws Exception, CouldNotFindSuitableConditionException, SolvingException, NotSupportedGameException, NoSuitableDistributionFoundException, NetNotSafeException {
@@ -135,20 +135,20 @@ public class TestGGvsSGG {
         HLASafetyWithoutType2SolverHLApproach solverHL = (HLASafetyWithoutType2SolverHLApproach) HLSolverFactoryHLApproach.getInstance().getSolver(hlgame, new HLSolverOptions());
         boolean hl = solverHL.existsWinningStrategy();
         diff = System.currentTimeMillis() - time;
-        System.out.println("HL ex strat " + "(time " + diff / 1000 + ")");
+        Logger.getInstance().addMessage("HL ex strat " + "(time " + diff / 1000 + ")");
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOW LEVEL
         time = System.currentTimeMillis();
 //        HLSolver<? extends Condition<?>, ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> solver = HLSolverFactoryHLApproach.getInstance().getSolver(hlgame, new HLSolverOptions());
         HLASafetyWithoutType2SolverLLApproach solverLL = (HLASafetyWithoutType2SolverLLApproach) HLSolverFactoryLLApproach.getInstance().getSolver(hlgame, new HLSolverOptions());
         boolean ll = solverLL.existsWinningStrategy();
         diff = System.currentTimeMillis() - time;
-        System.out.println("LL ex strat " + "(time " + diff / 1000 + ")");
+        Logger.getInstance().addMessage("LL ex strat " + "(time " + diff / 1000 + ")");
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BDD APPROACH
         time = System.currentTimeMillis();
 //        HLASafetyWithoutType2SolverBDDApproach solverBDD = (HLASafetyWithoutType2SolverBDDApproach) HLSolverFactoryBDDApproach.getInstance().getSolver(hlgame, new BDDSolverOptions(true));
 //        boolean bdd = solverBDD.existsWinningStrategy();
         diff = System.currentTimeMillis() - time;
-        System.out.println("HLBDD ex strat " + "(time " + diff / 1000 + ")");
+        Logger.getInstance().addMessage("HLBDD ex strat " + "(time " + diff / 1000 + ")");
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EXPLICIT
         PetriGame pgame = HL2PGConverter.convert(hlgame, true, true);
@@ -156,7 +156,7 @@ public class TestGGvsSGG {
         ExplicitASafetyWithoutType2Solver solverExp = (ExplicitASafetyWithoutType2Solver) ExplicitSolverFactory.getInstance().getSolver(pgame, new ExplicitSolverOptions());
         boolean expl = solverExp.existsWinningStrategy();
         diff = System.currentTimeMillis() - time;
-        System.out.println("Expl ex strat " + "(time " + diff / 1000 + ")");
+        Logger.getInstance().addMessage("Expl ex strat " + "(time " + diff / 1000 + ")");
 
         Assert.assertEquals(hl, exists, "HL");
         Assert.assertEquals(ll, exists, "LL");

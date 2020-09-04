@@ -29,9 +29,9 @@ import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.logic.pg.solver.hl.bddapproach.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
 import uniolunisaar.adam.ds.solver.symbolic.bddapproach.BDDSolverOptions;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;
+import uniolunisaar.adam.logic.distrsynt.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;
 import uniolunisaar.adam.ds.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolvingObject;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
+import uniolunisaar.adam.logic.distrsynt.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
 import uniolunisaar.adam.util.symbolic.bddapproach.BDDTools;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.HLTools;
@@ -48,7 +48,7 @@ public class TestConverter {
 
     @BeforeClass
     public void createFolder() {
-//        Logger.getInstance().setVerbose(false);
+        Logger.getInstance().setVerbose(false);
 //        Logger.getInstance().setShortMessageStream(null);
 //        Logger.getInstance().setVerboseMessageStream(null);
 //        Logger.getInstance().setWarningStream(null);
@@ -80,7 +80,7 @@ public class TestConverter {
         PGTools.savePG2PDF(outputDir + pg.getName(), pg, false);
     }
 
-    @Test
+    @Test(enabled=false) // too large (java heap error)
     public void containerHabour() throws IOException, InterruptedException, CouldNotFindSuitableConditionException, SolvingException, CalculationInterruptedException, RenderException {
 //        HLPetriGame hlgame = ContainerHabourHL.generateB(2, 2, 2, 1, true);
 //        HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
@@ -90,7 +90,7 @@ public class TestConverter {
 //        BDDSolverOptions opt = new BDDSolverOptions();
 //        opt.setNoType2(true);
 //        BDDSolver<? extends Condition> sol = BDDSolverFactory.getInstance().getSolver(pg, false, opt);
-//        System.out.println("asdf " + sol.existsWinningStrategy());
+//        Logger.getInstance().addMessage("asdf " + sol.existsWinningStrategy());
 //        
 //        BDDTools.saveGraph2PDF(outputDir + "habour_gg", sol.getGraphGame(), sol);
 
@@ -102,27 +102,27 @@ public class TestConverter {
 //        BDDSolverOptions opt = new BDDSolverOptions();
 //        opt.setNoType2(true);
 //        BDDSolver<? extends Condition> sol = BDDSolverFactory.getInstance().getSolver(pg, false, opt);
-//        System.out.println("asdf " + sol.existsWinningStrategy());
+//        Logger.getInstance().addMessage("asdf " + sol.existsWinningStrategy());
         HLPetriGame hlgame = ContainerHabourHL.generateD(4, 2, 1, 1, true);
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
         PetriGame pg = HL2PGConverter.convert(hlgame, true, true);
         PGTools.savePG2PDF(outputDir + pg.getName(), pg, false, true);
         PGTools.saveAPT(outputDir + pg.getName(), pg, true);
-        BDDSolverOptions opt = new BDDSolverOptions(false);
+        BDDSolverOptions opt = new BDDSolverOptions(true);
         opt.setNoType2(true);
         DistrSysBDDSolver<? extends Condition<?>> sol = DistrSysBDDSolverFactory.getInstance().getSolver(pg, opt);
 
         sol.initialize();
 
         double sizeBDD = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
-        System.out.println("size" + sizeBDD);
-//        System.out.println("asdf " + sol.existsWinningStrategy());
+        Logger.getInstance().addMessage("size" + sizeBDD);
+//        Logger.getInstance().addMessage("asdf " + sol.existsWinningStrategy());
 
     }
 
     @Test
     public void packageDelivery() throws IOException, InterruptedException, CouldNotFindSuitableConditionException, SolvingException, CalculationInterruptedException, RenderException, NotSupportedGameException, ParseException, NetNotSafeException {
-        Logger.getInstance().setVerbose(true);
+//        Logger.getInstance().setVerbose(true);
 
         HLPetriGame hlgame = PackageDeliveryHL.generateE(1, 3, true);
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
@@ -137,8 +137,8 @@ public class TestConverter {
 
         double sizeBDDLow = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1; // for the additional init state
 
-//        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% sizeLL: " + sizeBDDLow);
-//        System.out.println("asdf " + sol.existsWinningStrategy());
+//        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% sizeLL: " + sizeBDDLow);
+//        Logger.getInstance().addMessage("asdf " + sol.existsWinningStrategy());
         BDDGraph bddgraph = sol.getGraphGame();
         BDDTools.saveGraph2PDF(outputDir + "PDLL13_gg", bddgraph, sol);
 
@@ -146,13 +146,13 @@ public class TestConverter {
 //        opt.setNoType2(true);
 //        DistrSysBDDSolver<? extends Condition<?>> sol = BDDSolverFactory.getInstance().getSolver(pg, false, opt);
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
-        opt = new BDDSolverOptions(false);
+        opt = new BDDSolverOptions(true);
         BDDASafetyWithoutType2HLSolver solBDD = new BDDASafetyWithoutType2HLSolver(new DistrSysBDDSolvingObject<>(pg, new Safety()), syms, opt);
         solBDD.initialize();
 
         double sizeBDD = solBDD.getBufferedDCSs().satCount(solBDD.getFirstBDDVariables()) + 1;
-//        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% size" + sizeBDD);
-//        System.out.println("asdf " + solBDD.existsWinningStrategy());        
+//        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% size" + sizeBDD);
+//        Logger.getInstance().addMessage("asdf " + solBDD.existsWinningStrategy());        
         BDDGraph bddgraphHL = solBDD.getGraphGame();
         BDDTools.saveGraph2PDF(outputDir + "PDHL13_gg", bddgraphHL, solBDD);
     }

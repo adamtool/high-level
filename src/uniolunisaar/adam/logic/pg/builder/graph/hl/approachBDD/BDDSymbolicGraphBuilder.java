@@ -6,7 +6,7 @@ import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.Flow;
 import uniolunisaar.adam.logic.pg.solver.hl.bddapproach.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
-import uniolunisaar.adam.logic.pg.builder.graph.symbolic.bddapproach.BDDGraphAndGStrategyBuilder;
+import uniolunisaar.adam.logic.distrsynt.builder.graph.symbolic.bddapproach.BDDGraphAndGStrategyBuilder;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDState;
 
 /**

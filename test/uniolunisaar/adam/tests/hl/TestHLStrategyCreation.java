@@ -32,8 +32,8 @@ import uniolunisaar.adam.logic.pg.solver.hl.hlapproach.HLASafetyWithoutType2Solv
 import uniolunisaar.adam.logic.pg.solver.hl.hlapproach.HLSolverFactoryHLApproach;
 import uniolunisaar.adam.logic.pg.solver.hl.llapproach.HLASafetyWithoutType2SolverLLApproach;
 import uniolunisaar.adam.logic.pg.solver.hl.llapproach.HLSolverFactoryLLApproach;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
+import uniolunisaar.adam.logic.distrsynt.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;
+import uniolunisaar.adam.logic.distrsynt.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.HLTools;
 import uniolunisaar.adam.util.PGTools;
@@ -67,7 +67,7 @@ public class TestHLStrategyCreation {
         create("PD" + nb_drones + "_" + nb_packages, hlgame);
     }
 
-    @Test
+    @Test(enabled=false) // takes quite some time
     public void AS() throws Exception {
         int alarmsystems = 2;
 //        int alarmsystems = 1;
@@ -102,7 +102,7 @@ public class TestHLStrategyCreation {
     }
 
     private void create(String name, HLPetriGame hlgame) throws Exception {
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% " + name);
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% " + name);
         HLTools.saveHLPG2PDF(outputDir + name, hlgame);
 
         long timeHLApproach = 0;
@@ -114,19 +114,19 @@ public class TestHLStrategyCreation {
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SYMBOLIC
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HIGH LEVEL
         time = System.currentTimeMillis();
-        HLASafetyWithoutType2SolverHLApproach solverHL = (HLASafetyWithoutType2SolverHLApproach) HLSolverFactoryHLApproach.getInstance().getSolver(hlgame, new HLSolverOptions());
+        HLASafetyWithoutType2SolverHLApproach solverHL = (HLASafetyWithoutType2SolverHLApproach) HLSolverFactoryHLApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
         GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> stratHL = solverHL.calculateGraphStrategy();
         diff = System.currentTimeMillis() - time;
         timeHLApproach += diff;
-        System.out.println("%%%%%%%%%%%%%%%%% HL graph strategy HL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL graph strategy HL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
         HLTools.saveGraph2PDF(outputDir + name + "HL_Gstrat", stratHL);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOW LEVEL
         time = System.currentTimeMillis();
-        HLASafetyWithoutType2SolverLLApproach solverLL = (HLASafetyWithoutType2SolverLLApproach) HLSolverFactoryLLApproach.getInstance().getSolver(hlgame, new HLSolverOptions());
+        HLASafetyWithoutType2SolverLLApproach solverLL = (HLASafetyWithoutType2SolverLLApproach) HLSolverFactoryLLApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
         GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> stratLL = solverLL.calculateGraphStrategy();
         diff = System.currentTimeMillis() - time;
         timeLLApproach += diff;
-        System.out.println("%%%%%%%%%%%%%%%%% HL graph strategy LL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL graph strategy LL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
         HLTools.saveGraph2PDF(outputDir + name + "LL_Gstrat", stratLL);
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LLGraphStrategy
@@ -136,14 +136,14 @@ public class TestHLStrategyCreation {
         GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> stratHLlow = solverHL.calculateLLGraphStrategy();
         diff = System.currentTimeMillis() - time;
         timeHLApproach += diff;
-        System.out.println("%%%%%%%%%%%%%%%%% LL graph strategy HL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% LL graph strategy HL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
         HLTools.saveGraph2PDF(outputDir + name + "HL_Gstrat_low", stratHLlow);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOW LEVEL
         time = System.currentTimeMillis();
         GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> stratLLlow = solverLL.calculateLLGraphStrategy();
         diff = System.currentTimeMillis() - time;
         timeLLApproach += diff;
-        System.out.println("%%%%%%%%%%%%%%%%% LL graph strategy LL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% LL graph strategy LL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
         HLTools.saveGraph2PDF(outputDir + name + "LL_Gstrat_low", stratLLlow);
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EXPLICIT
@@ -154,7 +154,7 @@ public class TestHLStrategyCreation {
         GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> stratExpl = solverExp.calculateGraphStrategy();
         diff = System.currentTimeMillis() - time;
         timeExplApproach += diff;
-        System.out.println("%%%%%%%%%%%%%%%%% LL graph strategy explicit " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% LL graph strategy explicit " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
         HLTools.saveGraph2PDF(outputDir + name + "Expl_Gstrat_low", stratExpl);
         // %%%%%%%%%%%%%%%%%%%%%%%%% BDD
         time = System.currentTimeMillis();
@@ -164,7 +164,7 @@ public class TestHLStrategyCreation {
         BDDGraph graphBDD = solverExplBDD.getGraphStrategy();
         diff = System.currentTimeMillis() - time;
         timeExplBDDApproach += diff;
-        System.out.println("%%%%%%%%%%%%%%%%% LL graph strategy explicit BDD " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% LL graph strategy explicit BDD " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
         BDDTools.saveGraph2PDF(outputDir + name + "Expl_BDD_Gstrat_low", graphBDD, solverExplBDD);
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Petri game strategy
@@ -174,14 +174,14 @@ public class TestHLStrategyCreation {
         PetriGame pgStratHL = solverHL.getStrategy();
         diff = System.currentTimeMillis() - time;
         timeHLApproach += diff;
-        System.out.println("%%%%%%%%%%%%%%%%% Petri game strategy HL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% Petri game strategy HL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
         PGTools.savePG2PDF(outputDir + name + "HL_PGstrat", pgStratHL, true);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOW LEVEL
         time = System.currentTimeMillis();
         PetriGame pgStratLL = solverLL.getStrategy();
         diff = System.currentTimeMillis() - time;
         timeLLApproach += diff;
-        System.out.println("%%%%%%%%%%%%%%%%% Petri game strategy LL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% Petri game strategy LL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
         PGTools.savePG2PDF(outputDir + name + "LL_PGstrat", pgStratLL, true);
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EXPLICIT
@@ -190,14 +190,14 @@ public class TestHLStrategyCreation {
         PetriGame pgStratExpl = solverExp.getStrategy();
         diff = System.currentTimeMillis() - time;
         timeExplApproach += diff;
-        System.out.println("%%%%%%%%%%%%%%%%% Petri game strategy explicit " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% Petri game strategy explicit " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
         PGTools.savePG2PDF(outputDir + name + "Expl_PGstrat", pgStratExpl, true);
         // %%%%%%%%%%%%%%%%%%%%%%%%% BDD
         time = System.currentTimeMillis();
         PetriGame pgStratExplBDD = solverExplBDD.getStrategy();
         diff = System.currentTimeMillis() - time;
         timeExplBDDApproach += diff;
-        System.out.println("%%%%%%%%%%%%%%%%% Petri game strategy explicit BDD " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% Petri game strategy explicit BDD " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
         PGTools.savePG2PDF(outputDir + name + "Expl_BDD_PGstrat", pgStratExplBDD, true);
 
         time = System.currentTimeMillis();
@@ -206,12 +206,12 @@ public class TestHLStrategyCreation {
         Assert.assertEquals(winning, solverExp.existsWinningStrategy());
         Assert.assertEquals(winning, solverExplBDD.existsWinningStrategy());
         diff = System.currentTimeMillis() - time;
-        System.out.println("All existence took " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("All existence took " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
 
-        System.out.println("HLApproach: " + Math.round((timeHLApproach / 1000.0f) * 100.0) / 100.0);
-        System.out.println("LLApproach: " + Math.round((timeLLApproach / 1000.0f) * 100.0) / 100.0);
-        System.out.println("ExplApproach: " + Math.round((timeExplApproach / 1000.0f) * 100.0) / 100.0);
-        System.out.println("ExplBDDApproach: " + Math.round((timeExplBDDApproach / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("HLApproach: " + Math.round((timeHLApproach / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("LLApproach: " + Math.round((timeLLApproach / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("ExplApproach: " + Math.round((timeExplApproach / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("ExplBDDApproach: " + Math.round((timeExplBDDApproach / 1000.0f) * 100.0) / 100.0);
     }
 
 }

@@ -42,9 +42,10 @@ import uniolunisaar.adam.logic.pg.builder.graph.hl.SGGBuilderLL;
 import uniolunisaar.adam.logic.pg.solver.hl.bddapproach.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
 import uniolunisaar.adam.ds.solver.symbolic.bddapproach.BDDSolverOptions;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;
+import uniolunisaar.adam.logic.distrsynt.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;
 import uniolunisaar.adam.ds.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolvingObject;
-import uniolunisaar.adam.logic.pg.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
+import uniolunisaar.adam.logic.distrsynt.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
+import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.symbolic.bddapproach.BDDTools;
 import uniolunisaar.adam.util.HLTools;
 import uniolunisaar.adam.util.PGTools;
@@ -63,7 +64,7 @@ public class TestSGGBDD {
 //        Logger.getInstance().setVerbose(false);
 //        Logger.getInstance().setShortMessageStream(null);
 //        Logger.getInstance().setVerboseMessageStream(null);
-//        Logger.getInstance().setWarningStream(null);
+        Logger.getInstance().setWarningStream(null);
         (new File(outputDir)).mkdirs();
     }
 
@@ -80,7 +81,7 @@ public class TestSGGBDD {
         sol.initialize();
 
         double size = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
-        System.out.println("size " + size);
+        Logger.getInstance().addMessage("size " + size);
 
 //        BDDGraph graph = sol.getGraphGame();
 //        BDDTools.saveGraph2PDF(outputDir + "CM21_gg", graph, sol);
@@ -99,12 +100,12 @@ public class TestSGGBDD {
         opt.setNoType2(true);
         DistrSysBDDSolver<? extends Condition<?>> sol = DistrSysBDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), opt);
         BDDGraph bddgraph = sol.getGraphGame();
-        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
+        Logger.getInstance().addMessage("SIZE BDD: " + bddgraph.getStates().size());
         BDDTools.saveGraph2PDF(outputDir + "CM21_bdd_gg", bddgraph, sol);
 
         // Test the new version
         GameGraphByHashCode<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
-        System.out.println("SIZE: " + graph.getStatesView().size());
+        Logger.getInstance().addMessage("SIZE: " + graph.getStatesView().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
 //        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
 
@@ -121,7 +122,7 @@ public class TestSGGBDD {
         bddgraph = sol.getGraphGame();
 
         graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
-//        System.out.println("SIZE: " + graph.getStates().size());
+//        Logger.getInstance().addMessage("SIZE: " + graph.getStates().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "CM22_gg", graph);
 //        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size()); // todo: why does this fail?
 
@@ -139,11 +140,11 @@ public class TestSGGBDD {
         opt.setNoType2(true);
         sol = DistrSysBDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), opt);
         bddgraph = sol.getGraphGame();
-//        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
+//        Logger.getInstance().addMessage("SIZE BDD: " + bddgraph.getStates().size());
 //        BDDTools.saveGraph2PDF(outputDir + "DW" + size + "_bdd_gg", bddgraph, sol);
 
         graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
-//        System.out.println("SIZE: " + graph.getStates().size());
+//        Logger.getInstance().addMessage("SIZE: " + graph.getStates().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "DW" + size + "_gg", graph);
         Assert.assertEquals(bddgraph.getStates().size(), graph.getStatesView().size());
 
@@ -154,7 +155,7 @@ public class TestSGGBDD {
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
         GameGraphByHashCode<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, IntegerID>> graph = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 
-        System.out.println("SIZE: " + graph.getStatesView().size());
+        Logger.getInstance().addMessage("SIZE: " + graph.getStatesView().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "CM21_gg", graph);
 
 //        PetriGame game = HL2PGConverter.convert(hlgame, true, true);
@@ -166,7 +167,7 @@ public class TestSGGBDD {
 //        sol.initialize();
 //
 //        double sizeBDD = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
-//        System.out.println("size " + sizeBDD);
+//        Logger.getInstance().addMessage("size " + sizeBDD);
 //
 //        BDDGraph graph = sol.getGraphGame();
 //        BDDTools.saveGraph2PDF(outputDir + "CM21" + "_bdd_gg", graph, sol);
@@ -194,7 +195,7 @@ public class TestSGGBDD {
         for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
             Symmetry next = iterator.next();
 
-            System.out.println(next.toString());
+            Logger.getInstance().addMessage(next.toString());
         }
 
         BDDSolverOptions opt = new BDDSolverOptions(false);
@@ -203,7 +204,7 @@ public class TestSGGBDD {
         sol.initialize();
 
         double sizeBDD = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
-        System.out.println("size " + sizeBDD);
+        Logger.getInstance().addMessage("size " + sizeBDD);
 
 //        BDDGraph graph = sol.getGraphGame();
 //        BDDTools.saveGraph2PDF(outputDir + "DW" + size + "_gg", graph, sol);
@@ -213,7 +214,7 @@ public class TestSGGBDD {
 //        int size = 3;
 //        HLPetriGame hlgame = DocumentWorkflowHL.generateDWs(size);
 //        SymbolicGameGraph<Place, Transition, ILLDecision, LLDecisionSet, SRGFlow<Transition>> graph = SGGBuilder.createByLLGame(hlgame);
-//        System.out.println("SIZE: " + graph.getStates().size());
+//        Logger.getInstance().addMessage("SIZE: " + graph.getStates().size());
 ////        HLTools.saveGraph2DotAndPDF(outputDir + "DWs" + size + "_gg", graph);
 //        // convert
 //        PetriGame gameConv = HL2PGConverter.convert(hlgame);
@@ -226,7 +227,7 @@ public class TestSGGBDD {
 //        opt.setNoType2(true);
 //        DistrSysBDDSolver<? extends Condition<?>> sol = BDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, false, false), false, opt);
 //        BDDGraph bddgraph = sol.getGraphGame();
-//        System.out.println("SIZE BDD: " + bddgraph.getStates().size());
+//        Logger.getInstance().addMessage("SIZE BDD: " + bddgraph.getStates().size());
 ////        BDDTools.saveGraph2PDF(outputDir + "DWs" + size + "_bdd_gg", bddgraph, sol);
 ////        Assert.assertEquals(bddgraph.getStates().size(), graph.getStates().size());
     }
@@ -252,7 +253,7 @@ public class TestSGGBDD {
         sol.initialize();
 
         double sizeBDD = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
-        System.out.println("size " + sizeBDD);
+        Logger.getInstance().addMessage("size " + sizeBDD);
 
         BDDGraph graph = sol.getGraphGame();
         BDDTools.saveGraph2PDF(outputDir + "toyexmpale", graph, sol);
@@ -280,7 +281,7 @@ public class TestSGGBDD {
         sol.initialize();
 
         double sizeBDD = sol.getBufferedDCSs().satCount(sol.getFirstBDDVariables()) + 1;
-        System.out.println("size " + sizeBDD);
+        Logger.getInstance().addMessage("size " + sizeBDD);
 
         BDDGraph graph = sol.getGraphGame();
         BDDTools.saveGraph2PDF(outputDir + "toyexmpale2", graph, sol);
@@ -288,7 +289,7 @@ public class TestSGGBDD {
 
         GameGraphByHashCode<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, IntegerID>> graphEX = SGGBuilderLL.getInstance().createByHashcode(hlgame);
 
-        System.out.println("SIZE: " + graphEX.getStatesView().size());
+        Logger.getInstance().addMessage("SIZE: " + graphEX.getStatesView().size());
         HLTools.saveGraph2DotAndPDF(outputDir + "toyexmpleExplixit", graphEX);
     }
 }

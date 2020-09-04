@@ -38,7 +38,7 @@ public class TestASafetyWithoutType2HLSolver {
 
     @BeforeClass
     public void logger() {
-        Logger.getInstance().setVerbose(true);
+        Logger.getInstance().setVerbose(false);
     }
 
     @BeforeClass
