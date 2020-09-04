@@ -5,7 +5,7 @@ DEPENDENCIES_REV="HEAD,HEAD,HEAD,HEAD"
 # the build target
 FRAMEWORK_TARGETS = tools petrinetwithtransits
 SYNTHESIZER_TARGETS = petrigames symbolic highlevel
-t=jar
+t=javac
 
 # should be executed no matter if a file with the same name exists or not
 .PHONY: check_dependencies
@@ -19,6 +19,8 @@ t=jar
 .PHONY: mtbdd
 .PHONY: highlevel
 #.PHONY: javadoc
+.PHONY: setJavac
+.PHONY: setJar
 .PHONY: setStandalone
 .PHONY: setClean
 .PHONY: setCleanAll
@@ -74,6 +76,9 @@ symbolic: bdd mtbdd
 
 highlevel: check_dependencies
 	ant -buildfile ./build.xml $(t)
+
+setJavac:
+	$(eval t=javac)
 
 setStandalone:
 	$(eval t=jar-standalone)
