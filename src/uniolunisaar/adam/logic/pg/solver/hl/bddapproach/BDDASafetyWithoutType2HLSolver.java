@@ -25,7 +25,7 @@ import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.BDDSolverOptio
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NoStrategyExistentException;
 import uniolunisaar.adam.logic.pg.builder.graph.hl.BDDSGGBuilder;
 import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolvingObject;
-import uniolunisaar.adam.logic.distrsynt.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
+import uniolunisaar.adam.logic.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
 import uniolunisaar.adam.util.benchmarks.synthesis.Benchmarks;
 import uniolunisaar.adam.tools.Logger;
 

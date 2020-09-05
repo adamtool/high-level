@@ -32,8 +32,8 @@ import uniolunisaar.adam.logic.pg.solver.hl.hlapproach.HLASafetyWithoutType2Solv
 import uniolunisaar.adam.logic.pg.solver.hl.hlapproach.HLSolverFactoryHLApproach;
 import uniolunisaar.adam.logic.pg.solver.hl.llapproach.HLASafetyWithoutType2SolverLLApproach;
 import uniolunisaar.adam.logic.pg.solver.hl.llapproach.HLSolverFactoryLLApproach;
-import uniolunisaar.adam.logic.distrsynt.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;
-import uniolunisaar.adam.logic.distrsynt.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
+import uniolunisaar.adam.logic.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;
+import uniolunisaar.adam.logic.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.HLTools;
 import uniolunisaar.adam.util.PGTools;
