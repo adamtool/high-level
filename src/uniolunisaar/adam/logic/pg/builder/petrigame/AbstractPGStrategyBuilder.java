@@ -16,7 +16,7 @@ import uniolunisaar.adam.ds.graph.GameGraphFlow;
 import uniolunisaar.adam.ds.graph.IDecision;
 import uniolunisaar.adam.ds.graph.IDecisionSet;
 import uniolunisaar.adam.ds.graph.StateIdentifier;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.PNWTTools;
 
@@ -48,10 +48,10 @@ public abstract class AbstractPGStrategyBuilder<P, T, DC extends IDecision<P, T>
      * @param ggStrategy
      * @return
      */
-    public PetriGame builtStrategy(String name, GameGraph<P, T, DC, S, GameGraphFlow<T, S>> ggStrategy) {
+    public PetriGameWithTransits builtStrategy(String name, GameGraph<P, T, DC, S, GameGraphFlow<T, S>> ggStrategy) {
 //    public PetriGame builtStrategy(String name, GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy) {
         Logger.getInstance().addMessage("Calculate Petri game strategy.");
-        PetriGame strategy = new PetriGame("Winning strategy of the system players of the net '" + name + "'.");
+        PetriGameWithTransits strategy = new PetriGameWithTransits("Winning strategy of the system players of the net '" + name + "'.");
 //        S init = ggStrategy.getInitial();
 //        // create the initial places
 //        List<P> initial = new ArrayList<>(init.getMarking());
@@ -93,7 +93,7 @@ public abstract class AbstractPGStrategyBuilder<P, T, DC extends IDecision<P, T>
 
     abstract void copyExtension(Place to, P from);
 
-    private void calculateStrategyByBFS(GameGraph<P, T, DC, S, GameGraphFlow<T, S>> ggStrategy, PetriGame strategy) {
+    private void calculateStrategyByBFS(GameGraph<P, T, DC, S, GameGraphFlow<T, S>> ggStrategy, PetriGameWithTransits strategy) {
 //    private void calculateStrategyByBFS(GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy, PetriGame strategy, DecisionSet initialState, List<Place> initialMarking) {
 
         Map<S, List<T>> transitionMap = new HashMap<>();
@@ -201,7 +201,7 @@ public abstract class AbstractPGStrategyBuilder<P, T, DC extends IDecision<P, T>
         }
     }
 
-    void addBehaviorForVisitedSuccessors(PetriGame strategy, Map<Integer, List<Place>> visitedCuts, S succState, T t, Transition strat_t, LinkedList<Pair<S, List<Place>>> todoStates, List<Place> prevMarking) {
+    void addBehaviorForVisitedSuccessors(PetriGameWithTransits strategy, Map<Integer, List<Place>> visitedCuts, S succState, T t, Transition strat_t, LinkedList<Pair<S, List<Place>>> todoStates, List<Place> prevMarking) {
         // Don't create new places, only add the "suitable" flows and delete 
         // the places which had been created before, which are now double.
         List<Place> visitedMarking = visitedCuts.get(succState.getId());
@@ -253,7 +253,7 @@ public abstract class AbstractPGStrategyBuilder<P, T, DC extends IDecision<P, T>
         }
     }
 
-    private boolean containsID(PetriGame game, Set<P> places, Place place) {
+    private boolean containsID(PetriGameWithTransits game, Set<P> places, Place place) {
         for (P p : places) {
             String id = getPlaceID(p);
             if (id.equals(game.getOrigID(place))) {
@@ -281,7 +281,7 @@ public abstract class AbstractPGStrategyBuilder<P, T, DC extends IDecision<P, T>
      * @param marking - the current marking of the unfolding
      * @return the place of the marking with the given placeid
      */
-    Place getSuitablePredecessor(PetriGame game, String placeid, List<Place> marking) {
+    Place getSuitablePredecessor(PetriGameWithTransits game, String placeid, List<Place> marking) {
         for (Place p : marking) {
             String id = game.getOrigID(p);
             if (id.equals(placeid)) {

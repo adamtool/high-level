@@ -7,8 +7,8 @@ import uniolunisaar.adam.ds.graph.GameGraph;
 import uniolunisaar.adam.ds.graph.GameGraphFlow;
 import uniolunisaar.adam.ds.graph.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.explicit.ILLDecision;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
-import uniolunisaar.adam.util.pg.TransitCalculator;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
+import uniolunisaar.adam.util.pgwt.TransitCalculator;
 
 /**
  *
@@ -25,8 +25,8 @@ public class LLPGStrategyBuilder extends AbstractPGStrategyBuilder<Place, Transi
         return instance;
     }
 
-    public PetriGame builtStrategy(PetriGame game, GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy) {
-        PetriGame strategy = builtStrategy(game.getName(), ggStrategy);
+    public PetriGameWithTransits builtStrategy(PetriGameWithTransits game, GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy) {
+        PetriGameWithTransits strategy = builtStrategy(game.getName(), ggStrategy);
 
         TransitCalculator.copyTokenflowsFromGameToStrategy(game, strategy);
         return strategy;

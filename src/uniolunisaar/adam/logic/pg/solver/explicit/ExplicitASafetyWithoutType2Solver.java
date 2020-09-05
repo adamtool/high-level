@@ -4,10 +4,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import uniolunisaar.adam.ds.graph.explicit.DecisionSet;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.ds.objectives.Safety;
-import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
-import uniolunisaar.adam.exceptions.pg.NoStrategyExistentException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.CalculationInterruptedException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.NoStrategyExistentException;
 import uniolunisaar.adam.logic.pg.builder.petrigame.LLPGStrategyBuilder;
 
 /**
@@ -29,7 +29,7 @@ public class ExplicitASafetyWithoutType2Solver extends AbstractExplicitSolver<Sa
     }
 
     @Override
-    protected PetriGame calculateStrategy() throws NoStrategyExistentException, CalculationInterruptedException {
+    protected PetriGameWithTransits calculateStrategy() throws NoStrategyExistentException, CalculationInterruptedException {
         return LLPGStrategyBuilder.getInstance().builtStrategy(getGame(), calculateGraphStrategy());
     }
 

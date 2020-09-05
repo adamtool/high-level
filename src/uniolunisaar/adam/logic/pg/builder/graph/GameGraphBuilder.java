@@ -10,7 +10,7 @@ import uniolunisaar.adam.ds.graph.IDecision;
 import uniolunisaar.adam.ds.graph.GameGraphFlow;
 import uniolunisaar.adam.ds.graph.IDecisionSet;
 import uniolunisaar.adam.ds.graph.StateIdentifier;
-import uniolunisaar.adam.ds.petrigame.IPetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.IPetriGame;
 
 /**
  *

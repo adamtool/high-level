@@ -4,7 +4,7 @@ import uniolunisaar.adam.ds.graph.IDecision;
 import uniolunisaar.adam.ds.graph.explicit.ILLDecision;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 
 /**
  *
@@ -20,5 +20,5 @@ public interface IHLDecision extends IDecision<ColoredPlace, ColoredTransition> 
      * @return
      */
     @Deprecated
-    public ILLDecision toLLDecision(PetriGame game);
+    public ILLDecision toLLDecision(PetriGameWithTransits game);
 }

@@ -17,10 +17,10 @@ import uniolunisaar.adam.ds.graph.IDecision;
 import uniolunisaar.adam.ds.graph.IDecisionSet;
 import uniolunisaar.adam.ds.graph.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.explicit.ILLDecision;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.PNWTTools;
-import uniolunisaar.adam.util.pg.TransitCalculator;
+import uniolunisaar.adam.util.pgwt.TransitCalculator;
 
 /**
  * Currently this is only a structural adapted version of
@@ -43,8 +43,8 @@ public class PGStrategyBuilderLLorExplicit {
     PGStrategyBuilderLLorExplicit() {
     }
 
-    public PetriGame builtStrategy(PetriGame game, GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy) {
-        PetriGame strategy = builtStrategy(game.getName(), ggStrategy);
+    public PetriGameWithTransits builtStrategy(PetriGameWithTransits game, GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy) {
+        PetriGameWithTransits strategy = builtStrategy(game.getName(), ggStrategy);
 
         TransitCalculator.copyTokenflowsFromGameToStrategy(game, strategy);
         return strategy;
@@ -61,9 +61,9 @@ public class PGStrategyBuilderLLorExplicit {
      */
 //    public <P, DC extends IDecision<P, Transition>, S extends IDecisionSet<P, Transition, DC, S>, ID extends StateIdentifier, F extends GameGraphFlow<Transition, ID>>
 //            PetriGame builtStrategy(PetriGame game, GameGraph<P, Transition, DC, S, GameGraphFlow<Transition, S>> ggStrategy) {
-    public PetriGame builtStrategy(String name, GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy) {
+    public PetriGameWithTransits builtStrategy(String name, GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy) {
         Logger.getInstance().addMessage("Calculate Petri game strategy.");
-        PetriGame strategy = new PetriGame("Winning strategy of the system players of the net '" + name + "'.");
+        PetriGameWithTransits strategy = new PetriGameWithTransits("Winning strategy of the system players of the net '" + name + "'.");
         DecisionSet init = ggStrategy.getInitial();
         // create the initial places
         List<Place> initial = new ArrayList<>(init.getMarking());
@@ -97,7 +97,7 @@ public class PGStrategyBuilderLLorExplicit {
 
 //    private <P, DC extends IDecision<P, Transition>, S extends IDecisionSet<P, Transition, DC, S>, ID extends StateIdentifier, F extends GameGraphFlow<Transition, ID>>
 //            void calculateStrategyByBFS(GameGraph<P, Transition, DC, S, GameGraphFlow<Transition, S>> ggStrategy, PetriGame strategy, S initialState, List<Place> initialMarking) {
-    private void calculateStrategyByBFS(GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy, PetriGame strategy, DecisionSet initialState, List<Place> initialMarking) {
+    private void calculateStrategyByBFS(GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy, PetriGameWithTransits strategy, DecisionSet initialState, List<Place> initialMarking) {
 
         Map<DecisionSet, List<Transition>> transitionMap = new HashMap<>();
         Map<DecisionSet, List<Transition>> stratTransitionMap = new HashMap<>();
@@ -190,7 +190,7 @@ public class PGStrategyBuilderLLorExplicit {
         }
     }
 
-    <P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>> void addBehaviorForVisitedSuccessors(PetriGame strategy, Map<Integer, List<Place>> visitedCuts, S succState, Transition t, Transition strat_t, LinkedList<Pair<S, List<Place>>> todoStates, List<Place> prevMarking) {
+    <P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>> void addBehaviorForVisitedSuccessors(PetriGameWithTransits strategy, Map<Integer, List<Place>> visitedCuts, S succState, Transition t, Transition strat_t, LinkedList<Pair<S, List<Place>>> todoStates, List<Place> prevMarking) {
         // Don't create new places, only add the "suitable" flows and delete 
         // the places which had been created before, which are now double.
         List<Place> visitedMarking = visitedCuts.get(succState.getId());
@@ -242,7 +242,7 @@ public class PGStrategyBuilderLLorExplicit {
         }
     }
 
-    private boolean containsID(PetriGame game, Set<Place> places, Place place) {
+    private boolean containsID(PetriGameWithTransits game, Set<Place> places, Place place) {
         for (Place p : places) {
             if (p.getId().equals(game.getOrigID(place))) {
                 return true;
@@ -269,7 +269,7 @@ public class PGStrategyBuilderLLorExplicit {
      * @param marking - the current marking of the unfolding
      * @return the place of the marking with the given placeid
      */
-    Place getSuitablePredecessor(PetriGame game, String placeid, List<Place> marking) {
+    Place getSuitablePredecessor(PetriGameWithTransits game, String placeid, List<Place> marking) {
         for (Place p : marking) {
             String id = game.getOrigID(p);
             if (id.equals(placeid)) {

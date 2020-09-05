@@ -18,7 +18,7 @@ import uniolunisaar.adam.ds.graph.hl.llapproach.LLDecisionSet;
 import uniolunisaar.adam.ds.graph.hl.llapproach.LLEnvDecision;
 import uniolunisaar.adam.ds.graph.hl.llapproach.LLSysDecision;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 
 /**
@@ -39,7 +39,7 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, Dec
     private SGGBuilderLL() {
     }
 
-    private Collection<Transition> putSysAndSingleEnvTransitionsToExtention(PetriGame pgame) {
+    private Collection<Transition> putSysAndSingleEnvTransitionsToExtention(PetriGameWithTransits pgame) {
         Collection<Transition> sysTransitions = new ArrayList<>();
         Collection<Transition> singlePresetTransitions = new ArrayList<>();
         for (Transition transition : pgame.getTransitions()) {
@@ -61,7 +61,7 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, Dec
         return sysTransitions;
     }
 
-    private LLDecisionSet createInitDecisionSet(PetriGame pgame) {
+    private LLDecisionSet createInitDecisionSet(PetriGameWithTransits pgame) {
         Set<ILLDecision> inits = new HashSet<>();
         for (Place place : pgame.getPlaces()) {
             if (place.getInitialToken().getValue() > 0) {
@@ -95,7 +95,7 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, Dec
     @Deprecated
     public GameGraphByHashCode<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, IntegerID>> createByHashcode(HLPetriGame hlgame) {
         // Convert the high-level game to its low-level version
-        PetriGame pgame = HL2PGConverter.convert(hlgame, true);
+        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
         // calculate the system transitions
         Collection<Transition> sysTransitions = putSysAndSingleEnvTransitionsToExtention(pgame);
         // create initial decision set
@@ -124,7 +124,7 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, Dec
      */
     public GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> create(HLPetriGame hlgame) {
         // Convert the high-level game to its low-level version
-        PetriGame pgame = HL2PGConverter.convert(hlgame, true);
+        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
         // calculate the system transitions
         Collection<Transition> sysTransitions = putSysAndSingleEnvTransitionsToExtention(pgame);
         // create initial decision set

@@ -13,7 +13,7 @@ import uniol.apt.util.Pair;
 import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.ColorToken;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.ds.highlevel.ColorTokens;
 import uniolunisaar.adam.ds.highlevel.arcexpressions.ArcExpression;
@@ -117,7 +117,7 @@ public class TestHLCreation {
         hlgame.createFlow(t1, p3, new ArcExpression(new ArcTuple(new Variable("u"), new Variable("f"))));
 
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame, true);
-        PetriGame pg = HL2PGConverter.convert(hlgame);
+        PetriGameWithTransits pg = HL2PGConverter.convert(hlgame);
         PGTools.savePG2PDF(outputDir + pg.getName(), pg, false);
     }
 

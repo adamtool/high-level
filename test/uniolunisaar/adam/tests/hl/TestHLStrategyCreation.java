@@ -16,9 +16,9 @@ import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.ds.objectives.Condition;
-import uniolunisaar.adam.ds.solver.symbolic.bddapproach.BDDSolverOptions;
+import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.BDDSolverOptions;
 import uniolunisaar.adam.generators.hl.AlarmSystemHL;
 import uniolunisaar.adam.generators.hl.ConcurrentMachinesHL;
 import uniolunisaar.adam.generators.hl.DocumentWorkflowHL;
@@ -147,7 +147,7 @@ public class TestHLStrategyCreation {
         HLTools.saveGraph2PDF(outputDir + name + "LL_Gstrat_low", stratLLlow);
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EXPLICIT
-        PetriGame pgame = HL2PGConverter.convert(hlgame, true, true);
+        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true, true);
         // %%%%%%%%%%%%%%%%%%%%%%%%% EXPLICIT
         time = System.currentTimeMillis();
         ExplicitASafetyWithoutType2Solver solverExp = (ExplicitASafetyWithoutType2Solver) ExplicitSolverFactory.getInstance().getSolver(pgame, new ExplicitSolverOptions());
@@ -171,14 +171,14 @@ public class TestHLStrategyCreation {
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% SYMBOLIC
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HIGH LEVEL
         time = System.currentTimeMillis();
-        PetriGame pgStratHL = solverHL.getStrategy();
+        PetriGameWithTransits pgStratHL = solverHL.getStrategy();
         diff = System.currentTimeMillis() - time;
         timeHLApproach += diff;
         Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% Petri game strategy HL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
         PGTools.savePG2PDF(outputDir + name + "HL_PGstrat", pgStratHL, true);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOW LEVEL
         time = System.currentTimeMillis();
-        PetriGame pgStratLL = solverLL.getStrategy();
+        PetriGameWithTransits pgStratLL = solverLL.getStrategy();
         diff = System.currentTimeMillis() - time;
         timeLLApproach += diff;
         Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% Petri game strategy LL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
@@ -187,14 +187,14 @@ public class TestHLStrategyCreation {
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EXPLICIT
         // %%%%%%%%%%%%%%%%%%%%%%%%% EXPLICIT
         time = System.currentTimeMillis();
-        PetriGame pgStratExpl = solverExp.getStrategy();
+        PetriGameWithTransits pgStratExpl = solverExp.getStrategy();
         diff = System.currentTimeMillis() - time;
         timeExplApproach += diff;
         Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% Petri game strategy explicit " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
         PGTools.savePG2PDF(outputDir + name + "Expl_PGstrat", pgStratExpl, true);
         // %%%%%%%%%%%%%%%%%%%%%%%%% BDD
         time = System.currentTimeMillis();
-        PetriGame pgStratExplBDD = solverExplBDD.getStrategy();
+        PetriGameWithTransits pgStratExplBDD = solverExplBDD.getStrategy();
         diff = System.currentTimeMillis() - time;
         timeExplBDDApproach += diff;
         Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% Petri game strategy explicit BDD " + Math.round((diff / 1000.0f) * 100.0) / 100.0);

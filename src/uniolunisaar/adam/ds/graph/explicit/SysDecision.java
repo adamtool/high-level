@@ -5,7 +5,7 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.AbstractSysDecision;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 
 /**
  *
@@ -13,7 +13,7 @@ import uniolunisaar.adam.ds.petrigame.PetriGame;
  */
 public class SysDecision extends AbstractSysDecision<Place, Transition, CommitmentSet> implements ILLDecision {
 
-    private final PetriGame game;
+    private final PetriGameWithTransits game;
 
     /**
      * Copy-Constructor
@@ -25,7 +25,7 @@ public class SysDecision extends AbstractSysDecision<Place, Transition, Commitme
         this.game = dcs.game;
     }
 
-    public SysDecision(PetriGame game, Place place, CommitmentSet c) {
+    public SysDecision(PetriGameWithTransits game, Place place, CommitmentSet c) {
         super(place, c);
         this.game = game;
     }
@@ -58,7 +58,7 @@ public class SysDecision extends AbstractSysDecision<Place, Transition, Commitme
         return toDot();
     }
 
-    protected PetriGame getGame() {
+    protected PetriGameWithTransits getGame() {
         return game;
     }
 

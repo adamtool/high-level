@@ -11,7 +11,7 @@ import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.Valuation;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 
 /**
  *
@@ -35,7 +35,7 @@ public class LLSGStrat2Graphstrategy extends AbstractSGStrat2Graphstrategy<Place
 
     @Override
     Transition applySymmmetry(Transition t, Symmetry sym, GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> hlstrat) {
-        PetriGame pgame = hlstrat.getInitial().getGame();
+        PetriGameWithTransits pgame = hlstrat.getInitial().getGame();
 
         String hlID = HL2PGConverter.getOrigID(t);
         Valuation val = HL2PGConverter.getValuation(t);

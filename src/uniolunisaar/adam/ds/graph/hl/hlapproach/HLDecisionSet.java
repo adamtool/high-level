@@ -20,7 +20,7 @@ import uniolunisaar.adam.tools.Tools;
 import uniolunisaar.adam.ds.graph.IDecisionSet;
 import uniolunisaar.adam.ds.graph.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.explicit.ILLDecision;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 
 /**
  *
@@ -274,7 +274,7 @@ public class HLDecisionSet extends Extensible implements IDecisionSet<ColoredPla
      */
     @Override
     @Deprecated
-    public DecisionSet createLLDecisionSet(PetriGame game) {
+    public DecisionSet createLLDecisionSet(PetriGameWithTransits game) {
         Set<ILLDecision> lldecisions = new HashSet<>();
         for (IHLDecision decision : this.decisions) {
             lldecisions.add(decision.toLLDecision(game));

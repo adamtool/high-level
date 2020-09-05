@@ -31,8 +31,8 @@ import uniolunisaar.adam.ds.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.highlevel.terms.PredecessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.SuccessorTerm;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
-import uniolunisaar.adam.ds.petrigame.IPetriGame;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.IPetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.exceptions.highlevel.IdentifierAlreadyExistentException;
@@ -58,11 +58,11 @@ public class HLPetriGame extends Extensible implements IPetriGame {
 
     private final Map<String, BasicColorClass> colorClasses;
     private Symmetries symmetries;
-    private final PetriGame game;
+    private final PetriGameWithTransits game;
 
     public HLPetriGame(HLPetriGame hlgame) {
         this.colorClasses = copyColorClasses(hlgame);
-        this.game = new PetriGame(hlgame.game);
+        this.game = new PetriGameWithTransits(hlgame.game);
     }
 
     public HLPetriGame(HLPetriGame hlgame, boolean byReference) {
@@ -71,7 +71,7 @@ public class HLPetriGame extends Extensible implements IPetriGame {
             this.game = hlgame.game;
         } else {
             this.colorClasses = copyColorClasses(hlgame);
-            this.game = new PetriGame(hlgame.game);
+            this.game = new PetriGameWithTransits(hlgame.game);
         }
     }
 
@@ -85,13 +85,13 @@ public class HLPetriGame extends Extensible implements IPetriGame {
         return cclasses;
     }
 
-    public HLPetriGame(Map<String, BasicColorClass> colorClasses, PetriGame game) {
+    public HLPetriGame(Map<String, BasicColorClass> colorClasses, PetriGameWithTransits game) {
         this.colorClasses = colorClasses;
         this.game = game;
     }
 
     public HLPetriGame(String name) {
-        game = new PetriGame(name);
+        game = new PetriGameWithTransits(name);
         colorClasses = new HashMap<>();
     }
 
@@ -463,7 +463,7 @@ public class HLPetriGame extends Extensible implements IPetriGame {
     // this is totally stupid, since when I calculate it anyhow, 
     // I could also used in the other cases and this results in
     // the LLApproach ...
-    private PetriGame llGame = null;
+    private PetriGameWithTransits llGame = null;
 
     public boolean eventuallyEnabled(ColoredTransition t1, ColoredTransition t2) {
         // TODO: this is really silly. If this approach has any advantages,
@@ -615,7 +615,7 @@ public class HLPetriGame extends Extensible implements IPetriGame {
         return colorClasses;
     }
 
-    protected PetriGame getGame() {
+    protected PetriGameWithTransits getGame() {
         return game;
     }
 

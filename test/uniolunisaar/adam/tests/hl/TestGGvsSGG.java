@@ -21,14 +21,14 @@ import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.highlevel.oneenv.OneEnvHLPG;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetries;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.ds.objectives.Safety;
-import uniolunisaar.adam.ds.solver.symbolic.bddapproach.BDDSolverOptions;
-import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
-import uniolunisaar.adam.exceptions.pg.InvalidPartitionException;
-import uniolunisaar.adam.exceptions.pg.NoSuitableDistributionFoundException;
-import uniolunisaar.adam.exceptions.pg.NotSupportedGameException;
-import uniolunisaar.adam.exceptions.pg.SolvingException;
+import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.BDDSolverOptions;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.CalculationInterruptedException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.InvalidPartitionException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.NoSuitableDistributionFoundException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.NotSupportedGameException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.SolvingException;
 import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
 import uniolunisaar.adam.exceptions.pnwt.NetNotSafeException;
 import uniolunisaar.adam.generators.hl.AlarmSystemHL;
@@ -46,7 +46,7 @@ import uniolunisaar.adam.logic.pg.solver.hl.hlapproach.HLASafetyWithoutType2Solv
 import uniolunisaar.adam.logic.pg.solver.hl.hlapproach.HLSolverFactoryHLApproach;
 import uniolunisaar.adam.logic.pg.solver.hl.llapproach.HLASafetyWithoutType2SolverLLApproach;
 import uniolunisaar.adam.logic.pg.solver.hl.llapproach.HLSolverFactoryLLApproach;
-import uniolunisaar.adam.ds.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolvingObject;
+import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolvingObject;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.HLTools;
 import uniolunisaar.adam.util.PGTools;
@@ -108,7 +108,7 @@ public class TestGGvsSGG {
 //        HLTools.saveGraph2PDF(outputDir + name + "LL_sgg", graphll);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% BDD APPROACH
         time = System.currentTimeMillis();
-        PetriGame pgame = HL2PGConverter.convert(hlgame, true, true);
+        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true, true);
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
         BDDSolverOptions opt = new BDDSolverOptions(true);
         BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(new DistrSysBDDSolvingObject<>(pgame, new Safety()), syms, opt);
@@ -151,7 +151,7 @@ public class TestGGvsSGG {
         Logger.getInstance().addMessage("HLBDD ex strat " + "(time " + diff / 1000 + ")");
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EXPLICIT
-        PetriGame pgame = HL2PGConverter.convert(hlgame, true, true);
+        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true, true);
         time = System.currentTimeMillis();
         ExplicitASafetyWithoutType2Solver solverExp = (ExplicitASafetyWithoutType2Solver) ExplicitSolverFactory.getInstance().getSolver(pgame, new ExplicitSolverOptions());
         boolean expl = solverExp.existsWinningStrategy();
@@ -193,7 +193,7 @@ public class TestGGvsSGG {
         diff = System.currentTimeMillis() - time;
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EXPLICIT
-        PetriGame pgame = HL2PGConverter.convert(hlgame, true, true);
+        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true, true);
         time = System.currentTimeMillis();
         ExplicitASafetyWithoutType2Solver solverExp = (ExplicitASafetyWithoutType2Solver) ExplicitSolverFactory.getInstance().getSolver(pgame, new ExplicitSolverOptions());
         GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> stratExpl = solverExp.calculateGraphStrategy();
@@ -219,10 +219,10 @@ public class TestGGvsSGG {
 ////        BDDGraph stratBDD = solverBDD.calculateGraphStrategy();
 
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% EXPLICIT
-        PetriGame pgame = HL2PGConverter.convert(hlgame, true, true);
+        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true, true);
         time = System.currentTimeMillis();
         ExplicitASafetyWithoutType2Solver solverExp = (ExplicitASafetyWithoutType2Solver) ExplicitSolverFactory.getInstance().getSolver(pgame, new ExplicitSolverOptions());
-        PetriGame stratExpl = solverExp.getStrategy();
+        PetriGameWithTransits stratExpl = solverExp.getStrategy();
         diff = System.currentTimeMillis() - time;
         PGTools.savePG2PDF(outputDir + name + "Expl_PGstrat", stratExpl, true);
     }

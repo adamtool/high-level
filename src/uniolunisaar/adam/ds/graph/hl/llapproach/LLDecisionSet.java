@@ -4,7 +4,7 @@ import uniolunisaar.adam.ds.graph.explicit.*;
 import java.util.Set;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 
 /**
  *
@@ -25,7 +25,7 @@ public class LLDecisionSet extends DecisionSet {
      * @param bad
      * @param game
      */
-    public LLDecisionSet(Set<ILLDecision> decisions, boolean mcut, boolean bad, PetriGame game) {
+    public LLDecisionSet(Set<ILLDecision> decisions, boolean mcut, boolean bad, PetriGameWithTransits game) {
         super(decisions, mcut, bad, game);
     }
 
@@ -35,17 +35,17 @@ public class LLDecisionSet extends DecisionSet {
     }
 
     @Override
-    public CommitmentSet createCommitmentSet(PetriGame game, boolean isTop) {
+    public CommitmentSet createCommitmentSet(PetriGameWithTransits game, boolean isTop) {
         return new LLCommitmentSet(game, isTop);
     }
 
     @Override
-    public CommitmentSet createCommitmentSet(PetriGame game, Set<Transition> transitions) {
+    public CommitmentSet createCommitmentSet(PetriGameWithTransits game, Set<Transition> transitions) {
         return new LLCommitmentSet(game, transitions);
     }
 
     @Override
-    public SysDecision createSysDecision(PetriGame game, Place place, CommitmentSet c) {
+    public SysDecision createSysDecision(PetriGameWithTransits game, Place place, CommitmentSet c) {
         return new LLSysDecision(game, place, c);
     }
 
@@ -55,7 +55,7 @@ public class LLDecisionSet extends DecisionSet {
     }
 
     @Override
-    public EnvDecision createEnvDecision(PetriGame game, Place place) {
+    public EnvDecision createEnvDecision(PetriGameWithTransits game, Place place) {
         return new LLEnvDecision(game, place);
     }
 
@@ -65,7 +65,7 @@ public class LLDecisionSet extends DecisionSet {
     }
 
     @Override
-    public DecisionSet createDecisionSet(Set<ILLDecision> decisions, boolean mcut, boolean bad, PetriGame game) {
+    public DecisionSet createDecisionSet(Set<ILLDecision> decisions, boolean mcut, boolean bad, PetriGameWithTransits game) {
         return new LLDecisionSet(decisions, mcut, bad, game);
     }
 

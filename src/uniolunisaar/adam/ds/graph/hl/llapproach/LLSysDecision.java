@@ -7,7 +7,7 @@ import java.util.Objects;
 import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 
 /**
@@ -24,11 +24,11 @@ public class LLSysDecision extends SysDecision {
         super(dcs);
     }
 
-    public LLSysDecision(PetriGame game, Place place, LLCommitmentSet c) {
+    public LLSysDecision(PetriGameWithTransits game, Place place, LLCommitmentSet c) {
         super(game, place, c);
     }
 
-    public LLSysDecision(PetriGame game, Place place, CommitmentSet c) {
+    public LLSysDecision(PetriGameWithTransits game, Place place, CommitmentSet c) {
         super(game, place, c);
     }
 

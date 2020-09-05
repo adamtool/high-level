@@ -9,7 +9,7 @@ import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.Valuation;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 
 /**
@@ -18,15 +18,15 @@ import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
  */
 public class LLCommitmentSet extends CommitmentSet {
 
-    public LLCommitmentSet(PetriGame game, boolean isTop) {
+    public LLCommitmentSet(PetriGameWithTransits game, boolean isTop) {
         super(game, isTop);
     }
 
-    public LLCommitmentSet(PetriGame game, Transition... transitions) {
+    public LLCommitmentSet(PetriGameWithTransits game, Transition... transitions) {
         super(game, transitions);
     }
 
-    public LLCommitmentSet(PetriGame game, Set<Transition> transitions) {
+    public LLCommitmentSet(PetriGameWithTransits game, Set<Transition> transitions) {
         super(game, transitions);
     }
 

@@ -6,7 +6,7 @@ import java.util.List;
 import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.highlevel.Color;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 
 /**
@@ -15,7 +15,7 @@ import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
  */
 public class LLEnvDecision extends EnvDecision {
 
-    public LLEnvDecision(PetriGame game, Place place) {
+    public LLEnvDecision(PetriGameWithTransits game, Place place) {
         super(game, place);
     }
 

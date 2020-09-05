@@ -16,10 +16,10 @@ import uniolunisaar.adam.ds.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.ds.objectives.Safety;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
-import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
-import uniolunisaar.adam.exceptions.pg.NotSupportedGameException;
-import uniolunisaar.adam.exceptions.pg.SolvingException;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.CalculationInterruptedException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.NotSupportedGameException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.SolvingException;
 import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
 import uniolunisaar.adam.exceptions.pnwt.NetNotSafeException;
 import uniolunisaar.adam.generators.hl.AlarmSystemHL;
@@ -28,9 +28,9 @@ import uniolunisaar.adam.generators.hl.PackageDeliveryHL;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.logic.pg.solver.hl.bddapproach.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
-import uniolunisaar.adam.ds.solver.symbolic.bddapproach.BDDSolverOptions;
+import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.BDDSolverOptions;
 import uniolunisaar.adam.logic.distrsynt.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;
-import uniolunisaar.adam.ds.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolvingObject;
+import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolvingObject;
 import uniolunisaar.adam.logic.distrsynt.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
 import uniolunisaar.adam.util.symbolic.bddapproach.BDDTools;
 import uniolunisaar.adam.tools.Logger;
@@ -68,7 +68,7 @@ public class TestConverter {
         expr.add(new Variable("b"));
         hlgame.createFlow(p1, t, expr);
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
-        PetriGame pg = HL2PGConverter.convert(hlgame);
+        PetriGameWithTransits pg = HL2PGConverter.convert(hlgame);
         PGTools.savePG2PDF(outputDir + pg.getName(), pg, false);
     }
 
@@ -76,7 +76,7 @@ public class TestConverter {
     public void alarmSystem() throws IOException, InterruptedException {
         HLPetriGame hlgame = AlarmSystemHL.createSafetyVersionForHLRep(3, true);
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
-        PetriGame pg = HL2PGConverter.convert(hlgame);
+        PetriGameWithTransits pg = HL2PGConverter.convert(hlgame);
         PGTools.savePG2PDF(outputDir + pg.getName(), pg, false);
     }
 
@@ -105,7 +105,7 @@ public class TestConverter {
 //        Logger.getInstance().addMessage("asdf " + sol.existsWinningStrategy());
         HLPetriGame hlgame = ContainerHabourHL.generateD(4, 2, 1, 1, true);
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
-        PetriGame pg = HL2PGConverter.convert(hlgame, true, true);
+        PetriGameWithTransits pg = HL2PGConverter.convert(hlgame, true, true);
         PGTools.savePG2PDF(outputDir + pg.getName(), pg, false, true);
         PGTools.saveAPT(outputDir + pg.getName(), pg, true);
         BDDSolverOptions opt = new BDDSolverOptions(true);
@@ -126,7 +126,7 @@ public class TestConverter {
 
         HLPetriGame hlgame = PackageDeliveryHL.generateE(1, 3, true);
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
-        PetriGame pg = HL2PGConverter.convert(hlgame, true, true);
+        PetriGameWithTransits pg = HL2PGConverter.convert(hlgame, true, true);
         PGTools.savePG2PDF(outputDir + pg.getName(), pg, false, true);
         PGTools.saveAPT(outputDir + pg.getName(), pg, true);
 

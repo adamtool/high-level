@@ -7,7 +7,7 @@ import uniolunisaar.adam.ds.graph.AbstractCommitmentSet;
 import uniolunisaar.adam.ds.graph.hl.llapproach.LLCommitmentSet;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 
 /**
@@ -75,7 +75,7 @@ public class HLCommitmentSet extends AbstractCommitmentSet<ColoredTransition> {
      * @return
      */
     @Deprecated
-    LLCommitmentSet toLLCommitmentSet(PetriGame game) {
+    LLCommitmentSet toLLCommitmentSet(PetriGameWithTransits game) {
         if (isTop()) {
             return new LLCommitmentSet(game, true);
         }

@@ -14,14 +14,14 @@ import uniolunisaar.adam.ds.graph.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.explicit.EnvDecision;
 import uniolunisaar.adam.ds.graph.explicit.ILLDecision;
 import uniolunisaar.adam.ds.graph.explicit.SysDecision;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.logic.pg.builder.graph.GameGraphBuilder;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class GGBuilder extends GameGraphBuilder<PetriGame, Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, ? extends StateIdentifier>> {
+public class GGBuilder extends GameGraphBuilder<PetriGameWithTransits, Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, ? extends StateIdentifier>> {
 
     private static GGBuilder instance = null;
 
@@ -35,7 +35,7 @@ public class GGBuilder extends GameGraphBuilder<PetriGame, Place, Transition, IL
     private GGBuilder() {
     }
 
-    private Collection<Transition> putSysAndSingleEnvTransitionsToExtention(PetriGame pgame) {
+    private Collection<Transition> putSysAndSingleEnvTransitionsToExtention(PetriGameWithTransits pgame) {
         Collection<Transition> sysTransitions = new ArrayList<>();
         Collection<Transition> singlePresetTransitions = new ArrayList<>();
         for (Transition transition : pgame.getTransitions()) {
@@ -57,7 +57,7 @@ public class GGBuilder extends GameGraphBuilder<PetriGame, Place, Transition, IL
         return sysTransitions;
     }
 
-    private DecisionSet createInitDecisionSet(PetriGame pgame) {
+    private DecisionSet createInitDecisionSet(PetriGameWithTransits pgame) {
         Set<ILLDecision> inits = new HashSet<>();
         for (Place place : pgame.getPlaces()) {
             if (place.getInitialToken().getValue() > 0) {
@@ -71,7 +71,7 @@ public class GGBuilder extends GameGraphBuilder<PetriGame, Place, Transition, IL
         return new DecisionSet(inits, false, false, pgame);
     }
 
-    public GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> create(PetriGame pgame) {
+    public GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> create(PetriGameWithTransits pgame) {
         // calculate the system transitions
         Collection<Transition> sysTransitions = putSysAndSingleEnvTransitionsToExtention(pgame);
         // create initial decision set
@@ -84,7 +84,7 @@ public class GGBuilder extends GameGraphBuilder<PetriGame, Place, Transition, IL
     }
 
     @Override
-    protected Collection<Transition> getTransitions(Collection<Transition> trans, PetriGame pgame) {
+    protected Collection<Transition> getTransitions(Collection<Transition> trans, PetriGameWithTransits pgame) {
         return trans;
     }
 

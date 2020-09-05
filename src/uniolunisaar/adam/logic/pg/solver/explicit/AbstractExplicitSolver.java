@@ -8,9 +8,9 @@ import uniolunisaar.adam.ds.graph.GameGraph;
 import uniolunisaar.adam.ds.graph.GameGraphFlow;
 import uniolunisaar.adam.ds.graph.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.explicit.ILLDecision;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.ds.objectives.Condition;
-import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.CalculationInterruptedException;
 import uniolunisaar.adam.logic.pg.builder.graph.GGStrategyBuilder;
 import uniolunisaar.adam.logic.pg.builder.graph.explicit.GGBuilder;
 import uniolunisaar.adam.logic.pg.solver.AbstractSolver;
@@ -21,7 +21,7 @@ import uniolunisaar.adam.logic.pg.solver.AbstractSolver;
  * @param <W>
  */
 public abstract class AbstractExplicitSolver<W extends Condition<W>>
-        extends AbstractSolver<W, PetriGame, ExplicitSolvingObject<W>, ExplicitSolverOptions, Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> {
+        extends AbstractSolver<W, PetriGameWithTransits, ExplicitSolvingObject<W>, ExplicitSolverOptions, Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> {
 
     public AbstractExplicitSolver(ExplicitSolvingObject<W> solverObject, ExplicitSolverOptions options) {
         super(solverObject, options);
@@ -40,7 +40,7 @@ public abstract class AbstractExplicitSolver<W extends Condition<W>>
     }
 
     @Override
-    protected GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(PetriGame game) {
+    protected GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(PetriGameWithTransits game) {
         return GGBuilder.getInstance().create(game);
     }
 

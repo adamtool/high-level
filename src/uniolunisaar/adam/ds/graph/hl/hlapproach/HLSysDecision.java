@@ -9,7 +9,7 @@ import uniolunisaar.adam.ds.highlevel.ColorToken;
 import uniolunisaar.adam.ds.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 
 /**
@@ -49,7 +49,7 @@ public class HLSysDecision extends AbstractSysDecision<ColoredPlace, ColoredTran
 
     @Override
     @Deprecated
-    public ILLDecision toLLDecision(PetriGame game) {
+    public ILLDecision toLLDecision(PetriGameWithTransits game) {
         Place p =  game.getPlace(HL2PGConverter.getPlaceID(getPlace().getPlace().getId(), getPlace().getColor()));
         return new LLSysDecision(game, p, getC().toLLCommitmentSet(game));
     }

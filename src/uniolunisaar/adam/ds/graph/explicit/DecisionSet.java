@@ -11,7 +11,7 @@ import uniol.apt.adt.extension.Extensible;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.tools.CartesianProduct;
 import uniolunisaar.adam.tools.Tools;
 import uniolunisaar.adam.ds.graph.IDecisionSet;
@@ -24,7 +24,7 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
 
     private final Set<ILLDecision> decisions;
     private final boolean mcut;
-    private final PetriGame game;
+    private final PetriGameWithTransits game;
     private final boolean bad;
 //
 //    public DecisionSet(Set<IDecision> decisions) {
@@ -55,7 +55,7 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
      * @param bad
      * @param game
      */
-    public DecisionSet(Set<ILLDecision> decisions, boolean mcut, boolean bad, PetriGame game) {
+    public DecisionSet(Set<ILLDecision> decisions, boolean mcut, boolean bad, PetriGameWithTransits game) {
         this.decisions = decisions;
         this.mcut = mcut;
         this.game = game;
@@ -66,7 +66,7 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
         return new EnvDecision(decision);
     }
 
-    public EnvDecision createEnvDecision(PetriGame game, Place place) {
+    public EnvDecision createEnvDecision(PetriGameWithTransits game, Place place) {
         return new EnvDecision(game, place);
     }
 
@@ -74,7 +74,7 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
         return new SysDecision(decision);
     }
 
-    public SysDecision createSysDecision(PetriGame game, Place place, CommitmentSet c) {
+    public SysDecision createSysDecision(PetriGameWithTransits game, Place place, CommitmentSet c) {
         return new SysDecision(game, place, c);
     }
 
@@ -82,15 +82,15 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
         return new CommitmentSet(c);
     }
 
-    public CommitmentSet createCommitmentSet(PetriGame game, boolean isTop) {
+    public CommitmentSet createCommitmentSet(PetriGameWithTransits game, boolean isTop) {
         return new CommitmentSet(game, isTop);
     }
 
-    public CommitmentSet createCommitmentSet(PetriGame game, Set<Transition> transitions) {
+    public CommitmentSet createCommitmentSet(PetriGameWithTransits game, Set<Transition> transitions) {
         return new CommitmentSet(game, transitions);
     }
 
-    public DecisionSet createDecisionSet(Set<ILLDecision> decisions, boolean mcut, boolean bad, PetriGame game) {
+    public DecisionSet createDecisionSet(Set<ILLDecision> decisions, boolean mcut, boolean bad, PetriGameWithTransits game) {
         return new DecisionSet(decisions, mcut, bad, game);
     }
 
@@ -277,7 +277,7 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
      */
     @Override
     @Deprecated
-    public DecisionSet createLLDecisionSet(PetriGame game) {
+    public DecisionSet createLLDecisionSet(PetriGameWithTransits game) {
         return this;
     }
 
@@ -484,7 +484,7 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
         return toDot();
     }
 
-    public PetriGame getGame() {
+    public PetriGameWithTransits getGame() {
         return game;
     }
 

@@ -5,7 +5,7 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.AbstractEnvDecision;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 
 /**
  *
@@ -13,9 +13,9 @@ import uniolunisaar.adam.ds.petrigame.PetriGame;
  */
 public class EnvDecision extends AbstractEnvDecision<Place, Transition> implements ILLDecision {
 
-    private final PetriGame game;
+    private final PetriGameWithTransits game;
 
-    public EnvDecision(PetriGame game, Place place) {
+    public EnvDecision(PetriGameWithTransits game, Place place) {
         super(place);
         this.game = game;
     }
@@ -54,7 +54,7 @@ public class EnvDecision extends AbstractEnvDecision<Place, Transition> implemen
         return toDot();
     }
 
-    protected PetriGame getGame() {
+    protected PetriGameWithTransits getGame() {
         return game;
     }
 

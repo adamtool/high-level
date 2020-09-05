@@ -24,26 +24,26 @@ import uniolunisaar.adam.ds.highlevel.symmetries.SymmetryIterator;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.ds.objectives.Safety;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
-import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
-import uniolunisaar.adam.exceptions.pg.CouldNotCalculateException;
-import uniolunisaar.adam.exceptions.pg.InvalidPartitionException;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.CalculationInterruptedException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.CouldNotCalculateException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.InvalidPartitionException;
 import uniolunisaar.adam.exceptions.pnwt.NetNotSafeException;
-import uniolunisaar.adam.exceptions.pg.NoSuitableDistributionFoundException;
-import uniolunisaar.adam.exceptions.pg.NotSupportedGameException;
-import uniolunisaar.adam.exceptions.pg.SolvingException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.NoSuitableDistributionFoundException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.NotSupportedGameException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.SolvingException;
 import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
 import uniolunisaar.adam.generators.hl.ConcurrentMachinesHL;
 import uniolunisaar.adam.generators.hl.DocumentWorkflowHL;
-import uniolunisaar.adam.generators.pg.Clerks;
-import uniolunisaar.adam.generators.pg.Workflow;
+import uniolunisaar.adam.generators.pgwt.Clerks;
+import uniolunisaar.adam.generators.pgwt.Workflow;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.logic.pg.builder.graph.hl.SGGBuilderLL;
 import uniolunisaar.adam.logic.pg.solver.hl.bddapproach.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
-import uniolunisaar.adam.ds.solver.symbolic.bddapproach.BDDSolverOptions;
+import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.BDDSolverOptions;
 import uniolunisaar.adam.logic.distrsynt.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;
-import uniolunisaar.adam.ds.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolvingObject;
+import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolvingObject;
 import uniolunisaar.adam.logic.distrsynt.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.symbolic.bddapproach.BDDTools;
@@ -73,7 +73,7 @@ public class TestSGGBDD {
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
         HLTools.saveHLPG2PDF(outputDir + "CM21", hlgame);
 
-        PetriGame game = HL2PGConverter.convert(hlgame, true, true);
+        PetriGameWithTransits game = HL2PGConverter.convert(hlgame, true, true);
 
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
 
@@ -93,7 +93,7 @@ public class TestSGGBDD {
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, false);
 //        HLTools.saveHLPG2PDF(outputDir + "CM21", hlgame);
 //        PetriGame game = HL2PGConverter.convert(hlgame);
-        PetriGame game = Workflow.generateBJVersion(2, 1, true, false);
+        PetriGameWithTransits game = Workflow.generateBJVersion(2, 1, true, false);
 //        PGTools.savePG2PDF(outputDir + "CM21_ll", game, false);
         // Test  the old graph game
         BDDSolverOptions opt = new BDDSolverOptions(true);
@@ -182,7 +182,7 @@ public class TestSGGBDD {
         int size = 3;
         HLPetriGame hlgame = DocumentWorkflowHL.generateDW(size, false);
 
-        PetriGame game = HL2PGConverter.convert(hlgame, true, true);
+        PetriGameWithTransits game = HL2PGConverter.convert(hlgame, true, true);
 //        PNWTTools.saveAPT(outputDir+"DW"+size, game, true);
 //        Partitioner.doIt(game);
         PGTools.savePG2PDF(outputDir + "DW" + size + "_conv", game, false);
@@ -244,7 +244,7 @@ public class TestSGGBDD {
         hlgame.createFlow(t, p2);
         HLTools.saveHLPG2PDF(outputDir + "toyexample", hlgame);
 
-        PetriGame game = HL2PGConverter.convert(hlgame, true, true);
+        PetriGameWithTransits game = HL2PGConverter.convert(hlgame, true, true);
         PGTools.savePG2PDF(outputDir + "toyexmapelell", game, false, false);
 
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
@@ -272,7 +272,7 @@ public class TestSGGBDD {
         hlgame.createFlow(t, p2, new ArcExpression(new ArcTuple(new Variable("x"), new Variable("y"))));
         HLTools.saveHLPG2PDF(outputDir + "toyexample2", hlgame);
 
-        PetriGame game = HL2PGConverter.convert(hlgame, true, true);
+        PetriGameWithTransits game = HL2PGConverter.convert(hlgame, true, true);
         PGTools.savePG2PDF(outputDir + "toyexmapelell2", game, false, false);
 
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());

@@ -5,7 +5,7 @@ import java.util.Set;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.AbstractCommitmentSet;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 
 /**
  *
@@ -13,9 +13,9 @@ import uniolunisaar.adam.ds.petrigame.PetriGame;
  */
 public class CommitmentSet extends AbstractCommitmentSet<Transition> {
 
-    private final PetriGame game;
+    private final PetriGameWithTransits game;
 
-    public CommitmentSet(PetriGame game, boolean isTop) {
+    public CommitmentSet(PetriGameWithTransits game, boolean isTop) {
         super(isTop);
         this.game = game;
     }
@@ -28,7 +28,7 @@ public class CommitmentSet extends AbstractCommitmentSet<Transition> {
      * @param game
      * @param transitions
      */
-    public CommitmentSet(PetriGame game, Transition... transitions) {
+    public CommitmentSet(PetriGameWithTransits game, Transition... transitions) {
         super(transitions);
         this.game = game;
     }
@@ -41,7 +41,7 @@ public class CommitmentSet extends AbstractCommitmentSet<Transition> {
      * @param game
      * @param transitions
      */
-    public CommitmentSet(PetriGame game, Set<Transition> transitions) {
+    public CommitmentSet(PetriGameWithTransits game, Set<Transition> transitions) {
         super(transitions);
         this.game = game;
     }
@@ -88,7 +88,7 @@ public class CommitmentSet extends AbstractCommitmentSet<Transition> {
         return sb.toString();
     }
 
-    protected PetriGame getGame() {
+    protected PetriGameWithTransits getGame() {
         return game;
     }
 }

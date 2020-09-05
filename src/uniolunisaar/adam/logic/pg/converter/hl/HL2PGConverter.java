@@ -33,9 +33,9 @@ import uniolunisaar.adam.ds.highlevel.predicate.IPredicate;
 import uniolunisaar.adam.ds.highlevel.terms.ColorClassType;
 import uniolunisaar.adam.ds.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.objectives.Condition;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
-import uniolunisaar.adam.logic.pg.calculators.ConcurrencyPreservingCalculator;
-import uniolunisaar.adam.logic.pg.calculators.MaxTokenCountCalculator;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
+import uniolunisaar.adam.logic.synthesis.pgwt.calculators.ConcurrencyPreservingCalculator;
+import uniolunisaar.adam.logic.synthesis.pgwt.calculators.MaxTokenCountCalculator;
 import uniolunisaar.adam.tools.CartesianProduct;
 import uniolunisaar.adam.util.AdamExtensions;
 import uniolunisaar.adam.util.PNWTTools;
@@ -169,20 +169,20 @@ public class HL2PGConverter {
         return result;
     }
 
-    public static PetriGame convert(HLPetriGame hlgame) {
+    public static PetriGameWithTransits convert(HLPetriGame hlgame) {
         return convert(hlgame, false);
     }
 
-    public static PetriGame convert(HLPetriGame hlgame, boolean save2Extension) {
+    public static PetriGameWithTransits convert(HLPetriGame hlgame, boolean save2Extension) {
         return convert(hlgame, save2Extension, false);
     }
 
-    public static PetriGame convert(HLPetriGame hlgame, boolean save2Extension, boolean withCalculators) {
-        PetriGame pg;
+    public static PetriGameWithTransits convert(HLPetriGame hlgame, boolean save2Extension, boolean withCalculators) {
+        PetriGameWithTransits pg;
         if (withCalculators) {
-            pg = new PetriGame(hlgame.getName() + " - LL-Version", new ConcurrencyPreservingCalculator(), new MaxTokenCountCalculator());
+            pg = new PetriGameWithTransits(hlgame.getName() + " - LL-Version", new ConcurrencyPreservingCalculator(), new MaxTokenCountCalculator());
         } else {
-            pg = new PetriGame(hlgame.getName() + " - LL-Version");
+            pg = new PetriGameWithTransits(hlgame.getName() + " - LL-Version");
         }
         PNWTTools.setConditionAnnotation(pg, Condition.Objective.A_SAFETY); // TODO: do it properly
         // Places
@@ -205,7 +205,7 @@ public class HL2PGConverter {
         return pg;
     }
 
-    private static void addPlaces(HLPetriGame hlgame, PetriGame pg, boolean save2Extension) {
+    private static void addPlaces(HLPetriGame hlgame, PetriGameWithTransits pg, boolean save2Extension) {
         for (Place place : hlgame.getPlaces()) {
             ColorDomain dom = hlgame.getColorDomain(place);
             boolean env = hlgame.isEnvironment(place);
@@ -268,7 +268,7 @@ public class HL2PGConverter {
         }
     }
 
-    private static void setInitialMarking(HLPetriGame hlgame, PetriGame pg) {
+    private static void setInitialMarking(HLPetriGame hlgame, PetriGameWithTransits pg) {
         for (Place place : hlgame.getPlaces()) {
             if (hlgame.hasColorTokens(place)) {
                 ColorTokens tokens = hlgame.getColorTokens(place);
@@ -280,7 +280,7 @@ public class HL2PGConverter {
         }
     }
 
-    private static void addTransitions(HLPetriGame hlgame, PetriGame pg, boolean save2Extension) {
+    private static void addTransitions(HLPetriGame hlgame, PetriGameWithTransits pg, boolean save2Extension) {
         for (Transition t : hlgame.getTransitions()) {
             // For every valuation create a transition
             Valuations vals = hlgame.getValuations(t);
@@ -305,7 +305,7 @@ public class HL2PGConverter {
         }
     }
 
-    private static void createFlows(Transition tLL, Flow flowHL, Valuation val, HLPetriGame hlgame, PetriGame pg, boolean pre) {
+    private static void createFlows(Transition tLL, Flow flowHL, Valuation val, HLPetriGame hlgame, PetriGameWithTransits pg, boolean pre) {
         String origID = flowHL.getPlace().getId();
         ArcExpression expr = hlgame.getArcExpression(flowHL);
         for (Pair<IArcTerm.Sort, IArcTerm<? extends IArcType>> expression : expr.getExpresssions()) {
@@ -417,7 +417,7 @@ public class HL2PGConverter {
         }
     }
 
-    private static void createFlow(Node pre, Node post, PetriGame pg) {
+    private static void createFlow(Node pre, Node post, PetriGameWithTransits pg) {
         try { // TODO: replace this when addded a containsFlow method to APT
             pg.createFlow(pre, post);
         } catch (FlowExistsException e) { // not nice but APT currently has no containsFlow method.

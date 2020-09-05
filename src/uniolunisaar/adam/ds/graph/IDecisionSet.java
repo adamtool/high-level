@@ -3,7 +3,7 @@ package uniolunisaar.adam.ds.graph;
 import java.util.Set;
 import uniolunisaar.adam.ds.graph.explicit.DecisionSet;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetry;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 
 /**
  *
@@ -40,7 +40,7 @@ public interface IDecisionSet<P, T, DC extends IDecision<P, T>, S extends IDecis
     public Set<P> getMarking();
 
     @Deprecated
-    public DecisionSet createLLDecisionSet(PetriGame game);
+    public DecisionSet createLLDecisionSet(PetriGameWithTransits game);
 
     public boolean isMcut();
 

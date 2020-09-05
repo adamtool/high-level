@@ -28,12 +28,12 @@ import uniolunisaar.adam.ds.highlevel.ValuationIterator;
 import uniolunisaar.adam.ds.highlevel.oneenv.OneEnvHLPG;
 import uniolunisaar.adam.ds.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.objectives.Safety;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
-import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
-import uniolunisaar.adam.exceptions.pg.InvalidPartitionException;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.CalculationInterruptedException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.InvalidPartitionException;
 import uniolunisaar.adam.exceptions.pnwt.NetNotSafeException;
-import uniolunisaar.adam.exceptions.pg.NoSuitableDistributionFoundException;
-import uniolunisaar.adam.exceptions.pg.NotSupportedGameException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.NoSuitableDistributionFoundException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.NotSupportedGameException;
 import uniolunisaar.adam.generators.hl.AlarmSystemHL;
 import uniolunisaar.adam.generators.hl.ConcurrentMachinesHL;
 import uniolunisaar.adam.generators.hl.DocumentWorkflowHL;
@@ -43,8 +43,8 @@ import uniolunisaar.adam.logic.pg.builder.graph.hl.SGGBuilderHL;
 import uniolunisaar.adam.logic.pg.builder.graph.hl.SGGBuilderLL;
 import uniolunisaar.adam.logic.pg.solver.hl.bddapproach.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.ds.graph.symbolic.bddapproach.BDDGraph;
-import uniolunisaar.adam.ds.solver.symbolic.bddapproach.BDDSolverOptions;
-import uniolunisaar.adam.ds.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolvingObject;
+import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.BDDSolverOptions;
+import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolvingObject;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.symbolic.bddapproach.BDDTools;
 import uniolunisaar.adam.util.HLTools;
@@ -161,7 +161,7 @@ public class CompareApproaches {
         Logger.getInstance().addMessage("size HL" + graphll.getStatesView().size());
 
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
-        PetriGame llgame = HL2PGConverter.convert(hlgame, true, true);
+        PetriGameWithTransits llgame = HL2PGConverter.convert(hlgame, true, true);
         BDDASafetyWithoutType2HLSolver sol = new BDDASafetyWithoutType2HLSolver(new DistrSysBDDSolvingObject<>(llgame, new Safety()), syms, new BDDSolverOptions(false));
         sol.initialize();
 //
@@ -214,7 +214,7 @@ public class CompareApproaches {
                 ++llbad;
             }
         }
-        PetriGame pgame = HL2PGConverter.convert(hlgame, true);
+        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
         // calculate the system transitions
         Collection<Transition> sysTransitions = new ArrayList<>();
         Collection<Transition> singlePresetTransitions = new ArrayList<>();
@@ -594,7 +594,7 @@ public class CompareApproaches {
                 ++llbad;
             }
         }
-        PetriGame pgame = HL2PGConverter.convert(hlgame, true);
+        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
         // calculate the system transitions
         Collection<Transition> sysTransitions = new ArrayList<>();
         Collection<Transition> singlePresetTransitions = new ArrayList<>();
@@ -613,7 +613,7 @@ public class CompareApproaches {
             }
         }
 
-        PetriGame bddgame = HL2PGConverter.convert(hlgame, true, true);
+        PetriGameWithTransits bddgame = HL2PGConverter.convert(hlgame, true, true);
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
 
         BDDSolverOptions opt = new BDDSolverOptions(true);

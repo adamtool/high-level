@@ -6,7 +6,7 @@ import uniol.apt.analysis.isomorphism.IsomorphismLogic;
 import uniol.apt.io.parser.ParseException;
 import uniol.apt.io.renderer.RenderException;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
+import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
 import uniolunisaar.adam.tools.Logger;
 
@@ -108,7 +108,7 @@ public class HighLevelSymmetricPetriNetsTests {
         return isomorphismLogic.isIsomorphic();
     }
 
-    private static PetriGame toLowLevel(HLPetriGame highLevel) {
+    private static PetriGameWithTransits toLowLevel(HLPetriGame highLevel) {
         return HL2PGConverter.convert(highLevel, true, true);
     }
 }
