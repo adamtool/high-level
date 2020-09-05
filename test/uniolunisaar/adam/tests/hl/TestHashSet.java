@@ -5,11 +5,11 @@ import java.util.Objects;
 import java.util.Set;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import uniolunisaar.adam.ds.highlevel.Color;
-import uniolunisaar.adam.ds.highlevel.ColoredTransition;
-import uniolunisaar.adam.ds.highlevel.HLPetriGame;
-import uniolunisaar.adam.ds.highlevel.Valuation;
-import uniolunisaar.adam.ds.highlevel.terms.Variable;
+import uniolunisaar.adam.ds.synthesis.highlevel.Color;
+import uniolunisaar.adam.ds.synthesis.highlevel.ColoredTransition;
+import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
+import uniolunisaar.adam.ds.synthesis.highlevel.Valuation;
+import uniolunisaar.adam.ds.synthesis.highlevel.terms.Variable;
 
 /**
  *

@@ -5,14 +5,14 @@ import uniol.apt.analysis.exception.UnboundedException;
 import uniol.apt.analysis.isomorphism.IsomorphismLogic;
 import uniol.apt.io.parser.ParseException;
 import uniol.apt.io.renderer.RenderException;
-import uniolunisaar.adam.ds.highlevel.HLPetriGame;
+import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
-import uniolunisaar.adam.logic.pg.converter.hl.HL2PGConverter;
+import uniolunisaar.adam.logic.synthesis.transformers.highlevel.HL2PGConverter;
 import uniolunisaar.adam.tools.Logger;
 
 import java.util.*;
-import uniolunisaar.adam.logic.renderer.hl.pnml.PnmlRenderer;
-import uniolunisaar.adam.logic.parser.hl.pnml.SymmetricPnmlParser;
+import uniolunisaar.adam.logic.renderer.highlevel.pnml.PnmlRenderer;
+import uniolunisaar.adam.logic.parser.highlevel.pnml.SymmetricPnmlParser;
 
 import static org.testng.Assert.assertTrue;
 

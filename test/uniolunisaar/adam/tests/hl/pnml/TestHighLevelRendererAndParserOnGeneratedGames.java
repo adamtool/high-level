@@ -2,12 +2,12 @@ package uniolunisaar.adam.tests.hl.pnml;
 
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
-import uniolunisaar.adam.ds.highlevel.HLPetriGame;
-import uniolunisaar.adam.generators.hl.AlarmSystemHL;
-import uniolunisaar.adam.generators.hl.ConcurrentMachinesHL;
-import uniolunisaar.adam.generators.hl.ContainerHabourHL;
-import uniolunisaar.adam.generators.hl.DocumentWorkflowHL;
-import uniolunisaar.adam.generators.hl.PackageDeliveryHL;
+import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
+import uniolunisaar.adam.generators.highlevel.AlarmSystemHL;
+import uniolunisaar.adam.generators.highlevel.ConcurrentMachinesHL;
+import uniolunisaar.adam.generators.highlevel.ContainerHabourHL;
+import uniolunisaar.adam.generators.highlevel.DocumentWorkflowHL;
+import uniolunisaar.adam.generators.highlevel.PackageDeliveryHL;
 import uniolunisaar.adam.tools.Logger;
 
 import java.util.*;
