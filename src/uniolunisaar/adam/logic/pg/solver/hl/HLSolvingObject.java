@@ -2,7 +2,7 @@ package uniolunisaar.adam.logic.pg.solver.hl;
 
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.objectives.Condition;
-import uniolunisaar.adam.ds.solver.SolvingObject;
+import uniolunisaar.adam.ds.synthesis.solver.SolvingObject;
 
 /**
  *

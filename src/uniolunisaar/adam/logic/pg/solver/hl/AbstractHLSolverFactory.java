@@ -8,7 +8,7 @@ import uniolunisaar.adam.ds.graph.GameGraphFlow;
 import uniolunisaar.adam.ds.highlevel.HLPetriGame;
 import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
 import uniolunisaar.adam.exceptions.pg.SolvingException;
-import uniolunisaar.adam.logic.pg.solver.SolverFactory;
+import uniolunisaar.adam.logic.synthesis.solver.SolverFactory;
 import uniolunisaar.adam.ds.objectives.Buchi;
 import uniolunisaar.adam.ds.objectives.Reachability;
 import uniolunisaar.adam.ds.objectives.Safety;

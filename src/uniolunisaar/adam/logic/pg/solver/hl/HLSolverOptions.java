@@ -1,6 +1,6 @@
 package uniolunisaar.adam.logic.pg.solver.hl;
 
-import uniolunisaar.adam.ds.solver.SolverOptions;
+import uniolunisaar.adam.ds.synthesis.solver.SolverOptions;
 
 /**
  *

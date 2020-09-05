@@ -14,7 +14,7 @@ import uniolunisaar.adam.exceptions.pg.NotSupportedGameException;
 import uniolunisaar.adam.exceptions.pg.SolvingException;
 import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
 import uniolunisaar.adam.exceptions.pnwt.NetNotSafeException;
-import uniolunisaar.adam.logic.pg.solver.SolverFactory;
+import uniolunisaar.adam.logic.synthesis.solver.SolverFactory;
 
 /**
  *
