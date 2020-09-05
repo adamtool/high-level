@@ -10,7 +10,7 @@ import uniolunisaar.adam.ds.graph.GameGraph;
 import uniolunisaar.adam.ds.graph.GameGraphFlow;
 import uniolunisaar.adam.ds.petrigame.IPetriGame;
 import uniolunisaar.adam.ds.objectives.Condition;
-import uniolunisaar.adam.ds.synthesis.solver.Solver;
+import uniolunisaar.adam.logic.synthesis.solver.Solver;
 import uniolunisaar.adam.ds.synthesis.solver.SolverOptions;
 import uniolunisaar.adam.ds.synthesis.solver.SolvingObject;
 import uniolunisaar.adam.exceptions.pg.CalculationInterruptedException;
