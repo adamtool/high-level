@@ -107,7 +107,7 @@ public class TestConverter {
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
         PetriGameWithTransits pg = HL2PGConverter.convert(hlgame, true, true);
         PGTools.savePG2PDF(outputDir + pg.getName(), pg, false, true);
-        PGTools.saveAPT(outputDir + pg.getName(), pg, true);
+        PGTools.saveAPT(outputDir + pg.getName(), pg, true, false);
         BDDSolverOptions opt = new BDDSolverOptions(true);
         opt.setNoType2(true);
         DistrSysBDDSolver<? extends Condition<?>> sol = DistrSysBDDSolverFactory.getInstance().getSolver(pg, opt);
@@ -128,7 +128,7 @@ public class TestConverter {
         HLTools.saveHLPG2PDF(outputDir + hlgame.getName(), hlgame);
         PetriGameWithTransits pg = HL2PGConverter.convert(hlgame, true, true);
         PGTools.savePG2PDF(outputDir + pg.getName(), pg, false, true);
-        PGTools.saveAPT(outputDir + pg.getName(), pg, true);
+        PGTools.saveAPT(outputDir + pg.getName(), pg, true, false);
 
         BDDSolverOptions opt = new BDDSolverOptions(true);
         opt.setNoType2(true);
