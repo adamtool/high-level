@@ -6,7 +6,7 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.hlapproach.IHLDecis
 import uniolunisaar.adam.ds.synthesis.highlevel.ColoredPlace;
 import uniolunisaar.adam.ds.synthesis.highlevel.ColoredTransition;
 import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
-import uniolunisaar.adam.ds.objectives.Safety;
+import uniolunisaar.adam.ds.objectives.local.Safety;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.SolvingException;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.AbstractHLSolverFactory;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.HLSolverOptions;

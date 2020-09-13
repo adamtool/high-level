@@ -1,10 +1,10 @@
 package uniolunisaar.adam.logic.synthesis.solver.twoplayergame.explicit;
 
-import uniolunisaar.adam.ds.objectives.Buchi;
+import uniolunisaar.adam.ds.objectives.local.Buchi;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.ds.objectives.Condition;
-import uniolunisaar.adam.ds.objectives.Reachability;
-import uniolunisaar.adam.ds.objectives.Safety;
+import uniolunisaar.adam.ds.objectives.local.Reachability;
+import uniolunisaar.adam.ds.objectives.local.Safety;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NotSupportedGameException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.SolvingException;
 import uniolunisaar.adam.logic.synthesis.solver.LLSolverFactory;

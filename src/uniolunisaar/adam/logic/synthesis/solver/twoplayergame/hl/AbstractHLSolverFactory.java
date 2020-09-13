@@ -9,9 +9,9 @@ import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
 import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.SolvingException;
 import uniolunisaar.adam.logic.synthesis.solver.SolverFactory;
-import uniolunisaar.adam.ds.objectives.Buchi;
-import uniolunisaar.adam.ds.objectives.Reachability;
-import uniolunisaar.adam.ds.objectives.Safety;
+import uniolunisaar.adam.ds.objectives.local.Buchi;
+import uniolunisaar.adam.ds.objectives.local.Reachability;
+import uniolunisaar.adam.ds.objectives.local.Safety;
 import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NotSupportedGameException;
 
