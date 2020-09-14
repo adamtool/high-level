@@ -1,4 +1,4 @@
-package uniolunisaar.adam.tests.hl.examples;
+package uniolunisaar.adam.tests.synthesis.hl.examples;
 
 import java.io.File;
 import java.io.FileNotFoundException;

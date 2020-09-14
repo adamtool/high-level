@@ -1,4 +1,4 @@
-package uniolunisaar.adam.tests.hl;
+package uniolunisaar.adam.tests.synthesis.hl;
 
 import java.io.File;
 import java.io.IOException;

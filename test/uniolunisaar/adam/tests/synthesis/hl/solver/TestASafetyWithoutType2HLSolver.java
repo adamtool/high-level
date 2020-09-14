@@ -1,4 +1,4 @@
-package uniolunisaar.adam.tests.hl.solver;
+package uniolunisaar.adam.tests.synthesis.hl.solver;
 
 import java.io.File;
 import java.io.FileNotFoundException;

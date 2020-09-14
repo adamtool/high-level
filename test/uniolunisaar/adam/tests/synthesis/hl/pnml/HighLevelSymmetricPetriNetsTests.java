@@ -1,4 +1,4 @@
-package uniolunisaar.adam.tests.hl.pnml;
+package uniolunisaar.adam.tests.synthesis.hl.pnml;
 
 import uniol.apt.analysis.coverability.CoverabilityGraph;
 import uniol.apt.analysis.exception.UnboundedException;
