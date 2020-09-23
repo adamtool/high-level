@@ -6,7 +6,7 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
 import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
-import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.CouldNotFindSuitableConditionException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.SolvingException;
 import uniolunisaar.adam.logic.synthesis.solver.SolverFactory;
 import uniolunisaar.adam.ds.objectives.local.Buchi;

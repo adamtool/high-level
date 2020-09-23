@@ -38,7 +38,7 @@ import uniolunisaar.adam.logic.synthesis.pgwt.calculators.ConcurrencyPreservingC
 import uniolunisaar.adam.logic.synthesis.pgwt.calculators.MaxTokenCountCalculator;
 import uniolunisaar.adam.tools.CartesianProduct;
 import uniolunisaar.adam.util.AdamExtensions;
-import uniolunisaar.adam.util.PNWTTools;
+import uniolunisaar.adam.util.PGTools;
 
 /**
  *
@@ -184,7 +184,7 @@ public class HL2PGConverter {
         } else {
             pg = new PetriGameWithTransits(hlgame.getName() + " - LL-Version");
         }
-        PNWTTools.setConditionAnnotation(pg, Condition.Objective.A_SAFETY); // TODO: do it properly
+        PGTools.setConditionAnnotation(pg, Condition.Objective.A_SAFETY); // TODO: do it properly
         // Places
         addPlaces(hlgame, pg, save2Extension);
         // set initial marking

@@ -18,7 +18,7 @@ import uniolunisaar.adam.ds.synthesis.highlevel.oneenv.OneEnvHLPG;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NotSupportedGameException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.SolvingException;
-import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.CouldNotFindSuitableConditionException;
 import uniolunisaar.adam.generators.highlevel.ConcurrentMachinesHL;
 import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl.SGGBuilderHL;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.HLSolverOptions;
