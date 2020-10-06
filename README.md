@@ -78,7 +78,7 @@ For testing a specific class use for example
 ```
 ant test-class -Dclass.name=uniolunisaar.adam.tests.hl.TestGGvsSGG
 ```
-and for testing a specific class use for example
+and for testing a specific method use for example
 ```
 ant test-method -Dclass.name=uniolunisaar.adam.tests.hl.CompareApproaches -Dmethod.name=testDW
 ```
