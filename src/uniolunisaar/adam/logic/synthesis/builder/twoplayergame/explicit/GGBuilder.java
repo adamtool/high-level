@@ -32,7 +32,7 @@ public class GGBuilder extends GameGraphBuilder<PetriGameWithTransits, Place, Tr
         return instance;
     }
 
-    private GGBuilder() {
+    protected GGBuilder() {
     }
 
     private Collection<Transition> putSysAndSingleEnvTransitionsToExtention(PetriGameWithTransits pgame) {
@@ -57,7 +57,7 @@ public class GGBuilder extends GameGraphBuilder<PetriGameWithTransits, Place, Tr
         return sysTransitions;
     }
 
-    private DecisionSet createInitDecisionSet(PetriGameWithTransits pgame) {
+    public DecisionSet createInitDecisionSet(PetriGameWithTransits pgame) {
         Set<ILLDecision> inits = new HashSet<>();
         for (Place place : pgame.getPlaces()) {
             if (place.getInitialToken().getValue() > 0) {
