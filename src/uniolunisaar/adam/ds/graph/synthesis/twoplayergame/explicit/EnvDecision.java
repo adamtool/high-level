@@ -46,7 +46,7 @@ public class EnvDecision extends AbstractEnvDecision<Place, Transition> implemen
 
     @Override
     public String toDot() {
-        return getPlace().getId();
+        return "(" + getPlace().getId() + ")";
     }
 
     @Override

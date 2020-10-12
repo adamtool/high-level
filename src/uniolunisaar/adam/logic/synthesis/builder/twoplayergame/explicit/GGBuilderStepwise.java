@@ -2,6 +2,7 @@ package uniolunisaar.adam.logic.synthesis.builder.twoplayergame.explicit;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +27,10 @@ public class GGBuilderStepwise {
     private final GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> sgg;
     private final Collection<Transition> systemTransitions;
 
+    // just for the webinterface to not newly implement the frontend.
+    Map<DecisionSet, Integer> bddIDs = new HashMap<>();
+    Map<BDDState, DecisionSet> dcsMapping = new HashMap<>();
+
     public GGBuilderStepwise(PetriGameWithTransits pgame) {
         // create initial decision set
         DecisionSet init = GGBuilder.getInstance().createInitDecisionSet(pgame);
@@ -44,8 +49,8 @@ public class GGBuilderStepwise {
         this(game);
         BDDState init = bddGraph.addState(ExplicitBDDGraphTransformer.decisionset2BDDState(sgg.getInitial()));
         bddGraph.setInitial(init);
-        sgg.getInitial().putExtension("bddID", init.getId());
-        init.putExtension("dcs", sgg.getInitial());
+        bddIDs.put(sgg.getInitial(), init.getId());
+        dcsMapping.put(init, sgg.getInitial());
     }
 
     /**
@@ -56,13 +61,14 @@ public class GGBuilderStepwise {
      * @param bddGraph
      */
     public void addSuccessors(BDDState state, PetriGameWithTransits game, BDDGraph bddGraph) {
-        DecisionSet dcsState = sgg.getState((DecisionSet) state.getExtension("dcs"));
+        DecisionSet dcsState = dcsMapping.get(state);
         Pair<List<GameGraphFlow<Transition, DecisionSet>>, List<DecisionSet>> added = addSuccessors(dcsState, game);
         // create the new states also in the bddgraph
         for (DecisionSet dcs : added.getSecond()) {
-            BDDState bddState = bddGraph.addState(ExplicitBDDGraphTransformer.decisionset2BDDState(dcs));
-            dcs.putExtension("bddID", bddState.getId());
-            bddState.putExtension("dcs", dcs);
+            DecisionSet succState = sgg.getState(dcs);
+            BDDState bddState = bddGraph.addState(ExplicitBDDGraphTransformer.decisionset2BDDState(succState));
+            bddIDs.put(succState, bddState.getId());
+            dcsMapping.put(bddState, succState);
             if (dcs.isBad()) {
                 bddState.setBad(true);
             }
@@ -72,8 +78,10 @@ public class GGBuilderStepwise {
         }
         // create the flows
         for (GameGraphFlow<Transition, DecisionSet> flow : added.getFirst()) {
-            BDDState pre = bddGraph.getState((Integer) flow.getSource().getExtension("bddID"));
-            BDDState post = bddGraph.getState((Integer) flow.getTarget().getExtension("bddID"));
+            DecisionSet preDcs = sgg.getState(flow.getSource());
+            DecisionSet postDcs = sgg.getState(flow.getTarget());
+            BDDState pre = bddGraph.getState(bddIDs.get(preDcs));
+            BDDState post = bddGraph.getState(bddIDs.get(postDcs));
             bddGraph.addFlow(pre, post, flow.getTransition());
         }
     }

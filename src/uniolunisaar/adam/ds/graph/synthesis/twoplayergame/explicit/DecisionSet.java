@@ -469,14 +469,19 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
 
     @Override
     public String toDot() {
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sbEnv = new StringBuilder();
+        StringBuilder sbSys = new StringBuilder();
         for (ILLDecision dc : decisions) {
-            sb.append(dc.toDot()).append("\\n");
+            if (dc.isEnvDecision()) {
+                sbEnv.append(dc.toDot()).append("\\n");
+            } else {
+                sbSys.append(dc.toDot()).append("\\n");
+            }
         }
         if (decisions.size() >= 1) {
-            sb.delete(sb.length() - 2, sb.length());
+            sbSys.delete(sbSys.length() - 2, sbSys.length());
         }
-        return sb.toString();
+        return sbEnv.toString() + sbSys.toString();
     }
 
     @Override

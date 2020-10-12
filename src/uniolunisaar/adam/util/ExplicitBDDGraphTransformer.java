@@ -16,7 +16,8 @@ public class ExplicitBDDGraphTransformer {
      * @return
      */
     public static BDDState decisionset2BDDState(DecisionSet dcs) {
-        BDDState state = new BDDState(null, -1, dcs.toString());
+        String value = dcs.toString().replace("\\n", "\n");
+        BDDState state = new BDDState(null, -1, value);
         return state;
     }
 }
