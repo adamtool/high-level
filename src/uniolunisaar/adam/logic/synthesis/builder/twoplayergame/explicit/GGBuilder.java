@@ -35,7 +35,7 @@ public class GGBuilder extends GameGraphBuilder<PetriGameWithTransits, Place, Tr
     protected GGBuilder() {
     }
 
-    private Collection<Transition> putSysAndSingleEnvTransitionsToExtention(PetriGameWithTransits pgame) {
+    public Collection<Transition> putSysAndSingleEnvTransitionsToExtention(PetriGameWithTransits pgame) {
         Collection<Transition> sysTransitions = new ArrayList<>();
         Collection<Transition> singlePresetTransitions = new ArrayList<>();
         for (Transition transition : pgame.getTransitions()) {
@@ -71,6 +71,8 @@ public class GGBuilder extends GameGraphBuilder<PetriGameWithTransits, Place, Tr
         return new DecisionSet(inits, false, false, pgame);
     }
 
+    
+    
     public GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> create(PetriGameWithTransits pgame) {
         // calculate the system transitions
         Collection<Transition> sysTransitions = putSysAndSingleEnvTransitionsToExtention(pgame);

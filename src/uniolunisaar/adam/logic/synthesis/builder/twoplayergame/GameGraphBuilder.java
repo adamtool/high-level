@@ -2,6 +2,8 @@ package uniolunisaar.adam.logic.synthesis.builder.twoplayergame;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 import uniol.apt.adt.pn.Transition;
@@ -32,48 +34,45 @@ public abstract class GameGraphBuilder<G extends IPetriGame, P, T, DC extends ID
         todo.push(srg.getID(init));
         while (!todo.isEmpty()) { // as long as new states had been added        
             S state = srg.getState(todo.pop());
-            // if the current state contains tops, resolve them 
-            if (!state.isMcut() && state.hasTop()) {
-                Set<S> succs = state.resolveTop();
+            Map<T, Set<S>> succs = getSuccessors(state, allTransitions, systemTransitions, game);
+            for (T t : succs.keySet()) {
                 // add only the not to any existing state equivalent decision sets
-                // otherwise only the flows are added to the belonging equivalent class
-                addSuccessors(state, null, succs, todo, srg);
-                continue;
-            }
-
-            // In mcuts only transitions having an env place in its preset are allowed to fire
-            // whereas in the other states solely system transitions are valid
-            Collection<Transition> transitions;
-            if (state.isMcut()) {
-                transitions = new ArrayList<>(allTransitions);
-                transitions.removeAll(systemTransitions);
-            } else {
-                transitions = systemTransitions;
-            }
-            for (T transition : getTransitions(transitions, game)) {
-                Set<S> succs = state.fire(transition);
-//                    if (!state.isMcut()) {
-//                        System.out.println("liko to fire" + t);
-//                    }
-                if (succs != null) { // had been firable
-//                        if (!state.isMcut()) {
-//                            System.out.println("can fire");
-//                        }
-                    // add only the not to any existing state equivalent decision sets
-                    // otherwise only the flows are added to the belonging equivalent class
-                    addSuccessors(state, transition, succs, todo, srg);
-                } else {
-//                        System.out.println("haven't");
-                }
+                // otherwise only the flows are added to the belonging equivalent class              
+                addSuccessors(state, t, succs.get(t), todo, srg);
             }
         }
     }
 
     protected abstract Collection<T> getTransitions(Collection<Transition> trans, G game);
 
+    public Map<T, Set<S>> getSuccessors(S state, Collection<Transition> allTransitions, Collection<Transition> systemTransitions, G game) {
+        Map<T, Set<S>> mapSuccs = new HashMap<>();
+        // if the current state contains tops, resolve them 
+        if (!state.isMcut() && state.hasTop()) {
+            mapSuccs.put(null, state.resolveTop());
+        }
+
+        // In mcuts only transitions having an env place in its preset are allowed to fire
+        // whereas in the other states solely system transitions are valid
+        Collection<Transition> transitions;
+        if (state.isMcut()) {
+            transitions = new ArrayList<>(allTransitions);
+            transitions.removeAll(systemTransitions);
+        } else {
+            transitions = systemTransitions;
+        }
+        for (T transition : getTransitions(transitions, game)) {
+            Set<S> succs = state.fire(transition);
+            if (succs != null) { // had been firable
+                mapSuccs.put(transition, succs);
+            }
+        }
+        return mapSuccs;
+    }
+
     /**
      * Adds a successor only if there is not an identical state.The
- corresponding flows are added anyways.
+     * corresponding flows are added anyways.
      *
      * @param <ID>
      * @param pre
