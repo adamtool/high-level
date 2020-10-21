@@ -6,7 +6,7 @@ import java.util.Set;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.DecisionSet;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.ds.objectives.local.Safety;
-import uniolunisaar.adam.exceptions.synthesis.pgwt.CalculationInterruptedException;
+import uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NoStrategyExistentException;
 import uniolunisaar.adam.logic.synthesis.builder.pgwt.highlevel.LLPGStrategyBuilder;
 

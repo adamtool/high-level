@@ -9,7 +9,7 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.ILLDecision;
 import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.ds.objectives.local.Safety;
-import uniolunisaar.adam.exceptions.synthesis.pgwt.CalculationInterruptedException;
+import uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NoStrategyExistentException;
 import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl.SGGBuilderLL;
 import uniolunisaar.adam.logic.synthesis.builder.pgwt.highlevel.LLPGStrategyBuilder;

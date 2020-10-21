@@ -17,7 +17,7 @@ import uniolunisaar.adam.ds.synthesis.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.ds.objectives.local.Safety;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
-import uniolunisaar.adam.exceptions.synthesis.pgwt.CalculationInterruptedException;
+import uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NotSupportedGameException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.SolvingException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.CouldNotFindSuitableConditionException;

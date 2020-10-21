@@ -29,7 +29,7 @@ import uniolunisaar.adam.ds.synthesis.highlevel.oneenv.OneEnvHLPG;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.objectives.local.Safety;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
-import uniolunisaar.adam.exceptions.synthesis.pgwt.CalculationInterruptedException;
+import uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.InvalidPartitionException;
 import uniolunisaar.adam.exceptions.pnwt.NetNotSafeException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NoSuitableDistributionFoundException;

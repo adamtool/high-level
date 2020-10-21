@@ -8,7 +8,7 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
 import uniolunisaar.adam.ds.objectives.local.Safety;
-import uniolunisaar.adam.exceptions.synthesis.pgwt.CalculationInterruptedException;
+import uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException;
 import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.GGStrategyBuilder;
 
 /**
