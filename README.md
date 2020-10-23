@@ -1,18 +1,18 @@
 High-level Petri games
 ======================
-A framework for the synthesis of distributed systems modeled with high-level Petri games. 
+A framework for the synthesis of distributed systems modeled with high-level Petri games.
 
 Contains:
 ---------
 - data structures for symmetric Petri games,
-- data structures for the corresponding two-player games over a finite graph (cp. [Acta'20](https://doi.org/10.1007/s00236-020-00368-5)):
-  1) explicit version, 
+- data structures for the corresponding two-player games over a finite graph (cf. [Acta'20](https://doi.org/10.1007/s00236-020-00368-5)):
+  1) explicit version,
   2) low-level version (exploiting the symmetries of the net),
   3) high-level version (exploiting the symmetries of the net),
   4) bdd version (partially exploiting the symmetries of the net),
 - solving algorithms for all the approaches,
 - converter to generate a low-level Petri game from a high-level one,
-- generators for example high-level Petri games (cp. [ArXiv'19](http://arxiv.org/abs/1904.05621)).
+- generators for example high-level Petri games (cf. [ArXiv'19](http://arxiv.org/abs/1904.05621)).
 
 Integration:
 ------------
