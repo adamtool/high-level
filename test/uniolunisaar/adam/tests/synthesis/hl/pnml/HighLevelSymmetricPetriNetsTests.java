@@ -100,8 +100,8 @@ public class HighLevelSymmetricPetriNetsTests {
 
     private static boolean isIsomorphic(HLPetriGame game1, HLPetriGame game2) throws UnboundedException {
         IsomorphismLogic isomorphismLogic = new IsomorphismLogic(
-                CoverabilityGraph.get(toLowLevel(game1)).toReachabilityLTS(),
-                CoverabilityGraph.get(toLowLevel(game2)).toReachabilityLTS(),
+                CoverabilityGraph.getReachabilityGraph(toLowLevel(game1)).toReachabilityLTS(),
+                CoverabilityGraph.getReachabilityGraph(toLowLevel(game2)).toReachabilityLTS(),
                 true
         );
 
