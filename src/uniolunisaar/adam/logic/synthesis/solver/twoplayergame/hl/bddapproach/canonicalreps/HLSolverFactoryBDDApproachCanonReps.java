@@ -1,5 +1,6 @@
-package uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach;
+package uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.canonicalreps;
 
+import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.*;
 import java.io.IOException;
 import uniol.apt.io.parser.ParseException;
 import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
@@ -20,25 +21,25 @@ import uniolunisaar.adam.logic.synthesis.solver.SolverFactory;
  *
  * @author Manuel Gieseking
  */
-public class HLSolverFactoryBDDApproach extends SolverFactory<HLPetriGame, BDDSolverOptions, HLBDDSolver<? extends Condition<?>>> {
+public class HLSolverFactoryBDDApproachCanonReps extends SolverFactory<HLPetriGame, BDDSolverOptions, HLBDDSolver<? extends Condition<?>>> {
 
-    private static HLSolverFactoryBDDApproach instance = null;
+    private static HLSolverFactoryBDDApproachCanonReps instance = null;
 
-    public static HLSolverFactoryBDDApproach getInstance() {
+    public static HLSolverFactoryBDDApproachCanonReps getInstance() {
         if (instance == null) {
-            instance = new HLSolverFactoryBDDApproach();
+            instance = new HLSolverFactoryBDDApproachCanonReps();
         }
         return instance;
     }
 
-    private HLSolverFactoryBDDApproach() {
+    private HLSolverFactoryBDDApproachCanonReps() {
 
     }
 
     @Override
-    protected HLASafetyWithoutType2SolverBDDApproach getASafetySolver(HLPetriGame game, Safety con, BDDSolverOptions opts) throws SolvingException, NotSupportedGameException, NoSuitableDistributionFoundException, InvalidPartitionException {
+    protected HLASafetyWithoutType2CanonRepSolverBDDApproach getASafetySolver(HLPetriGame game, Safety con, BDDSolverOptions opts) throws SolvingException, NotSupportedGameException, NoSuitableDistributionFoundException, InvalidPartitionException {
         try {
-            return new HLASafetyWithoutType2SolverBDDApproach(createSolvingObject(game, con), opts);
+            return new HLASafetyWithoutType2CanonRepSolverBDDApproach(createSolvingObject(game, con), opts);
         } catch (NetNotSafeException ex) {
             throw new NotSupportedGameException("Could not create solver.", ex);
         }

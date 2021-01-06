@@ -1,4 +1,4 @@
-package uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach;
+package uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.membership;
 
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.symbolic.bddapproach.BDDGraph;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
@@ -11,6 +11,8 @@ import uniolunisaar.adam.exceptions.synthesis.pgwt.NoStrategyExistentException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NoSuitableDistributionFoundException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NotSupportedGameException;
 import uniolunisaar.adam.exceptions.pnwt.NetNotSafeException;
+import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.HLBDDSolver;
+import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.HLBDDSolvingObject;
 
 /**
  *

@@ -41,7 +41,7 @@ import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.explicit.ExplicitA
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.explicit.ExplicitSolverFactory;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.explicit.ExplicitSolverOptions;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.HLSolverOptions;
-import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.BDDASafetyWithoutType2HLSolver;
+import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.membership.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.hlapproach.HLASafetyWithoutType2SolverHLApproach;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.hlapproach.HLSolverFactoryHLApproach;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.llapproach.HLASafetyWithoutType2SolverLLApproach;

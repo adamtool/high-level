@@ -7,7 +7,7 @@ import net.sf.javabdd.BDD;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NoStrategyExistentException;
 import uniolunisaar.adam.ds.graph.Flow;
 import uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException;
-import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.BDDASafetyWithoutType2HLSolver;
+import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.membership.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.util.symbolic.bddapproach.BDDTools;
 import uniolunisaar.adam.tools.Logger;
 

@@ -26,7 +26,7 @@ import uniolunisaar.adam.generators.highlevel.AlarmSystemHL;
 import uniolunisaar.adam.generators.highlevel.ContainerHabourHL;
 import uniolunisaar.adam.generators.highlevel.PackageDeliveryHL;
 import uniolunisaar.adam.logic.synthesis.transformers.highlevel.HL2PGConverter;
-import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.BDDASafetyWithoutType2HLSolver;
+import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.membership.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.symbolic.bddapproach.BDDGraph;
 import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.BDDSolverOptions;
 import uniolunisaar.adam.logic.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;

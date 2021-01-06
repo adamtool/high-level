@@ -1,4 +1,4 @@
-package uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach;
+package uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.membership;
 
 import java.util.ArrayList;
 import java.util.List;
