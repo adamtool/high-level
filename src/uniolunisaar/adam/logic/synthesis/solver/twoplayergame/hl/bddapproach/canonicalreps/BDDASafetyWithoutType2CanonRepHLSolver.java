@@ -1,18 +1,24 @@
 package uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.canonicalreps;
 
+import java.util.List;
 import java.util.Map;
 import net.sf.javabdd.BDD;
+import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.exceptions.pnwt.NetNotSafeException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NoSuitableDistributionFoundException;
 import uniolunisaar.adam.ds.objectives.local.Safety;
+import uniolunisaar.adam.ds.synthesis.highlevel.BasicColorClass;
+import uniolunisaar.adam.ds.synthesis.highlevel.ColorDomain;
+import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
+import uniolunisaar.adam.ds.synthesis.highlevel.StaticColorClass;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NotSupportedGameException;
 import uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.InvalidPartitionException;
 import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.BDDSolverOptions;
-import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolvingObject;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NoStrategyExistentException;
+import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.HLBDDSolvingObject;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.membership.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.tools.Logger;
 
@@ -23,12 +29,17 @@ import uniolunisaar.adam.tools.Logger;
  *
  * This approach uses the canonical representations to have unique successors.
  *
+ * Not finished!
+ * 
  * @author Manuel Gieseking
  */
 public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutType2HLSolver {
 
-    public BDDASafetyWithoutType2CanonRepHLSolver(DistrSysBDDSolvingObject<Safety> obj, Symmetries syms, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
-        super(obj, syms, opts);
+    private final HLBDDSolvingObject<Safety> hlSolvingObject;
+
+    public BDDASafetyWithoutType2CanonRepHLSolver(HLBDDSolvingObject<Safety> obj, Symmetries syms, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
+        super(obj.getObj(), syms, opts);
+        hlSolvingObject = obj;
     }
 
     @Override
@@ -51,7 +62,7 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
         // if it is an mcut or not is already coded in the transitions itself            
         BDD trans = getBufferedEnvTransitions().or(getBufferedSystemTransitions());
 
-        BDD init = makeCanonical(getInitialDCSs());
+        BDD init = makeCanonical(getInitialDCSs(), 0);
 
         BDD Q = getZero();
         BDD Q_ = init.andWith(getWellformed(0));
@@ -106,11 +117,57 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
 // %%%%%%%%%%%%%%%%%%%%%%%%% END The relevant ability of the solver %%%%%%%%%%%%
     @Override
     protected BDD calcBadDCSs() {
-        return makeCanonical(badStates());
+        return makeCanonical(badStates(), 0);
     }
 
-    private BDD makeCanonical(BDD bdd) {
-
+    /**
+     *
+     * @param bdd
+     * @param pos
+     * @return
+     */
+    private BDD makeCanonical(BDD bdd, int pos) {
+        BDD sys = getSymmetricStates(bdd);
         return bdd;
     }
+
+    /**
+     * just not finished yet, but must be super expensive.
+     * @return 
+     */
+    private BDD canonicalReps() {
+        HLPetriGame hlgame = hlSolvingObject.getGame();
+        // put the high-level places in a list to ensure a fixed order
+        List<Place> hlplaces = null;
+
+        // a hashmap of for every basiccolor class (or when it has subclasses for each static subclass)
+        // mapped to an integer counter
+        Map<String, Integer> colorClassCounter = null;
+
+        // for each place p        
+        BDD canon = getFactory().one();
+        for (Place hlplace : hlplaces) {
+            // get the color domain of the place
+            ColorDomain colorDomain = hlgame.getColorDomain(hlplace);
+            for (int i = 0; i < colorDomain.size(); i++) { // currently should be just one
+                String basicColorClassId = colorDomain.get(i);
+                BasicColorClass basicColorClass = hlgame.getBasicColorClass(basicColorClassId);
+                if (basicColorClass.getStaticSubclasses().isEmpty()) {
+
+                } else {
+                    for (Map.Entry<String, StaticColorClass> subclassEntry : basicColorClass.getStaticSubclasses().entrySet()) { // for each static subclass
+                        String subclassid = subclassEntry.getKey();
+                        StaticColorClass subclass = subclassEntry.getValue();
+                        Integer counter = colorClassCounter.get(subclassid);
+                        //
+                        subclass.getColors().get(counter + 2);
+                    }
+                }
+                //  p.c_i' -> p.c_{i-1}'
+
+            }
+        }
+        return null;
+    }
+
 }

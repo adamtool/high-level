@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
+ * List of IDs for BasicColorClasses
  *
  * @author Manuel Gieseking
  */

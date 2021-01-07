@@ -209,6 +209,13 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
         return getSuccs(getSymmetries().and(state));
     }
 
+    /**
+     * Calculates a BDD where 
+     * 
+     * V_sym Wedge_p (p <-> sym(p)' wedge post(p) <-> sym(post(p)')
+     * @param syms
+     * @return 
+     */
     private BDD symmetries(Symmetries syms) {
         BDD symsBDD = getZero();
         SymmetryIterator symit = syms.iterator();
