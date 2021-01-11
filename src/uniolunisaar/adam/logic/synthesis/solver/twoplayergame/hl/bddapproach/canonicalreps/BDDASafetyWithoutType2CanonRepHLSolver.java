@@ -46,19 +46,15 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
     @Override
     protected BDD calcSystemTransitions() {
         BDD sysTrans = super.calcSystemTransitions();
-//        System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^");
-        BDD first = sysTrans.exist(getSecondBDDVariables());
-        // pre->post both are not canonical, make them canonical
-        BDD canonFirst = makeCanonical(first);
 
-//        BDDTools.printDecisionSets(canonFirst, true);
-        BDD second = sysTrans.exist(getFirstBDDVariables());
-        BDD canonSecond = shiftFirst2Second(makeCanonical(shiftSecond2First(second)));
-//        BDDTools.printDecodedDecisionSets(shiftSecond2First(second), this,true);
-//        System.out.println("makeCanonical");
-//        BDDTools.printDecodedDecisionSets(makeCanonical(shiftSecond2First(second)), this,true);
-
-        return canonFirst.andWith(canonSecond);
+        // this should be the problem of forall (A and B) vs forall A and forall B
+//        BDD first = sysTrans.exist(getSecondBDDVariables());
+//        // pre->post both are not canonical, make them canonical
+//        BDD canonFirst = makeCanonical(first);
+//        BDD second = sysTrans.exist(getFirstBDDVariables());
+//        BDD canonSecond = shiftFirst2Second(makeCanonical(shiftSecond2First(second)));
+//        return canonFirst.andWith(canonSecond);
+        return sysTrans;
     }
 
     public BDD getSystemTrans() {
@@ -68,19 +64,23 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
     @Override
     protected BDD calcEnvironmentTransitions() {
         BDD envTrans = super.calcEnvironmentTransitions();
+
+        // this should be the problem of forall (A and B) vs forall A and forall B
         // pre->post both are not canonical, make them canonical        
-        BDD canonFirst = makeCanonical(envTrans);
-        BDD canonSecond = makeCanonical(shiftSecond2First(envTrans));
-        return canonFirst.andWith(canonSecond);
+//        BDD canonFirst = makeCanonical(envTrans);
+//        BDD canonSecond = makeCanonical(shiftSecond2First(envTrans));
+//        return canonFirst.andWith(canonSecond);
+        return envTrans;
     }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%% The relevant ability of the solver %%%%%%%%%%%%%%%%
     @Override
     protected BDD calcDCSs() throws CalculationInterruptedException {
+        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& I DO THE CALCULATION!");
         // if it is an mcut or not is already coded in the transitions itself            
         BDD trans = getBufferedEnvTransitions().or(getBufferedSystemTransitions());
 
-        BDD init = makeCanonical(getInitialDCSs());
+        BDD init = getInitialDCSs();
 
         BDD Q = getZero();
         BDD Q_ = init.andWith(getWellformed(0));
@@ -93,15 +93,13 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
             Q = Q_;
 
             BDD succs = getSuccs(trans.and(Q));
-            Q_ = Q.or(succs);
+            Q_ = Q.or(makeCanonical(succs));
         }
         return Q.andWith(getWellformed(0));
     }
 
     @Override
     protected BDD attractor(BDD F, boolean p1, BDD gameGraph, Map<Integer, BDD> distance) throws CalculationInterruptedException {
-        // also all symmetric are bad
-        gameGraph = getSuccs(gameGraph.and(getSymmetries()));
         // Calculate the possibly restricted transitions to the given game graph
         BDD graphSuccs = super.shiftFirst2Second(gameGraph);
         BDD envTrans = getBufferedEnvTransitions().and(gameGraph).and(graphSuccs);
@@ -121,8 +119,7 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
             }
             Q = Q_;
             BDD pre = p1 ? pre(Q, sysTrans, envTrans) : pre(Q, envTrans, sysTrans);
-            pre = getSuccs(pre.and(getSymmetries())).and(getBufferedDCSs());
-            Q_ = pre.or(Q);
+            Q_ = makeCanonical(pre).or(Q);
         }
         return Q_.andWith(getWellformed(0));
     }
@@ -136,6 +133,11 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
     @Override
     protected BDD calcBadDCSs() {
         return makeCanonical(badStates());
+    }
+
+    @Override
+    protected BDD initial() {
+        return makeCanonical(super.initial());
     }
 
     /**

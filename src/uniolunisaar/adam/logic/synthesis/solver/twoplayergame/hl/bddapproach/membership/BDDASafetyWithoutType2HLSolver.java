@@ -52,7 +52,8 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
      * @throws NoSuitableDistributionFoundException - Thrown if the given net is
      * not annotated to which token each place belongs and the algorithm was not
      * able to detect it on its own.
-     * @throws uniolunisaar.adam.exceptions.synthesis.pgwt.InvalidPartitionException
+     * @throws
+     * uniolunisaar.adam.exceptions.synthesis.pgwt.InvalidPartitionException
      */
     public BDDASafetyWithoutType2HLSolver(DistrSysBDDSolvingObject<Safety> obj, Symmetries syms, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
         super(obj, opts);
@@ -210,11 +211,12 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
     }
 
     /**
-     * Calculates a BDD where 
-     * 
+     * Calculates a BDD where
+     *
      * V_sym Wedge_p (p <-> sym(p)' wedge post(p) <-> sym(post(p)')
+     *
      * @param syms
-     * @return 
+     * @return
      */
     private BDD symmetries(Symmetries syms) {
         BDD symsBDD = getZero();
@@ -359,7 +361,9 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
         Benchmarks.getInstance().start(Benchmarks.Parts.FIXPOINT);
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS
         Logger.getInstance().addMessage("Calculating fixpoint ...");
-        BDD fixedPoint = attractor(badStates(), true, getBufferedDCSs(), distance).not().and(getBufferedDCSs());//fixpointOuter();
+        // todo: it should be expensive to calculate the buffered dcss!? Why did I chose to use it?
+//        BDD fixedPoint = attractor(badStates(), true, getBufferedDCSs(), distance).not().and(getBufferedDCSs());//fixpointOuter();
+        BDD fixedPoint = attractor(badStates(), true, getFactory().one(), distance).not();
 //        BDDTools.printDecodedDecisionSets(fixedPoint.andWith(codePlace(getGame().getNet().getPlace("env1"), 0, 0)), this, true);
 //        BDDTools.printDecodedDecisionSets(fixedPoint.andWith(codePlace(getGame().getNet().getPlace("env1"), 0, 0)).andWith(getBufferedSystemTransition()), this, true);
 //        BDDTools.printDecodedDecisionSets(fixedPoint.andWith(codePlace(getGame().getNet().getPlace("env1"), 0, 0)).andWith(getBufferedSystemTransition()).andWith(getNotTop()), this, true);

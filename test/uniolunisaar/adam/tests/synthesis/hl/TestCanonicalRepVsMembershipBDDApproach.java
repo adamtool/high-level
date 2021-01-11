@@ -21,6 +21,7 @@ import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.BDDSolverOptions;
 import uniolunisaar.adam.generators.highlevel.ConcurrentMachinesHL;
+import uniolunisaar.adam.generators.highlevel.PackageDeliveryHL;
 import uniolunisaar.adam.logic.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
 import uniolunisaar.adam.logic.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.explicit.ExplicitASafetyWithoutType2Solver;
@@ -81,21 +82,18 @@ public class TestCanonicalRepVsMembershipBDDApproach {
 //        BDDTools.printDecodedDecisionSets(canonWell, solver1, true);
 //        
 
-
         BDD transitions = solver1.getSystemTrans();
 
         System.out.println("%%%%%%% THE SySTEM TRANSITIONS");
         BDDTools.printDecodedDecisionSets(transitions, solver1, true);
 //        BDDTools.saveStates2Pdf(outputDir + "testcm21_init", init, solver1);
 //
-        
-        
+
 ////        BDDTools.saveStates2Pdf(outputDir + "testcm21", makeCanonical, solver1);
 //
 //        System.out.println("%%%%%%% Wellformed");
 //        BDDTools.printDecodedDecisionSets(canonWell, solver1, true);
 //        
-
 //        BDDTools.saveStates2Pdf(outputDir + "testcm21_well", makeCanonical, solver1);
 //        BDD makeCanonical = solver1.makeCanonical(solver1.badSysDCS(),0);
 //        BDD canonWell = makeCanonical.and(solver1.getWellformed(0));
@@ -111,8 +109,14 @@ public class TestCanonicalRepVsMembershipBDDApproach {
 
     @Test
     public void testCM() throws Exception {
-        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(3, 2, true);
-        checkExistsStrat("CM21", hlgame);
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(4, 2, true);
+        checkExistsStrat("CM42", hlgame);
+    }
+
+    @Test
+    public void testPD() throws Exception {
+        HLPetriGame hlgame = PackageDeliveryHL.generateEwithPool(1, 4, true);
+        checkExistsStrat("PD14", hlgame);
     }
 
     private void checkExistsStrat(String name, HLPetriGame hlgame) throws Exception {
@@ -121,13 +125,61 @@ public class TestCanonicalRepVsMembershipBDDApproach {
         long time, diff;
 
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HIGH LEVEL
+//        time = System.currentTimeMillis();
+//        HLASafetyWithoutType2SolverHLApproach solverHL = (HLASafetyWithoutType2SolverHLApproach) HLSolverFactoryHLApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
+//        GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> stratHL = solverHL.calculateGraphStrategy();
+//        diff = System.currentTimeMillis() - time;
+//        timeHLApproach += diff;
+//        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL graph strategy HL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+//        HLTools.saveGraph2PDF(outputDir + name + "HL_Gstrat", stratHL);
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOW LEVEL
         time = System.currentTimeMillis();
-        HLASafetyWithoutType2SolverHLApproach solverHL = (HLASafetyWithoutType2SolverHLApproach) HLSolverFactoryHLApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
-        GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> stratHL = solverHL.calculateGraphStrategy();
+//        HLASafetyWithoutType2SolverLLApproach solverLL = (HLASafetyWithoutType2SolverLLApproach) HLSolverFactoryLLApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
+//        boolean llapproach = solverLL.existsWinningStrategy();
         diff = System.currentTimeMillis() - time;
-        timeHLApproach += diff;
-        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL graph strategy HL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
-        HLTools.saveGraph2PDF(outputDir + name + "HL_Gstrat", stratHL);
+//        timeLLApproach += diff;
+//        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy LL approach: " + llapproach + "" + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANON REPS
+        time = System.currentTimeMillis();
+        BDDSolverOptions opt = new BDDSolverOptions(true);
+        opt.setNoType2(true);
+        HLASafetyWithoutType2CanonRepSolverBDDApproach solver = (HLASafetyWithoutType2CanonRepSolverBDDApproach) HLSolverFactoryBDDApproachCanonReps.getInstance().getSolver(hlgame, opt);
+        solver.getSolver().initialize();
+        boolean canonrep = solver.existsWinningStrategy();
+        diff = System.currentTimeMillis() - time;
+        timeCanonRepApproach += diff;
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy CanonReps approach: " + canonrep + " " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+   
+        time = System.currentTimeMillis();
+        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true, true);
+        DistrSysBDDSolver<? extends Condition<?>> solverExplBDD = DistrSysBDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(pgame, true, false), opt);
+        Boolean llBDD = solverExplBDD.existsWinningStrategy();
+        diff = System.currentTimeMillis() - time;
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% LL strategy explicit BDD exists: " + llBDD + " " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+
+    }
+
+    private void checkGraphStrat(String name, HLPetriGame hlgame) throws Exception {
+        long timeHLApproach = 0;
+        long timeCanonRepApproach = 0;
+        long time, diff;
+
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HIGH LEVEL
+//        time = System.currentTimeMillis();
+//        HLASafetyWithoutType2SolverHLApproach solverHL = (HLASafetyWithoutType2SolverHLApproach) HLSolverFactoryHLApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
+//        GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> stratHL = solverHL.calculateGraphStrategy();
+//        diff = System.currentTimeMillis() - time;
+//        timeHLApproach += diff;
+//        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL graph strategy HL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+//        HLTools.saveGraph2PDF(outputDir + name + "HL_Gstrat", stratHL);
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOW LEVEL
+        time = System.currentTimeMillis();
+        HLASafetyWithoutType2SolverLLApproach solverLL = (HLASafetyWithoutType2SolverLLApproach) HLSolverFactoryLLApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
+        GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> stratLL = solverLL.calculateGraphStrategy();
+        diff = System.currentTimeMillis() - time;
+//        timeLLApproach += diff;
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL graph strategy LL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        HLTools.saveGraph2PDF(outputDir + name + "LL_Gstrat", stratLL);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANON REPS
         time = System.currentTimeMillis();
         BDDSolverOptions opt = new BDDSolverOptions(true);
@@ -141,6 +193,13 @@ public class TestCanonicalRepVsMembershipBDDApproach {
         Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL graph strategy CanonReps approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
         BDDTools.saveGraph2PDF(outputDir + name + "Canon_Gstrat", canonGGStrat, solver.getSolver());
 //        BDDTools.saveGraph2PDF(outputDir + name + "Canon_GraphGame", canonGGStrat, solver.getSolver());
+
+        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true, true);
+        DistrSysBDDSolver<? extends Condition<?>> solverExplBDD = DistrSysBDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(pgame, true, false), opt);
+        BDDGraph graphBDD = solverExplBDD.getGraphStrategy();
+        diff = System.currentTimeMillis() - time;
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% LL graph strategy explicit BDD " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        BDDTools.saveGraph2PDF(outputDir + name + "Expl_BDD_Gstrat_low", graphBDD, solverExplBDD);
 
     }
 
