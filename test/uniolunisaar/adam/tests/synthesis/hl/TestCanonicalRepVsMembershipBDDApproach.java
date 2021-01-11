@@ -1,6 +1,7 @@
 package uniolunisaar.adam.tests.synthesis.hl;
 
 import java.io.File;
+import net.sf.javabdd.BDD;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -26,6 +27,9 @@ import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.explicit.ExplicitA
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.explicit.ExplicitSolverFactory;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.explicit.ExplicitSolverOptions;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.HLSolverOptions;
+import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.canonicalreps.BDDASafetyWithoutType2CanonRepHLSolver;
+import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.canonicalreps.HLASafetyWithoutType2CanonRepSolverBDDApproach;
+import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.canonicalreps.HLSolverFactoryBDDApproachCanonReps;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.hlapproach.HLASafetyWithoutType2SolverHLApproach;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.hlapproach.HLSolverFactoryHLApproach;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.llapproach.HLASafetyWithoutType2SolverLLApproach;
@@ -48,6 +52,7 @@ public class TestCanonicalRepVsMembershipBDDApproach {
     @BeforeClass
     public void createFolder() {
 //        Logger.getInstance().setVerbose(false);
+        Logger.getInstance().setVerbose(true);
 //        Logger.getInstance().setShortMessageStream(null);
 //        Logger.getInstance().setVerboseMessageStream(null);
         Logger.getInstance().setWarningStream(null);
@@ -55,9 +60,88 @@ public class TestCanonicalRepVsMembershipBDDApproach {
     }
 
     @Test
+    public void firstTests() throws Exception {
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(4, 2, true);
+        BDDSolverOptions opt = new BDDSolverOptions(true);
+        opt.setNoType2(true);
+        HLASafetyWithoutType2CanonRepSolverBDDApproach solver = (HLASafetyWithoutType2CanonRepSolverBDDApproach) HLSolverFactoryBDDApproachCanonReps.getInstance().getSolver(hlgame, opt);
+
+        BDDASafetyWithoutType2CanonRepHLSolver solver1 = solver.getSolver();
+        solver1.initialize();
+//
+//        BDD init = solver1.getInitialDCSs();
+//
+//        System.out.println("%%%%%%% THE STATE ITSELF");
+//        BDDTools.printDecodedDecisionSets(init, solver1, true);
+////        BDDTools.saveStates2Pdf(outputDir + "testcm21_init", init, solver1);
+////
+//        BDD makeCanonical = solver1.makeCanonical(init);
+//        BDD canonWell = makeCanonical.and(solver1.getWellformed(0));
+//        System.out.println("%%%%%%% ALL");
+//        BDDTools.printDecodedDecisionSets(canonWell, solver1, true);
+//        
+
+
+        BDD transitions = solver1.getSystemTrans();
+
+        System.out.println("%%%%%%% THE SySTEM TRANSITIONS");
+        BDDTools.printDecodedDecisionSets(transitions, solver1, true);
+//        BDDTools.saveStates2Pdf(outputDir + "testcm21_init", init, solver1);
+//
+        
+        
+////        BDDTools.saveStates2Pdf(outputDir + "testcm21", makeCanonical, solver1);
+//
+//        System.out.println("%%%%%%% Wellformed");
+//        BDDTools.printDecodedDecisionSets(canonWell, solver1, true);
+//        
+
+//        BDDTools.saveStates2Pdf(outputDir + "testcm21_well", makeCanonical, solver1);
+//        BDD makeCanonical = solver1.makeCanonical(solver1.badSysDCS(),0);
+//        BDD canonWell = makeCanonical.and(solver1.getWellformed(0));
+//        System.out.println("%%%%%%% ALL");
+//        BDDTools.printDecodedDecisionSets(makeCanonical, solver1, true);
+//        BDDTools.saveStates2Pdf(outputDir+"testcm21", makeCanonical, solver1);
+//        
+//        System.out.println("%%%%%%% Wellformed");
+//        BDDTools.printDecodedDecisionSets(canonWell, solver1, true);
+//        BDDTools.saveStates2Pdf(outputDir+"testcm21_well", makeCanonical, solver1);
+//        create("CM21", hlgame);
+    }
+
+    @Test
     public void testCM() throws Exception {
-        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(2, 1, true);
-        create("CM21", hlgame);
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(3, 2, true);
+        checkExistsStrat("CM21", hlgame);
+    }
+
+    private void checkExistsStrat(String name, HLPetriGame hlgame) throws Exception {
+        long timeHLApproach = 0;
+        long timeCanonRepApproach = 0;
+        long time, diff;
+
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HIGH LEVEL
+        time = System.currentTimeMillis();
+        HLASafetyWithoutType2SolverHLApproach solverHL = (HLASafetyWithoutType2SolverHLApproach) HLSolverFactoryHLApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
+        GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> stratHL = solverHL.calculateGraphStrategy();
+        diff = System.currentTimeMillis() - time;
+        timeHLApproach += diff;
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL graph strategy HL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        HLTools.saveGraph2PDF(outputDir + name + "HL_Gstrat", stratHL);
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANON REPS
+        time = System.currentTimeMillis();
+        BDDSolverOptions opt = new BDDSolverOptions(true);
+        opt.setNoType2(true);
+        HLASafetyWithoutType2CanonRepSolverBDDApproach solver = (HLASafetyWithoutType2CanonRepSolverBDDApproach) HLSolverFactoryBDDApproachCanonReps.getInstance().getSolver(hlgame, opt);
+        solver.getSolver().initialize();
+        BDDGraph canonGGStrat = solver.calculateGraphStrategy();
+//        BDDGraph canonGGStrat = solver.calculateGraphGame();
+        diff = System.currentTimeMillis() - time;
+        timeCanonRepApproach += diff;
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL graph strategy CanonReps approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        BDDTools.saveGraph2PDF(outputDir + name + "Canon_Gstrat", canonGGStrat, solver.getSolver());
+//        BDDTools.saveGraph2PDF(outputDir + name + "Canon_GraphGame", canonGGStrat, solver.getSolver());
+
     }
 
     private void create(String name, HLPetriGame hlgame) throws Exception {
@@ -66,6 +150,7 @@ public class TestCanonicalRepVsMembershipBDDApproach {
 
         long timeHLApproach = 0;
         long timeLLApproach = 0;
+        long timeCanonRepApproach = 0;
         long timeExplApproach = 0;
         long timeExplBDDApproach = 0;
         long time, diff;

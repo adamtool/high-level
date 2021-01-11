@@ -46,4 +46,8 @@ public class HLASafetyWithoutType2CanonRepSolverBDDApproach extends HLBDDSolver<
         return solver.calculateStrategy();
     }
 
+    public BDDASafetyWithoutType2CanonRepHLSolver getSolver() {
+        return solver;
+    }
+
 }

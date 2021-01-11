@@ -21,6 +21,7 @@ import uniolunisaar.adam.exceptions.synthesis.pgwt.NoStrategyExistentException;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.HLBDDSolvingObject;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.membership.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.tools.Logger;
+import uniolunisaar.adam.util.symbolic.bddapproach.BDDTools;
 
 /**
  * Solves symmetric Petri games with a safety objective with BDDs. This solver
@@ -30,7 +31,7 @@ import uniolunisaar.adam.tools.Logger;
  * This approach uses the canonical representations to have unique successors.
  *
  * Not finished!
- * 
+ *
  * @author Manuel Gieseking
  */
 public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutType2HLSolver {
@@ -45,15 +46,32 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
     @Override
     protected BDD calcSystemTransitions() {
         BDD sysTrans = super.calcSystemTransitions();
+//        System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^");
+        BDD first = sysTrans.exist(getSecondBDDVariables());
         // pre->post both are not canonical, make them canonical
-        return sysTrans;
+        BDD canonFirst = makeCanonical(first);
+
+//        BDDTools.printDecisionSets(canonFirst, true);
+        BDD second = sysTrans.exist(getFirstBDDVariables());
+        BDD canonSecond = shiftFirst2Second(makeCanonical(shiftSecond2First(second)));
+//        BDDTools.printDecodedDecisionSets(shiftSecond2First(second), this,true);
+//        System.out.println("makeCanonical");
+//        BDDTools.printDecodedDecisionSets(makeCanonical(shiftSecond2First(second)), this,true);
+
+        return canonFirst.andWith(canonSecond);
+    }
+
+    public BDD getSystemTrans() {
+        return calcSystemTransitions();
     }
 
     @Override
     protected BDD calcEnvironmentTransitions() {
         BDD envTrans = super.calcEnvironmentTransitions();
-        // pre->post both are not canonical, make them canonical
-        return envTrans;
+        // pre->post both are not canonical, make them canonical        
+        BDD canonFirst = makeCanonical(envTrans);
+        BDD canonSecond = makeCanonical(shiftSecond2First(envTrans));
+        return canonFirst.andWith(canonSecond);
     }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%% The relevant ability of the solver %%%%%%%%%%%%%%%%
@@ -62,7 +80,7 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
         // if it is an mcut or not is already coded in the transitions itself            
         BDD trans = getBufferedEnvTransitions().or(getBufferedSystemTransitions());
 
-        BDD init = makeCanonical(getInitialDCSs(), 0);
+        BDD init = makeCanonical(getInitialDCSs());
 
         BDD Q = getZero();
         BDD Q_ = init.andWith(getWellformed(0));
@@ -117,25 +135,25 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
 // %%%%%%%%%%%%%%%%%%%%%%%%% END The relevant ability of the solver %%%%%%%%%%%%
     @Override
     protected BDD calcBadDCSs() {
-        return makeCanonical(badStates(), 0);
+        return makeCanonical(badStates());
     }
 
     /**
      *
      * @param bdd
-     * @param pos
      * @return
      */
-    private BDD makeCanonical(BDD bdd, int pos) {
-        BDD sys = getSymmetricStates(bdd);
-        return bdd;
+    public BDD makeCanonical(BDD bdd) {
+//        return bdd.andWith(canonicalRepresentatives());
+        return shiftSecond2First(bdd.and(getSymmetries()).exist(getFirstBDDVariables())).andWith(canonicalRepresentatives());
     }
 
     /**
      * just not finished yet, but must be super expensive.
-     * @return 
+     *
+     * @return
      */
-    private BDD canonicalReps() {
+    public BDD canonicalReps() {
         HLPetriGame hlgame = hlSolvingObject.getGame();
         // put the high-level places in a list to ensure a fixed order
         List<Place> hlplaces = null;
@@ -168,6 +186,20 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
             }
         }
         return null;
+    }
+
+    /**
+     * new method
+     *
+     * @return
+     */
+    private BDD canonicalRepresentatives() {
+        BDD symmetries = getSymmetries();
+        BDD smaller = BDDTools.getSmallerBDD(getFactory());
+//        BDD allSymmetric = shiftSecond2First(symmetries);
+//        return allSymmetric.andWith((smaller.and(symmetries)).not()).exist(getSecondBDDVariables());
+        BDD symAndSmaller = symmetries.andWith(smaller).exist(getSecondBDDVariables()).not();
+        return symAndSmaller;
     }
 
 }
