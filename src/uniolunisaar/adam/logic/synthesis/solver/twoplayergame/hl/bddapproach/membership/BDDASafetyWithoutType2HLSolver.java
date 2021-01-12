@@ -219,6 +219,9 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
      * @return
      */
     private BDD symmetries(Symmetries syms) {
+        Logger.getInstance().addMessage("Calculation of symmetry BDD ...", true);
+        long time = System.currentTimeMillis();
+
         BDD symsBDD = getZero();
         SymmetryIterator symit = syms.iterator();
 //        if (symit.hasNext()) {
@@ -265,6 +268,8 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
             }
             symsBDD.orWith(symm);
         }
+        Logger.getInstance().addMessage(".... finished calculation of symmetry BDD (" + (System.currentTimeMillis() - time) / 1000.0f + ")", true);
+
         return symsBDD;
     }
 

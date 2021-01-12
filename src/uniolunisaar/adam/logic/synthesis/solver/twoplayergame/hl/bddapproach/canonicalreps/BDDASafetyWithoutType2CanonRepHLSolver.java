@@ -37,6 +37,7 @@ import uniolunisaar.adam.util.symbolic.bddapproach.BDDTools;
 public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutType2HLSolver {
 
     private final HLBDDSolvingObject<Safety> hlSolvingObject;
+    private BDD canonicalRepresentatives = null;
 
     public BDDASafetyWithoutType2CanonRepHLSolver(HLBDDSolvingObject<Safety> obj, Symmetries syms, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
         super(obj.getObj(), syms, opts);
@@ -147,7 +148,7 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
      */
     public BDD makeCanonical(BDD bdd) {
 //        return bdd.andWith(canonicalRepresentatives());
-        return shiftSecond2First(bdd.and(getSymmetries()).exist(getFirstBDDVariables())).andWith(canonicalRepresentatives());
+        return shiftSecond2First(bdd.and(getSymmetries()).exist(getFirstBDDVariables())).and(getCanonicalRepresentatives());
     }
 
     /**
@@ -202,6 +203,13 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
 //        return allSymmetric.andWith((smaller.and(symmetries)).not()).exist(getSecondBDDVariables());
         BDD symAndSmaller = symmetries.andWith(smaller).exist(getSecondBDDVariables()).not();
         return symAndSmaller;
+    }
+
+    private BDD getCanonicalRepresentatives() {
+        if (canonicalRepresentatives == null) {
+            canonicalRepresentatives = canonicalRepresentatives();
+        }
+        return canonicalRepresentatives;
     }
 
 }
