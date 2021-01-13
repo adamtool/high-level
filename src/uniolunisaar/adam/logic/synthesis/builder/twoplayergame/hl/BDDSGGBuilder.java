@@ -129,7 +129,7 @@ public class BDDSGGBuilder {
         return graph;
     }
 
-    protected <S extends BDDASafetyWithoutType2HLSolver> BDD getSuccessorBDD(S solver, BDD succs, BDD validStates) {
+    protected <S extends BDDASafetyWithoutType2HLSolver> BDD getSuccessorBDD(S solver, BDD succs, BDD validStates) throws CalculationInterruptedException {
         return solver.getSymmetricStates(solver.getSuccs(succs)).and(validStates);
     }
 

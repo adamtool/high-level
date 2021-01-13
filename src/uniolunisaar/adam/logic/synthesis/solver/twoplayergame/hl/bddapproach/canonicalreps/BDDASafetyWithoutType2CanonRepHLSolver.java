@@ -21,12 +21,13 @@ import uniolunisaar.adam.exceptions.synthesis.pgwt.NoStrategyExistentException;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.HLBDDSolvingObject;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.membership.BDDASafetyWithoutType2HLSolver;
 import uniolunisaar.adam.tools.Logger;
+import uniolunisaar.adam.util.benchmarks.synthesis.Benchmarks;
 import uniolunisaar.adam.util.symbolic.bddapproach.BDDTools;
 
 /**
  * Solves symmetric Petri games with a safety objective with BDDs. This solver
- * can be used when there is no possibillity for system player to play
- * infinitely long without any further interaction with the environment.
+ * can be used when there is no possibility for system player to play infinitely
+ * long without any further interaction with the environment.
  *
  * This approach uses the canonical representations to have unique successors.
  *
@@ -42,6 +43,13 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
     public BDDASafetyWithoutType2CanonRepHLSolver(HLBDDSolvingObject<Safety> obj, Symmetries syms, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
         super(obj.getObj(), syms, opts);
         hlSolvingObject = obj;
+    }
+
+    @Override
+    public void initialize() {
+        super.initialize();
+        getFactory().setNodeTableSize(10000000);
+//        getFactory().setIncreaseFactor(2);
     }
 
     @Override
@@ -77,11 +85,12 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
 // %%%%%%%%%%%%%%%%%%%%%%%%% The relevant ability of the solver %%%%%%%%%%%%%%%%
     @Override
     protected BDD calcDCSs() throws CalculationInterruptedException {
-        System.out.println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&& I DO THE CALCULATION!");
+        Logger.getInstance().addMessage("Calculation of all decision sets ...", true);
+        long time = System.currentTimeMillis();
         // if it is an mcut or not is already coded in the transitions itself            
         BDD trans = getBufferedEnvTransitions().or(getBufferedSystemTransitions());
 
-        BDD init = getInitialDCSs();
+        BDD init = makeCanonical(getInitialDCSs());
 
         BDD Q = getZero();
         BDD Q_ = init.andWith(getWellformed(0));
@@ -96,11 +105,16 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
             BDD succs = getSuccs(trans.and(Q));
             Q_ = Q.or(makeCanonical(succs));
         }
-        return Q.andWith(getWellformed(0));
+        BDD ret = Q.andWith(getWellformed(0));
+        Logger.getInstance().addMessage(".... finished calculation all decision sets (" + (System.currentTimeMillis() - time) / 1000.0f + ")", true);
+        return ret;
+
     }
 
     @Override
     protected BDD attractor(BDD F, boolean p1, BDD gameGraph, Map<Integer, BDD> distance) throws CalculationInterruptedException {
+        Logger.getInstance().addMessage("Calculation of attractor BDD ...", true);
+        long time = System.currentTimeMillis();
         // Calculate the possibly restricted transitions to the given game graph
         BDD graphSuccs = super.shiftFirst2Second(gameGraph);
         BDD envTrans = getBufferedEnvTransitions().and(gameGraph).and(graphSuccs);
@@ -122,7 +136,34 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
             BDD pre = p1 ? pre(Q, sysTrans, envTrans) : pre(Q, envTrans, sysTrans);
             Q_ = makeCanonical(pre).or(Q);
         }
-        return Q_.andWith(getWellformed(0));
+        BDD ret = Q_.andWith(getWellformed(0));
+        Logger.getInstance().addMessage("... finished attractor (" + (System.currentTimeMillis() - time) / 1000.0f + ")", true);
+        return ret;
+    }
+
+    /**
+     * Returns the winning decisionsets for the system players
+     *
+     * @return
+     * @throws uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException
+     */
+    @Override
+    protected BDD calcWinningDCSs(Map<Integer, BDD> distance) throws CalculationInterruptedException {
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS
+        Benchmarks.getInstance().start(Benchmarks.Parts.FIXPOINT);
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS
+        Logger.getInstance().addMessage("Calculating fixpoint ...");
+        // todo: it should be expensive to calculate the buffered dcss!? Why did I chose to use it? BECAUSE THIS SEEMS REALLY TO BE FASTER?
+        BDD fixedPoint = attractor(badStates(), true, makeCanonical(getBufferedDCSs()), distance).not().and(getBufferedDCSs());//fixpointOuter();
+//        BDD fixedPoint = attractor(badStates(), true, getFactory().one(), distance).not();
+//        BDDTools.printDecodedDecisionSets(fixedPoint.andWith(codePlace(getGame().getNet().getPlace("env1"), 0, 0)), this, true);
+//        BDDTools.printDecodedDecisionSets(fixedPoint.andWith(codePlace(getGame().getNet().getPlace("env1"), 0, 0)).andWith(getBufferedSystemTransition()), this, true);
+//        BDDTools.printDecodedDecisionSets(fixedPoint.andWith(codePlace(getGame().getNet().getPlace("env1"), 0, 0)).andWith(getBufferedSystemTransition()).andWith(getNotTop()), this, true);
+        Logger.getInstance().addMessage("... calculation of fixpoint done.");
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS
+        Benchmarks.getInstance().stop(Benchmarks.Parts.FIXPOINT);
+        // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS
+        return fixedPoint;
     }
 
     @Override
@@ -131,24 +172,18 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
     }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%% END The relevant ability of the solver %%%%%%%%%%%%
-    @Override
-    protected BDD calcBadDCSs() {
-        return makeCanonical(badStates());
-    }
-
-    @Override
-    protected BDD initial() {
-        return makeCanonical(super.initial());
-    }
-
     /**
      *
      * @param bdd
      * @return
      */
-    public BDD makeCanonical(BDD bdd) {
+    public BDD makeCanonical(BDD bdd) throws CalculationInterruptedException {
+        Logger.getInstance().addMessage("Calculation of make canonical ...", true);
+        long time = System.currentTimeMillis();
 //        return bdd.andWith(canonicalRepresentatives());
-        return shiftSecond2First(bdd.and(getSymmetries()).exist(getFirstBDDVariables())).and(getCanonicalRepresentatives());
+        BDD ret = shiftSecond2First(bdd.and(getSymmetries()).exist(getFirstBDDVariables())).and(getCanonicalRepresentatives());
+        Logger.getInstance().addMessage(".... finished make canonical (" + (System.currentTimeMillis() - time) / 1000.0f + ")", true);
+        return ret;
     }
 
     /**
@@ -196,16 +231,19 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
      *
      * @return
      */
-    private BDD canonicalRepresentatives() {
+    private BDD canonicalRepresentatives() throws CalculationInterruptedException {
+        Logger.getInstance().addMessage("Calculation of canonicalRepresentatives BDD ...", true);
+        long time = System.currentTimeMillis();
         BDD symmetries = getSymmetries();
-        BDD smaller = BDDTools.getSmallerBDD(getFactory());
+        BDD smaller = BDDTools.getSmallerBDD(getFactory()).and(getWellformed(0).and(getWellformed(1)));
 //        BDD allSymmetric = shiftSecond2First(symmetries);
 //        return allSymmetric.andWith((smaller.and(symmetries)).not()).exist(getSecondBDDVariables());
-        BDD symAndSmaller = symmetries.andWith(smaller).exist(getSecondBDDVariables()).not();
+        BDD symAndSmaller = symmetries.andWith(smaller).exist(getSecondBDDVariables()).not().and(getWellformed(0));
+        Logger.getInstance().addMessage(".... finished calculation of canonicalRepresentatives BDD (" + (System.currentTimeMillis() - time) / 1000.0f + ")", true);
         return symAndSmaller;
     }
 
-    private BDD getCanonicalRepresentatives() {
+    private BDD getCanonicalRepresentatives() throws CalculationInterruptedException {
         if (canonicalRepresentatives == null) {
             canonicalRepresentatives = canonicalRepresentatives();
         }

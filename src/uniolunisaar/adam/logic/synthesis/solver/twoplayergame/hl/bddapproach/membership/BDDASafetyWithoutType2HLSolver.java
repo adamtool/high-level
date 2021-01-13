@@ -183,7 +183,7 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
 //        return Q.andWith(getWellformed(0));
     }
 
-    private BDD getRepresentatives(BDD states) {
+    private BDD getRepresentatives(BDD states) throws CalculationInterruptedException {
         BDD reps = getZero();
         BDD state = states.satOne(getFirstBDDVariables(), false);
 //            BDDTools.printDecodedDecisionSets(state, this, true);
@@ -199,14 +199,14 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
 
     private BDD symmetries = null;
 
-    public BDD getSymmetries() {
+    public BDD getSymmetries() throws CalculationInterruptedException {
         if (symmetries == null) {
             symmetries = symmetries(syms);
         }
         return symmetries;
     }
 
-    public BDD getSymmetricStates(BDD state) {
+    public BDD getSymmetricStates(BDD state) throws CalculationInterruptedException {
         return getSuccs(getSymmetries().and(state));
     }
 
@@ -218,20 +218,28 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
      * @param syms
      * @return
      */
-    private BDD symmetries(Symmetries syms) {
+    private BDD symmetries(Symmetries syms) throws CalculationInterruptedException {
         Logger.getInstance().addMessage("Calculation of symmetry BDD ...", true);
         long time = System.currentTimeMillis();
 
+        BDD start = getWellformed(0).andWith(getWellformed(1)); // this seems to be faster then just getOne()
+        
         BDD symsBDD = getZero();
         SymmetryIterator symit = syms.iterator();
 //        if (symit.hasNext()) {
 //            symit.next(); // jump over identity
 //        }
         for (SymmetryIterator iti = symit; iti.hasNext();) {
+            if (Thread.interrupted()) {
+                CalculationInterruptedException e = new CalculationInterruptedException();
+                Logger.getInstance().addError(e.getMessage(), e);
+                throw e;
+            }
             Symmetry sym = iti.next();
 //            System.out.println(sym.toString());
 //            BDD symm = getOne();
-            BDD symm = getWellformed(0).andWith(getWellformed(1)); // this seems to be faster then just getOne()
+//            BDD symm = getWellformed(0).andWith(getWellformed(1)); // this seems to be faster then just getOne()
+            BDD symm = start.id();
             // the symmetries for all places
             for (Place place : getGame().getPlaces()) {
                 int partition = getSolvingObject().getGame().getPartition(place);
@@ -366,9 +374,9 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
         Benchmarks.getInstance().start(Benchmarks.Parts.FIXPOINT);
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS
         Logger.getInstance().addMessage("Calculating fixpoint ...");
-        // todo: it should be expensive to calculate the buffered dcss!? Why did I chose to use it?
-//        BDD fixedPoint = attractor(badStates(), true, getBufferedDCSs(), distance).not().and(getBufferedDCSs());//fixpointOuter();
-        BDD fixedPoint = attractor(badStates(), true, getFactory().one(), distance).not();
+        // todo: it should be expensive to calculate the buffered dcss!? Why did I chose to use it? BECAUSE THIS SEEMS REALLY TO BE FASTER?
+        BDD fixedPoint = attractor(badStates(), true, getBufferedDCSs(), distance).not().and(getBufferedDCSs());//fixpointOuter();
+//        BDD fixedPoint = attractor(badStates(), true, getFactory().one(), distance).not();
 //        BDDTools.printDecodedDecisionSets(fixedPoint.andWith(codePlace(getGame().getNet().getPlace("env1"), 0, 0)), this, true);
 //        BDDTools.printDecodedDecisionSets(fixedPoint.andWith(codePlace(getGame().getNet().getPlace("env1"), 0, 0)).andWith(getBufferedSystemTransition()), this, true);
 //        BDDTools.printDecodedDecisionSets(fixedPoint.andWith(codePlace(getGame().getNet().getPlace("env1"), 0, 0)).andWith(getBufferedSystemTransition()).andWith(getNotTop()), this, true);

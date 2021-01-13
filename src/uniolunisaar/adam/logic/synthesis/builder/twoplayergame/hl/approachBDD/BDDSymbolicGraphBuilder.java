@@ -8,6 +8,7 @@ import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.mem
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.symbolic.bddapproach.BDDGraph;
 import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.symbolic.bddapproach.BDDGraphAndGStrategyBuilder;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.symbolic.bddapproach.BDDState;
+import uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException;
 
 /**
  * Not really sure for what this class was once added (2019-04-01 19:32:53 MG:
@@ -29,7 +30,7 @@ public class BDDSymbolicGraphBuilder extends BDDGraphAndGStrategyBuilder {
         return instance;
     }
 
-    protected BDD getSuccessorBDD(BDDASafetyWithoutType2HLSolver solver, BDD succs, BDD validStates) {
+    protected BDD getSuccessorBDD(BDDASafetyWithoutType2HLSolver solver, BDD succs, BDD validStates) throws CalculationInterruptedException {
         BDD symmetricSuccs = solver.getSuccs(solver.getSuccs(succs).and(solver.getSymmetries()));
         return symmetricSuccs.and(validStates);
     }
