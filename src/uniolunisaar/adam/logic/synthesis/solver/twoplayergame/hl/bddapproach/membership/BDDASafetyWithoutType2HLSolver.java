@@ -219,7 +219,7 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
      * @return
      */
     private BDD symmetries(Symmetries syms) throws CalculationInterruptedException {
-        Logger.getInstance().addMessage("Calculation of symmetry BDD ...", true);
+        Logger.getInstance().addMessage("Calculation of symmetry BDD ...", "INTERMEDIATE_TIMING");
         long time = System.currentTimeMillis();
 
         BDD start = getWellformed(0).andWith(getWellformed(1)); // this seems to be faster then just getOne()
@@ -276,7 +276,7 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
             }
             symsBDD.orWith(symm);
         }
-        Logger.getInstance().addMessage(".... finished calculation of symmetry BDD (" + (System.currentTimeMillis() - time) / 1000.0f + ")", true);
+        Logger.getInstance().addMessage(".... finished calculation of symmetry BDD (" + (System.currentTimeMillis() - time) / 1000.0f + ")", "INTERMEDIATE_TIMING");
 
         return symsBDD;
     }

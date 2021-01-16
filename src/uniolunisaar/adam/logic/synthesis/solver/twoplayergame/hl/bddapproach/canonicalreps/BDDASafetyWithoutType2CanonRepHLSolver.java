@@ -85,7 +85,7 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
 // %%%%%%%%%%%%%%%%%%%%%%%%% The relevant ability of the solver %%%%%%%%%%%%%%%%
     @Override
     protected BDD calcDCSs() throws CalculationInterruptedException {
-        Logger.getInstance().addMessage("Calculation of all decision sets ...", true);
+        Logger.getInstance().addMessage("Calculation of all decision sets ...", "INTERMEDIATE_TIMING");
         long time = System.currentTimeMillis();
         // if it is an mcut or not is already coded in the transitions itself            
         BDD trans = getBufferedEnvTransitions().or(getBufferedSystemTransitions());
@@ -106,14 +106,14 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
             Q_ = Q.or(makeCanonical(succs));
         }
         BDD ret = Q.andWith(getWellformed(0));
-        Logger.getInstance().addMessage(".... finished calculation all decision sets (" + (System.currentTimeMillis() - time) / 1000.0f + ")", true);
+        Logger.getInstance().addMessage(".... finished calculation all decision sets (" + (System.currentTimeMillis() - time) / 1000.0f + ")", "INTERMEDIATE_TIMING");
         return ret;
 
     }
 
     @Override
     protected BDD attractor(BDD F, boolean p1, BDD gameGraph, Map<Integer, BDD> distance) throws CalculationInterruptedException {
-        Logger.getInstance().addMessage("Calculation of attractor BDD ...", true);
+        Logger.getInstance().addMessage("Calculation of attractor BDD ...", "INTERMEDIATE_TIMING");
         long time = System.currentTimeMillis();
         // Calculate the possibly restricted transitions to the given game graph
         BDD graphSuccs = super.shiftFirst2Second(gameGraph);
@@ -137,7 +137,7 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
             Q_ = makeCanonical(pre).or(Q);
         }
         BDD ret = Q_.andWith(getWellformed(0));
-        Logger.getInstance().addMessage("... finished attractor (" + (System.currentTimeMillis() - time) / 1000.0f + ")", true);
+        Logger.getInstance().addMessage("... finished attractor (" + (System.currentTimeMillis() - time) / 1000.0f + ")", "INTERMEDIATE_TIMING");
         return ret;
     }
 
@@ -178,11 +178,11 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
      * @return
      */
     public BDD makeCanonical(BDD bdd) throws CalculationInterruptedException {
-        Logger.getInstance().addMessage("Calculation of make canonical ...", true);
+        Logger.getInstance().addMessage("Calculation of make canonical ...", "INTERMEDIATE_TIMING");
         long time = System.currentTimeMillis();
 //        return bdd.andWith(canonicalRepresentatives());
         BDD ret = shiftSecond2First(bdd.and(getSymmetries()).exist(getFirstBDDVariables())).and(getCanonicalRepresentatives());
-        Logger.getInstance().addMessage(".... finished make canonical (" + (System.currentTimeMillis() - time) / 1000.0f + ")", true);
+        Logger.getInstance().addMessage(".... finished make canonical (" + (System.currentTimeMillis() - time) / 1000.0f + ")", "INTERMEDIATE_TIMING");
         return ret;
     }
 
@@ -232,14 +232,14 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
      * @return
      */
     private BDD canonicalRepresentatives() throws CalculationInterruptedException {
-        Logger.getInstance().addMessage("Calculation of canonicalRepresentatives BDD ...", true);
+        Logger.getInstance().addMessage("Calculation of canonicalRepresentatives BDD ...", "INTERMEDIATE_TIMING");
         long time = System.currentTimeMillis();
         BDD symmetries = getSymmetries();
         BDD smaller = BDDTools.getSmallerBDD(getFactory()).and(getWellformed(0).and(getWellformed(1)));
 //        BDD allSymmetric = shiftSecond2First(symmetries);
 //        return allSymmetric.andWith((smaller.and(symmetries)).not()).exist(getSecondBDDVariables());
         BDD symAndSmaller = symmetries.andWith(smaller).exist(getSecondBDDVariables()).not().and(getWellformed(0));
-        Logger.getInstance().addMessage(".... finished calculation of canonicalRepresentatives BDD (" + (System.currentTimeMillis() - time) / 1000.0f + ")", true);
+        Logger.getInstance().addMessage(".... finished calculation of canonicalRepresentatives BDD (" + (System.currentTimeMillis() - time) / 1000.0f + ")", "INTERMEDIATE_TIMING");
         return symAndSmaller;
     }
 
