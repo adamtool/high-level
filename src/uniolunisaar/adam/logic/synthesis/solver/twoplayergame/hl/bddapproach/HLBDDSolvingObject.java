@@ -20,10 +20,10 @@ public class HLBDDSolvingObject<W extends Condition<W>> extends SolvingObject<HL
 
     private final DistrSysBDDSolvingObject<W> obj;
 
-    public HLBDDSolvingObject(HLPetriGame game, W winCon) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
-        super(game, winCon);
-        PetriGameWithTransits pgame = HL2PGConverter.convert(game, true, true);
-        obj = new DistrSysBDDSolvingObject<>(pgame, winCon.getCopy(), true);
+    public HLBDDSolvingObject(HLPetriGame hlgame, W winCon) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
+        super(hlgame, winCon);
+        PetriGameWithTransits llpgame = HL2PGConverter.convert(hlgame, true, true);
+        obj = new DistrSysBDDSolvingObject<>(llpgame, winCon.getCopy(), true);
     }
 
     public HLBDDSolvingObject(HLBDDSolvingObject<W> object) {
@@ -36,8 +36,12 @@ public class HLBDDSolvingObject<W extends Condition<W>> extends SolvingObject<HL
         return new HLBDDSolvingObject<>(this);
     }
 
-    public DistrSysBDDSolvingObject<W> getObj() {
+    public DistrSysBDDSolvingObject<W> getLLObj() {
         return obj;
+    }
+
+    public HLPetriGame getHLGame() {
+        return super.getGame();
     }
 
 }

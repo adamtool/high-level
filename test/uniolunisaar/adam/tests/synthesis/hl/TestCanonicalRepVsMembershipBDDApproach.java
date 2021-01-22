@@ -1,7 +1,6 @@
 package uniolunisaar.adam.tests.synthesis.hl;
 
 import java.io.File;
-import net.sf.javabdd.BDD;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -57,6 +56,7 @@ public class TestCanonicalRepVsMembershipBDDApproach {
 //        Logger.getInstance().setShortMessageStream(null);
 //        Logger.getInstance().setVerboseMessageStream(null);
         Logger.getInstance().setWarningStream(null);
+        Logger.getInstance().addMessageStream("INTERMEDIATE_TIMING", System.out);
         (new File(outputDir)).mkdirs();
     }
 
@@ -82,10 +82,10 @@ public class TestCanonicalRepVsMembershipBDDApproach {
 //        BDDTools.printDecodedDecisionSets(canonWell, solver1, true);
 //        
 
-        BDD transitions = solver1.getSystemTrans();
+//        BDD transitions = solver1.getSystemTrans();
 
-        System.out.println("%%%%%%% THE SySTEM TRANSITIONS");
-        BDDTools.printDecodedDecisionSets(transitions, solver1, true);
+//        System.out.println("%%%%%%% THE SySTEM TRANSITIONS");
+//        BDDTools.printDecodedDecisionSets(transitions, solver1, true);
 //        BDDTools.saveStates2Pdf(outputDir + "testcm21_init", init, solver1);
 //
 
@@ -109,8 +109,12 @@ public class TestCanonicalRepVsMembershipBDDApproach {
 
     @Test
     public void testCM() throws Exception {
-        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(4, 2, true);
-        checkExistsStrat("CM42", hlgame);
+        int a = 2;
+        int b = 1;
+        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(a, b, true);
+        HLTools.saveHLPG2PDF(outputDir + "CM" + a + b, hlgame);
+        PGTools.savePG2PDF(outputDir + "CM" + a + b + "_ll", HL2PGConverter.convert(hlgame), false);
+        checkExistsStrat("CM" + a + "" + b, hlgame);
     }
 
     @Test
@@ -149,7 +153,7 @@ public class TestCanonicalRepVsMembershipBDDApproach {
         diff = System.currentTimeMillis() - time;
         timeCanonRepApproach += diff;
         Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy CanonReps approach: " + canonrep + " " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
-   
+
         time = System.currentTimeMillis();
         PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true, true);
         DistrSysBDDSolver<? extends Condition<?>> solverExplBDD = DistrSysBDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(pgame, true, false), opt);

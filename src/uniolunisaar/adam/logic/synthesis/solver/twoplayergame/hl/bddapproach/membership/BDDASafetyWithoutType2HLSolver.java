@@ -58,6 +58,9 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
     public BDDASafetyWithoutType2HLSolver(DistrSysBDDSolvingObject<Safety> obj, Symmetries syms, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
         super(obj, opts);
         this.syms = syms;
+        for (Symmetry sym : syms) {
+            System.out.println(sym.toString());
+        }
     }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%% START WINNING CONDITION %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -219,10 +222,10 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
      * @return
      */
     private BDD symmetries(Symmetries syms) throws CalculationInterruptedException {
-        Logger.getInstance().addMessage("Calculation of symmetry BDD ...", "INTERMEDIATE_TIMING");
+        Logger.getInstance().addMessage("Calculation of symmetry BDD ...", "INTERMEDIATE_TIMING");        
         long time = System.currentTimeMillis();
 
-        BDD start = getWellformed(0).andWith(getWellformed(1)); // this seems to be faster then just getOne()
+//        BDD start = getWellformed(0).andWith(getWellformed(1)); // this seems to be faster then just getOne()
         
         BDD symsBDD = getZero();
         SymmetryIterator symit = syms.iterator();
@@ -236,32 +239,34 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
                 throw e;
             }
             Symmetry sym = iti.next();
+           
 //            System.out.println(sym.toString());
 //            BDD symm = getOne();
-//            BDD symm = getWellformed(0).andWith(getWellformed(1)); // this seems to be faster then just getOne()
-            BDD symm = start.id();
+            BDD symm = getWellformed(0).andWith(getWellformed(1)); // this seems to be faster then just getOne()
+//            BDD symm = start.id();
             // the symmetries for all places
-            for (Place place : getGame().getPlaces()) {
-                int partition = getSolvingObject().getGame().getPartition(place);
+            for (Place llplace : getGame().getPlaces()) {
+                int partition = getSolvingObject().getGame().getPartition(llplace);
                 // Calculate the symmetric place
-                String id = HL2PGConverter.getOrigID(place);
-                List<Color> col = HL2PGConverter.getColors(place);
-                List<Color> colors = new ArrayList<>();
-                for (int i = 0; i < col.size(); i++) {
-                    colors.add(sym.get(col.get(i)));
+                String id = HL2PGConverter.getOrigID(llplace);
+                List<Color> oldcolors = HL2PGConverter.getColors(llplace);
+                // cal the new colors
+                List<Color> newcolors = new ArrayList<>();
+                for (int i = 0; i < oldcolors.size(); i++) {
+                    newcolors.add(sym.get(oldcolors.get(i)));
                 }
-                Place newPlace = getGame().getPlace(HL2PGConverter.getPlaceID(id, colors));
+                Place newPlace = getGame().getPlace(HL2PGConverter.getPlaceID(id, newcolors));
                 int newPartition = getSolvingObject().getGame().getPartition(newPlace);
-                symm.andWith(codePlace(place, 0, partition).biimpWith(codePlace(newPlace, 1, newPartition)));
+                symm.andWith(codePlace(llplace, 0, partition).biimpWith(codePlace(newPlace, 1, newPartition)));
                 if (partition != 0) { // no env place
                     // the symmetries for all transitions            
-                    for (Transition t : place.getPostset()) {
+                    for (Transition t : llplace.getPostset()) {
                         int transId = getSolvingObject().getDevidedTransitions()[partition - 1].indexOf(t);
                         // Calculate the symmetric transition
                         String hlID = HL2PGConverter.getOrigID(t);
-                        Valuation val = HL2PGConverter.getValuation(t);
+                        Valuation oldval = HL2PGConverter.getValuation(t);
                         Valuation newVal = new Valuation();
-                        for (Map.Entry<Variable, Color> entry : val.entrySet()) {
+                        for (Map.Entry<Variable, Color> entry : oldval.entrySet()) {
                             Variable var = entry.getKey();
                             Color c = entry.getValue();
                             newVal.put(var, sym.get(c));

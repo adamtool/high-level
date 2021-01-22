@@ -25,7 +25,7 @@ public class HLASafetyWithoutType2SolverBDDApproach extends HLBDDSolver<Safety> 
     public HLASafetyWithoutType2SolverBDDApproach(HLBDDSolvingObject<Safety> solverObject, BDDSolverOptions options) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
         super(solverObject, options);
         Symmetries syms = solverObject.getGame().getSymmetries();
-        solver = new BDDASafetyWithoutType2HLSolver(solverObject.getObj(), syms, options);
+        solver = new BDDASafetyWithoutType2HLSolver(solverObject.getLLObj(), syms, options);
     }
 
     @Override
