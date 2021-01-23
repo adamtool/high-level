@@ -62,4 +62,9 @@ public class SysDecision extends AbstractSysDecision<Place, Transition, Commitme
         return game;
     }
 
+    @Override
+    public String getIDChain() {
+        return getPlace().getId() + "+" + getC().getIDChain();
+    }
+
 }

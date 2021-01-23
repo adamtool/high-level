@@ -258,7 +258,7 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
      * @param dcs
      * @return
      */
-    private boolean checkMcut(Set<ILLDecision> dcs) {
+    protected boolean checkMcut(Set<ILLDecision> dcs) {
         for (Transition t : (Collection<Transition>) game.getExtension("sysTransitions")) { // todo: quick hack
             if (firable(dcs, t)) {
                 return false;
@@ -383,7 +383,7 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
         return false;
     }
 
-    private boolean calcBad(Set<ILLDecision> dcs) {
+    protected boolean calcBad(Set<ILLDecision> dcs) {
         return calcBadPlace(dcs) || calcDeadlock(dcs) || calcNdet(dcs);
 //        return calcDeadlock(dcs);// || calcNdet(dcs);
 //        return calcBadPlace(dcs) ;//|| calcDeadlock(dcs) || calcNdet(dcs);
@@ -491,6 +491,10 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
 
     public PetriGameWithTransits getGame() {
         return game;
+    }
+
+    public Iterator<ILLDecision> getDecisionsIterator() {
+        return decisions.iterator();
     }
 
 }

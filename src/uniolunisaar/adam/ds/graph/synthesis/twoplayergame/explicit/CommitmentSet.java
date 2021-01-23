@@ -1,5 +1,6 @@
 package uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit;
 
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 import uniol.apt.adt.pn.Transition;
@@ -90,5 +91,22 @@ public class CommitmentSet extends AbstractCommitmentSet<Transition> {
 
     protected PetriGameWithTransits getGame() {
         return game;
+    }
+
+    /**
+     * Returns a concatenated String of all IDs of the commitment set. If the
+     * set is ordered it obeys the order.
+     *
+     * @return
+     */
+    public String getIDChain() {
+        if (getTransitions() == null) {
+           return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (Iterator<Transition> iterator = getTransitions().iterator(); iterator.hasNext();) {
+            sb.append(iterator.next().getId()).append("-");
+        }
+        return sb.toString();
     }
 }

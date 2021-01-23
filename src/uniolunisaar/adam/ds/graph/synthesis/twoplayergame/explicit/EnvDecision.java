@@ -58,4 +58,9 @@ public class EnvDecision extends AbstractEnvDecision<Place, Transition> implemen
         return game;
     }
 
+    @Override
+    public String getIDChain() {
+        return getPlace().getId();
+    }
+
 }

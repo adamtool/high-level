@@ -10,4 +10,5 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecision;
  */
 public interface ILLDecision extends IDecision<Place, Transition> {
 
+    public String getIDChain();
 }
