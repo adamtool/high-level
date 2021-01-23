@@ -109,7 +109,9 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
     private Set<F> calculatePostset(S state) {
         Set<F> post = new HashSet<>();
         for (F flow : getFlows()) {
-            if (flow.getSource().equals(state)) {
+            // this is very expensive, because really all members have to be checked
+//            if (flow.getSource().equals(state)) {                
+            if (flow.getSource().getId() == state.getId()) {
                 post.add(flow);
             }
         }
@@ -149,7 +151,9 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
     private Set<F> calculatePreset(S state) {
         Set<F> pre = new HashSet<>();
         for (F flow : getFlows()) {
-            if (flow.getTarget().equals(state)) {
+            // this is very expensive, because really all members have to be checked
+//            if (flow.getTarget().equals(state)) {
+            if (flow.getTarget().getId() == state.getId()) {
                 pre.add(flow);
             }
         }
