@@ -101,7 +101,7 @@ public class CommitmentSet extends AbstractCommitmentSet<Transition> {
      */
     public String getIDChain() {
         if (getTransitions() == null) {
-           return "";
+            return (isTop()) ? "T" : "";
         }
         StringBuilder sb = new StringBuilder();
         for (Iterator<Transition> iterator = getTransitions().iterator(); iterator.hasNext();) {

@@ -14,7 +14,7 @@ import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
 public abstract class AbstractCommitmentSet<T> {
 
     private final boolean isTop;
-    private Set<T> transitions;
+    private final Set<T> transitions;
 
     public AbstractCommitmentSet(boolean isTop) {
         this.isTop = isTop;
@@ -114,17 +114,7 @@ public abstract class AbstractCommitmentSet<T> {
     protected Set<T> getTransitions() {
         return transitions;
     }
-
-    /**
-     * Don't use this method or change the transition field. This is just for
-     * subclasses to use another Set implementation (e.g. SortedTree)
-     *
-     * @param transitions
-     */
-    protected void setTransitions(Set<T> transitions) {
-        this.transitions = transitions;
-    }
-
+ 
     @Override
     public int hashCode() {
         int hash = 7;

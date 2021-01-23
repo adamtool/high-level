@@ -3,7 +3,6 @@ package uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.canonreps;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.*;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -35,15 +34,25 @@ public class OrderedDecisionSet extends LLDecisionSet {
 
     public OrderedDecisionSet createDecisionSet(TreeSet<ILLDecision> decisions, boolean mcut, boolean bad, PetriGameWithTransits game, Symmetries syms) {
         OrderedDecisionSet dcs = new OrderedDecisionSet(decisions, mcut, bad, game, syms);
-        OrderedDecisionSet canon = SGGBuilderLLCanon.getInstance().dcs2canon.get(dcs);
-        if (canon == null) {            
-            canon = getCanonical(dcs);
-            SGGBuilderLLCanon.getInstance().dcs2canon.put(dcs, canon);
+        SGGBuilderLLCanon.SaveMapping mapping = SGGBuilderLLCanon.getInstance().saveMapping;
+        if (mapping == SGGBuilderLLCanon.SaveMapping.NONE) {
+            return getCanonical(dcs);
         } else {
-//            System.out.println("did it!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            OrderedDecisionSet canon = SGGBuilderLLCanon.getInstance().dcs2canon.get(dcs);
+            if (canon == null) {
+                canon = getCanonical(dcs);
+                if (mapping == SGGBuilderLLCanon.SaveMapping.SOME) {
+                    SGGBuilderLLCanon.getInstance().dcs2canon.put(dcs, canon);
+                } else {
+                    for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+                        Symmetry sym = iterator.next();
+                        OrderedDecisionSet symDcs = dcs.apply(sym);
+                        SGGBuilderLLCanon.getInstance().dcs2canon.put(symDcs, canon);
+                    }
+                }
+            }
+            return canon;
         }
-        return canon;
-//        return getCanonical();
     }
 
     public OrderedDecisionSet getCanonical(OrderedDecisionSet dcs) {

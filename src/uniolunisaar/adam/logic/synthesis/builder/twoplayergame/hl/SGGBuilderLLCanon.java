@@ -3,12 +3,16 @@ package uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.StateIdentifier;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.CommitmentSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.ILLDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.canonreps.LexiILLDecisionComparator;
@@ -43,8 +47,15 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
     private SGGBuilderLLCanon() {
     }
 
+    public enum SaveMapping {
+        ALL,
+        SOME,
+        NONE
+    }
     // todo: just a hack to check if it's faster
     public HashMap<OrderedDecisionSet, OrderedDecisionSet> dcs2canon = new HashMap<>();
+
+    public SaveMapping saveMapping = SaveMapping.ALL;
 
     /**
      * It's the same as for SGGBuilderLL Todo: Do it properly ...
@@ -74,7 +85,7 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
         return sysTransitions;
     }
 
-    private OrderedDecisionSet createInitDecisionSet(HLPetriGame hlgame, PetriGameWithTransits pgame) {
+    private OrderedDecisionSet createOrderedInitDecisionSet(HLPetriGame hlgame, PetriGameWithTransits pgame) {
         TreeSet<ILLDecision> inits = new TreeSet<>(new LexiILLDecisionComparator());
         for (Place place : pgame.getPlaces()) {
             if (place.getInitialToken().getValue() > 0) {
@@ -85,8 +96,25 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
                 }
             }
         }
-        OrderedDecisionSet dcs = new OrderedDecisionSet(inits, false, false, pgame, hlgame.getSymmetries()); // todo: ask nick, but I shouldn't need to make it canonical (ordered is it anyhow)
-        dcs2canon.put(dcs, dcs);
+        OrderedDecisionSet dcs = new OrderedDecisionSet(inits, false, false, pgame, hlgame.getSymmetries());
+        if (saveMapping != SaveMapping.NONE) {
+            dcs2canon.put(dcs, dcs);
+        }
+        return dcs;
+    }
+
+    private LLDecisionSet createUnOrderedInitDecisionSet(HLPetriGame hlgame, PetriGameWithTransits pgame) {
+        TreeSet<ILLDecision> inits = new TreeSet<>(new LexiILLDecisionComparator());
+        for (Place place : pgame.getPlaces()) {
+            if (place.getInitialToken().getValue() > 0) {
+                if (pgame.isEnvironment(place)) {
+                    inits.add(new LLEnvDecision(pgame, place));
+                } else {
+                    inits.add(new LLSysDecision(pgame, place, new CommitmentSet(pgame, true)));
+                }
+            }
+        }
+        LLDecisionSet dcs = new LLDecisionSet(inits, false, false, pgame);
         return dcs;
     }
 
@@ -109,11 +137,13 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
         // calculate the system transitions
         Collection<Transition> sysTransitions = putSysAndSingleEnvTransitionsToExtention(pgame);
         // create initial decision set
-        LLDecisionSet init = createInitDecisionSet(hlgame, pgame);
+        LLDecisionSet init = createOrderedInitDecisionSet(hlgame, pgame);
+//        LLDecisionSet init = createUnOrderedInitDecisionSet(hlgame, pgame);
 
         // Create the graph iteratively
         GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> srg = new GameGraph<>(hlgame.getName() + "_SRG", init);
         addStatesIteratively(hlgame, srg, init, pgame.getTransitions(), sysTransitions);
+//        System.out.println(dcs2canon.size());
         return srg;
     }
 
@@ -121,5 +151,10 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
     protected Collection<Transition> getTransitions(Collection<Transition> trans, HLPetriGame hlgame) {
         return trans;
     }
+//    
+//        @Override
+//    protected <ID extends StateIdentifier> void addSuccessors(ILLDecision pre, Transition t, Set<ILLDecision> succs, Stack<ID> todo, AbstractGameGraph<Place, Transition, DecisionSet, S, ID, GameGraphFlow<T, ID>> srg) {
+////        addSuccessors(pre, t, succs, syms, todo, srg);
+//    }
 
 }

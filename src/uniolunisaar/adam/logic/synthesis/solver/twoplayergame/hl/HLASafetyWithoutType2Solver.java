@@ -28,7 +28,7 @@ public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, 
 
     public Set<S> winRegionSafety(boolean p1, Map<Integer, Set<S>> distance) throws CalculationInterruptedException {
         Set<S> attr = attractor(getGraph().getBadStatesView(), !p1, distance);
-//        System.out.println(attr.toString());
+//        System.out.println(attr.toString());        
         Set<S> winning = new HashSet<>(getGraph().getStatesView());
         winning.removeAll(attr);
 //        for (S s : winning) {
