@@ -111,8 +111,10 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
 
     @Test
     public void testPD() throws Exception {
-        HLPetriGame hlgame = PackageDeliveryHL.generateEwithPool(1, 4, true);
-        checkExistsStrat("PD14", hlgame);
+        int a = 2;
+        int b = 2;
+        HLPetriGame hlgame = PackageDeliveryHL.generateEwithPool(a, b, true);
+        checkExistsStrat("PD" + a + "" + b, hlgame);
     }
 
     private void checkExistsStrat(String name, HLPetriGame hlgame) throws Exception {
@@ -132,16 +134,20 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
         time = System.currentTimeMillis();
         HLASafetyWithoutType2SolverLLApproach solverLL = (HLASafetyWithoutType2SolverLLApproach) HLSolverFactoryLLApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
         boolean llapproach = solverLL.existsWinningStrategy();
+        int sizeLL = solverLL.getGraph().getStatesView().size();
+//        int sizeLL = -1;
         diff = System.currentTimeMillis() - time;
 //        timeLLApproach += diff;
-        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy LL approach: " + llapproach + "" + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy LL approach (size " + sizeLL + "): " + llapproach + "" + Math.round((diff / 1000.0f) * 100.0) / 100.0);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANON REPS
         time = System.currentTimeMillis();
         HLASafetyWithoutType2SolverCanonApproach solverCanon = (HLASafetyWithoutType2SolverCanonApproach) HLSolverFactoryCanonApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
         boolean canonApproach = solverCanon.existsWinningStrategy();
+        int sizeCanon = solverCanon.getGraph().getStatesView().size();
+//        int sizeCanon = -1;
         diff = System.currentTimeMillis() - time;
 //        timeLLApproach += diff;
-        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy canon approach: " + canonApproach + "" + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy canon approach (size " + sizeCanon + "): " + canonApproach + "" + Math.round((diff / 1000.0f) * 100.0) / 100.0);
 
 //        // %%%%%%% BDD
 //        time = System.currentTimeMillis();

@@ -497,4 +497,20 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
         return decisions.iterator();
     }
 
+    /**
+     * Returns a concatenated String of all IDChains of the decisions. If the
+     * set is ordered it obeys the order.
+     *
+     * @return
+     */
+    public String getIDChain() {
+        if (decisions == null) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (Iterator<ILLDecision> iterator = decisions.iterator(); iterator.hasNext();) {
+            sb.append(iterator.next().getIDChain()).append("|");
+        }
+        return sb.toString();
+    }
 }

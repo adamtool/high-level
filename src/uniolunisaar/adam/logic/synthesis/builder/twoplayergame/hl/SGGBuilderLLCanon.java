@@ -2,6 +2,7 @@ package uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.TreeSet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
@@ -42,6 +43,9 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
     private SGGBuilderLLCanon() {
     }
 
+    // todo: just a hack to check if it's faster
+    public HashMap<OrderedDecisionSet, OrderedDecisionSet> dcs2canon = new HashMap<>();
+
     /**
      * It's the same as for SGGBuilderLL Todo: Do it properly ...
      *
@@ -81,7 +85,9 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
                 }
             }
         }
-        return new OrderedDecisionSet(inits, false, false, pgame, hlgame.getSymmetries());
+        OrderedDecisionSet dcs = new OrderedDecisionSet(inits, false, false, pgame, hlgame.getSymmetries()); // todo: ask nick, but I shouldn't need to make it canonical (ordered is it anyhow)
+        dcs2canon.put(dcs, dcs);
+        return dcs;
     }
 
     /**

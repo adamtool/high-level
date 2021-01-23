@@ -3,6 +3,7 @@ package uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.canonreps;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.*;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +17,8 @@ import uniolunisaar.adam.tools.CartesianProduct;
 import uniolunisaar.adam.tools.Tools;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLDecisionSet;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
+import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.SymmetryIterator;
+import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl.SGGBuilderLLCanon;
 
 /**
  *
@@ -31,7 +34,28 @@ public class OrderedDecisionSet extends LLDecisionSet {
     }
 
     public OrderedDecisionSet createDecisionSet(TreeSet<ILLDecision> decisions, boolean mcut, boolean bad, PetriGameWithTransits game, Symmetries syms) {
-        return new OrderedDecisionSet(decisions, mcut, bad, game, syms);
+        OrderedDecisionSet dcs = new OrderedDecisionSet(decisions, mcut, bad, game, syms);
+        OrderedDecisionSet canon = SGGBuilderLLCanon.getInstance().dcs2canon.get(dcs);
+        if (canon == null) {            
+            canon = getCanonical(dcs);
+            SGGBuilderLLCanon.getInstance().dcs2canon.put(dcs, canon);
+        } else {
+//            System.out.println("did it!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        }
+        return canon;
+//        return getCanonical();
+    }
+
+    public OrderedDecisionSet getCanonical(OrderedDecisionSet dcs) {
+        OrderedDecisionSet smallest = dcs;
+        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+            Symmetry sym = iterator.next();
+            OrderedDecisionSet symDcs = dcs.apply(sym);
+            if (symDcs.getIDChain().compareTo(smallest.getIDChain()) < 0) {
+                smallest = symDcs;
+            }
+        }
+        return smallest;
     }
 
     /**
@@ -262,7 +286,7 @@ public class OrderedDecisionSet extends LLDecisionSet {
             ILLDecision dc = iterator.next();
             decs.add((ILLDecision) dc.apply(sym));
         }
-        return createDecisionSet(decs, isMcut(), isBad(), getGame(), syms);
+        return new OrderedDecisionSet(decs, isMcut(), isBad(), getGame(), syms);
     }
 
 }
