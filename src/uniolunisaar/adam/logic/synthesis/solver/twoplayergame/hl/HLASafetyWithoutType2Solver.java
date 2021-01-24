@@ -47,7 +47,9 @@ public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, 
     }
 
     public boolean isWinning(boolean p1) throws CalculationInterruptedException {
-        return winRegionSafety(p1, null).contains(getGraph().getInitial());
+//        return winRegionSafety(p1, null).contains(getGraph().getInitial()); // don't need to do the removeAll:
+        Set<S> attr = attractor(getGraph().getBadStatesView(), !p1, null);
+        return !attr.contains(getGraph().getInitial());
     }
 
     public AbstractGameGraph<P, T, DC, S, S, F> calculateGraphStrategy() throws CalculationInterruptedException {

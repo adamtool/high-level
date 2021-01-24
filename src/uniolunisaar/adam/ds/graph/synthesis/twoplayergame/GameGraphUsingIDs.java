@@ -44,6 +44,12 @@ public class GameGraphUsingIDs<P, T, DC extends IDecision<P, T>, S extends IDeci
         this.postSet = new HashMap<>();
     }
 
+//    public GameGraphFlow createFlow(S source, T transition, S target) {
+//        F f = new GameGraphFlow<T, S>(source, transition, target);
+//        this.addFlow(f);
+//        return f;
+//    }
+
     /**
      * This should be way cheaper as contains(S state). So if the state already
      * has an id use this method.
@@ -178,7 +184,7 @@ public class GameGraphUsingIDs<P, T, DC extends IDecision<P, T>, S extends IDeci
     private Set<F> calculatePreset(S state) {
         Set<F> pre = new HashSet<>();
         for (F flow : getFlows()) {
-//            if (flow.getTarget().equals(state)) {// since we have hier IDs, this should be a cheap comparison
+//            if (flow.getTarget().equals(state)) {
             if (flow.getTarget().getId() == state.getId()) {// since we have here IDs, this should be a cheap comparison
                 pre.add(flow);
             }

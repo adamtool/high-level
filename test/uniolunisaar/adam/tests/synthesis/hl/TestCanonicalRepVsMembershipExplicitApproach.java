@@ -22,6 +22,7 @@ import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.BDDSolverOptions;
 import uniolunisaar.adam.generators.highlevel.ConcurrentMachinesHL;
 import uniolunisaar.adam.generators.highlevel.PackageDeliveryHL;
+import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl.SGGBuilderLLCanon;
 import uniolunisaar.adam.logic.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
 import uniolunisaar.adam.logic.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.explicit.ExplicitASafetyWithoutType2Solver;
@@ -113,7 +114,7 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
     @Test
     public void testPD() throws Exception {
         int a = 1;
-        int b = 2;
+        int b = 3;
         HLPetriGame hlgame = PackageDeliveryHL.generateEwithPool(a, b, true);
         HLTools.saveHLPG2PDF(outputDir + "PD" + a + b, hlgame);
         PGTools.savePG2PDF(outputDir + "PD" + a + b + "_ll", HL2PGConverter.convert(hlgame), false);
@@ -146,6 +147,8 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
 //        HLTools.saveGraph2DotAndPDF(outputDir + "hl2llGG", solverLL.getGraph());
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANON REPS
         time = System.currentTimeMillis();
+
+        SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.NONE;
         HLASafetyWithoutType2SolverCanonApproach solverCanon = (HLASafetyWithoutType2SolverCanonApproach) HLSolverFactoryCanonApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
         boolean canonApproach = solverCanon.existsWinningStrategy();
         int sizeCanon = solverCanon.getGraph().getStatesView().size();
