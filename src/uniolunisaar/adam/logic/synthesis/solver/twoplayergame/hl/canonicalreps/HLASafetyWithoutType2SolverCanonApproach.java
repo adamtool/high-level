@@ -2,6 +2,7 @@ package uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.canonicalreps;
 
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphUsingIDs;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.DecisionSet;
@@ -28,7 +29,8 @@ public class HLASafetyWithoutType2SolverCanonApproach extends HLASafetyWithoutTy
 
     @Override
 //    protected GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(HLPetriGame hlgame) {
-    protected GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(HLPetriGame hlgame) {
+//    protected GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(HLPetriGame hlgame) {
+    protected AbstractGameGraph<Place, Transition, ILLDecision, DecisionSet, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(HLPetriGame hlgame) {
         return SGGBuilderLLCanon.getInstance().create(hlgame);
     }
 

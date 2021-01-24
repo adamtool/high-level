@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.collections4.BidiMap;
+import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 
 /**
  * ToDo: Merge this class with the Graph in module PetriGames.Attention: Later
@@ -25,19 +27,19 @@ import java.util.Set;
  * @param <T>
  * @param <F>
  */
-public class GameGraphUsingIDs<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends GameGraphFlow<T, S>> extends AbstractGameGraph<P, T, DC, S, S, F> {
+public class GameGraphUsingIDsBidiMap<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends GameGraphFlow<T, S>> extends AbstractGameGraph<P, T, DC, S, S, F> {
 
-    private final HashMap<Integer, S> states;
+    private final BidiMap<Integer, S> states;
     private final Set<S> badStates;
     private final Map<Integer, Set<F>> preSet;
     private final Map<Integer, Set<F>> postSet;
 
     private int idCounter = 0;
 
-    public GameGraphUsingIDs(String name, S initial) {
+    public GameGraphUsingIDsBidiMap(String name, S initial) {
         super(name, initial);
         initial.overwriteId(idCounter++);
-        this.states = new HashMap<>();
+        this.states = new DualHashBidiMap<>();
         this.states.put(initial.getId(), initial);
         this.badStates = new HashSet<>();
         this.preSet = new HashMap<>();
@@ -99,22 +101,9 @@ public class GameGraphUsingIDs<P, T, DC extends IDecision<P, T>, S extends IDeci
         return states.get(state.getId());
     }
 
-    /**
-     * This is expensive. We search the whole entry set!
-     *
-     * @param state
-     * @return
-     */
     @Override
     public S getCorrespondingState(S state) {
-        for (Map.Entry<Integer, S> entry : states.entrySet()) {
-            Integer key = entry.getKey();
-            S value = entry.getValue();
-            if (value.equals(state)) {
-                return value;
-            }
-        }
-        return null;
+        return states.get(states.getKey(state));
     }
 
     /**

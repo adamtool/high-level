@@ -44,6 +44,11 @@ public class GameGraphByHashCode<P, T, DC extends IDecision<P, T>, S extends IDe
     }
 
     @Override
+    public S getCorrespondingState(S state) {
+        return state;
+    }
+
+    @Override
     public Collection<S> getStatesView() {
         return Collections.unmodifiableCollection(states.values());
     }

@@ -33,6 +33,7 @@ public class HLDecisionSet extends Extensible implements IDecisionSet<ColoredPla
     private final boolean mcut;
     private final OneEnvHLPG hlgame;
     private final boolean bad;
+    // todo: this id cannot properly used when using the membership approaches (due to adding the flows to existing symmetric states)!
     private int id = -1;
 
     /**

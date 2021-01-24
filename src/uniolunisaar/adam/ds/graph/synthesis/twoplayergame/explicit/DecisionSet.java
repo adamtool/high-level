@@ -27,6 +27,7 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
     private final boolean mcut;
     private final PetriGameWithTransits game;
     private final boolean bad;
+    // todo: this id cannot properly used when using the membership approaches (due to adding the flows to existing symmetric states)!
     private int id = -1;
 
     /**

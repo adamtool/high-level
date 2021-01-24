@@ -84,11 +84,12 @@ public abstract class GameGraphBuilder<G extends IPetriGame, P, T, DC extends ID
     protected <ID extends StateIdentifier> void addSuccessors(S pre, T t, Set<S> succs, Stack<ID> todo, AbstractGameGraph<P, T, DC, S, ID, GameGraphFlow<T, ID>> srg) {
         for (S succ : succs) {
             ID id = srg.getID(succ);
-            if (!srg.contains(succ)) {
+            S succState = srg.getCorrespondingState(succ);
+            if (succState == null) {
                 srg.addState(succ);
                 todo.add(id);
             } else {
-                id = srg.getID(succ);
+                id = srg.getID(succState);
             }
             srg.addFlow(new GameGraphFlow<>(srg.getID(pre), t, id));
         }

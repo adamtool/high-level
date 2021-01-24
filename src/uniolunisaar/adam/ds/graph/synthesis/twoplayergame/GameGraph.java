@@ -71,6 +71,11 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
         return id;
     }
 
+    @Override
+    public S getCorrespondingState(S state) {
+        return state;
+    }
+
     /**
      * Attention: don't change the set when using this method
      *

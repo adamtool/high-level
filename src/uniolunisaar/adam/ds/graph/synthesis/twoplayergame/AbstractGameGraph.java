@@ -33,14 +33,26 @@ public abstract class AbstractGameGraph<P, T, DC extends IDecision<P, T>, S exte
 
     public abstract S getState(ID id);
 
+    public abstract S getCorrespondingState(S state);
+
     public abstract Collection<S> getStatesView();
+
     public abstract Collection<F> getPostsetView(S state);
+
     public abstract Collection<F> getPresetView(S state);
+
     public abstract Collection<S> getBadStatesView();
 
     public abstract ID getID(S state);
 
     public void addFlow(F flow) {
+//        if (flow.getTarget().getId() == -1) {
+//            throw new RuntimeException(flow.toString());
+////            System.out.println(flow.toString());
+//        }
+//        if (flow.getSource().getId() == -1) {
+//            System.out.println(flow.toString());
+//        }
         flows.add(flow);
     }
 
