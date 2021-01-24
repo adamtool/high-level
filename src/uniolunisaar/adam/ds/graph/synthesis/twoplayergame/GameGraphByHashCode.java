@@ -24,18 +24,18 @@ public class GameGraphByHashCode<P, T, DC extends IDecision<P, T>, S extends IDe
     public GameGraphByHashCode(String name, S initial) {
         super(name, initial);
         this.states = new HashMap<>();
-        this.states.put(initial.getId(), initial);
+        this.states.put(initial.hashCode(), initial);
     }
 
     @Override
     public boolean contains(S state) {
-        return states.containsKey(state.getId());
+        return states.containsKey(state.hashCode());
 //        return states.values().contains(state);
     }
 
     @Override
     public void addState(S state) {
-        states.put(state.getId(), state);
+        states.put(state.hashCode(), state);
     }
 
     @Override
@@ -50,7 +50,22 @@ public class GameGraphByHashCode<P, T, DC extends IDecision<P, T>, S extends IDe
 
     @Override
     public IntegerID getID(S state) {
-        return new IntegerID(state.getId());
+        return new IntegerID(state.hashCode());
+    }
+
+    @Override
+    public Collection<F> getPostsetView(S state) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Collection<F> getPresetView(S state) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Collection<S> getBadStatesView() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

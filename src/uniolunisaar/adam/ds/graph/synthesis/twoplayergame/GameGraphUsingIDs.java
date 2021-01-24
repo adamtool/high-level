@@ -8,14 +8,15 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * ToDo: Merge this class with the Graph in module PetriGames.
+ * ToDo: Merge this class with the Graph in module PetriGames.Attention: Later
+ * modification would yield inconsistent states (pre-, postsets).
  *
- * Attention: Later modification would yield inconsistent states (pre-,
- * postsets). Think of having a general class which could be used for the
- * framework and a specialized class optimized to performance gains.
+ * Think of having a general class which could be used for the framework and a
+ * specialized class optimized to performance gains.
  *
- * This seems to be very slow when the equals or hashcode functions of the
- * states are slow. Especially calculatePre and Postset is then very expensive.
+ * Note: be aware that you can only use the ids of the decision sets after using
+ * the addState method here. As well as all methods depending on the id of the
+ * state.
  *
  * @author Manuel Gieseking
  * @param <P>
@@ -24,51 +25,73 @@ import java.util.Set;
  * @param <T>
  * @param <F>
  */
-public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends GameGraphFlow<T, S>> extends AbstractGameGraph<P, T, DC, S, S, F> {
+public class GameGraphUsingIDs<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends GameGraphFlow<T, S>> extends AbstractGameGraph<P, T, DC, S, S, F> {
 
-    private final Set<S> states;
+    private final HashMap<Integer, S> states;
     private final Set<S> badStates;
-//    private final Map<S, Set<S>> preSet;
-//    private final Map<S, Set<S>> postSet;
-    // better safe the flows
-    private final Map<S, Set<F>> preSet;
-    private final Map<S, Set<F>> postSet;
-//    private final Set<S> V0;
-//    private final Set<S> V1;
+    private final Map<Integer, Set<F>> preSet;
+    private final Map<Integer, Set<F>> postSet;
 
-    public GameGraph(String name, S initial) {
+    private int idCounter = 0;
+
+    public GameGraphUsingIDs(String name, S initial) {
         super(name, initial);
-        this.states = new HashSet<>();
-        this.states.add(initial);
+        initial.overwriteId(idCounter++);
+        this.states = new HashMap<>();
+        this.states.put(initial.getId(), initial);
         this.badStates = new HashSet<>();
         this.preSet = new HashMap<>();
         this.postSet = new HashMap<>();
-//        this.V0 = new HashSet<>();
-//        this.V1 = new HashSet<>();
+    }
+
+    /**
+     * This should be way cheaper as contains(S state). So if the state already
+     * has an id use this method.
+     *
+     * @param id
+     * @return
+     */
+    public boolean contains(int id) {
+        return states.containsKey(id);
     }
 
     @Override
     public boolean contains(S state) {
-        return states.contains(state);
-//        return states.values().contains(state);
+        return states.values().contains(state);
     }
 
+    /**
+     * This method can be used for the strategies to use a State and overwrite
+     * its ID.
+     *
+     * @param state
+     */
+    public void addStateWithNewId(S state) {
+        state.overwriteId(idCounter++);
+        addStateWithID(state);
+    }
+
+    /**
+     * This also sets an ID to the state.
+     *
+     * @param state
+     */
     @Override
     public void addState(S state) {
+        state.setId(idCounter++);
+        addStateWithID(state);
+    }
+
+    private void addStateWithID(S state) {
         if (state.isBad()) {
             badStates.add(state);
         }
-//        if (state.isMcut()) {
-//            V1.add(state);
-//        } else {
-//            V0.add(state);
-//        }
-        states.add(state);
+        states.put(state.getId(), state);
     }
 
     @Override
-    public S getState(S id) {
-        return id;
+    public S getState(S state) {
+        return states.get(state.getId());
     }
 
     /**
@@ -76,8 +99,8 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
      *
      * @return
      */
-    Set<S> getStates() {
-        return states;
+    Collection<S> getStates() {
+        return states.values();
     }
 
     /**
@@ -113,8 +136,8 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
     private Set<F> calculatePostset(S state) {
         Set<F> post = new HashSet<>();
         for (F flow : getFlows()) {
-            if (flow.getSource().equals(state)) {  // this is very expensive, because really all members have to be checked             
-//            if (flow.getSource().getId() == state.getId()) { // this for the id methods using hashcode also
+//            if (flow.getSource().equals(state)) {
+            if (flow.getSource().getId() == state.getId()) {// since we have here IDs, this should be a cheap comparison
                 post.add(flow);
             }
         }
@@ -128,10 +151,10 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
      * @return
      */
     Set<F> getPostset(S state) {
-        Set<F> post = postSet.get(state);
+        Set<F> post = postSet.get(state.getId());
         if (post == null) {
             post = calculatePostset(state);
-            postSet.put(state, post);
+            postSet.put(state.getId(), post);
         }
         return post;
     }
@@ -155,8 +178,8 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
     private Set<F> calculatePreset(S state) {
         Set<F> pre = new HashSet<>();
         for (F flow : getFlows()) {
-            if (flow.getTarget().equals(state)) { // this is very expensive, because really all members have to be checked
-//            if (flow.getTarget().getId() == state.getId()) {// this for the id methods using hashcode also
+//            if (flow.getTarget().equals(state)) {// since we have hier IDs, this should be a cheap comparison
+            if (flow.getTarget().getId() == state.getId()) {// since we have here IDs, this should be a cheap comparison
                 pre.add(flow);
             }
         }
@@ -170,10 +193,10 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
      * @return
      */
     Set<F> getPreset(S state) {
-        Set<F> pre = preSet.get(state);
+        Set<F> pre = preSet.get(state.getId());
         if (pre == null) {
             pre = calculatePreset(state);
-            preSet.put(state, pre);
+            preSet.put(state.getId(), pre);
         }
         return pre;
     }
@@ -183,14 +206,6 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
         return Collections.unmodifiableCollection(getPreset(state));
     }
 
-//
-//    public Collection<S> getPlayer0States() {
-//        return Collections.unmodifiableCollection(V0);
-//    }
-//
-//    public Collection<S> getPlayer1States() {
-//        return Collections.unmodifiableCollection(V1);
-//    }
     @Override
     public S getID(S state) {
         return state;

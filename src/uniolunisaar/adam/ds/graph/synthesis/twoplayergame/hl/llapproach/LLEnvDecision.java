@@ -2,6 +2,7 @@ package uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.EnvDecision;
 import uniolunisaar.adam.ds.synthesis.highlevel.Color;
@@ -61,5 +62,5 @@ public class LLEnvDecision extends EnvDecision {
         hash = 29 * hash * HL2PGConverter.getHashCode(getPlace());
         return hash;
     }
-
+   
 }

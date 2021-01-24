@@ -3,14 +3,11 @@ package uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Set;
-import java.util.Stack;
 import java.util.TreeSet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphUsingIDs;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.StateIdentifier;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.CommitmentSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.DecisionSet;
@@ -131,7 +128,8 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
      * @param hlgame
      * @return
      */
-    public GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> create(HLPetriGame hlgame) {
+//    public GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> create(HLPetriGame hlgame) {
+    public GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> create(HLPetriGame hlgame) {
         // Convert the high-level game to its low-level version
         PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
         // calculate the system transitions
@@ -141,7 +139,7 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
 //        LLDecisionSet init = createUnOrderedInitDecisionSet(hlgame, pgame);
 
         // Create the graph iteratively
-        GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> srg = new GameGraph<>(hlgame.getName() + "_SRG", init);
+        GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> srg = new GameGraphUsingIDs<>(hlgame.getName() + "_SRG", init);
         addStatesIteratively(hlgame, srg, init, pgame.getTransitions(), sysTransitions);
 //        System.out.println(dcs2canon.size());
         return srg;

@@ -34,6 +34,9 @@ public abstract class AbstractGameGraph<P, T, DC extends IDecision<P, T>, S exte
     public abstract S getState(ID id);
 
     public abstract Collection<S> getStatesView();
+    public abstract Collection<F> getPostsetView(S state);
+    public abstract Collection<F> getPresetView(S state);
+    public abstract Collection<S> getBadStatesView();
 
     public abstract ID getID(S state);
 

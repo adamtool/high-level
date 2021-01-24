@@ -9,8 +9,8 @@ import java.util.Set;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.util.Pair;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphUsingIDs;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.ILLDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.symbolic.bddapproach.BDDGraph;
@@ -24,7 +24,8 @@ import uniolunisaar.adam.util.ExplicitBDDGraphTransformer;
  */
 public class GGBuilderStepwise {
 
-    private final GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> sgg;
+//    private final GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> sgg;
+    private final GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> sgg;
     private final Collection<Transition> systemTransitions;
 
     // just for the webinterface to not newly implement the frontend.
@@ -36,7 +37,8 @@ public class GGBuilderStepwise {
         DecisionSet init = GGBuilder.getInstance().createInitDecisionSet(pgame);
         systemTransitions = GGBuilder.getInstance().putSysAndSingleEnvTransitionsToExtention(pgame);
         // Create the graph with the init place
-        sgg = new GameGraph<>(pgame.getName() + "_SRG", init);
+//        sgg = new GameGraph<>(pgame.getName() + "_SRG", init);
+        sgg = new GameGraphUsingIDs<>(pgame.getName() + "_SRG", init);
     }
 
     /**

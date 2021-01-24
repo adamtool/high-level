@@ -3,7 +3,7 @@ package uniolunisaar.adam.logic.synthesis.transformers.highlevel;
 import java.util.Map;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraph;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.ILLDecision;
@@ -34,7 +34,9 @@ public class LLSGStrat2Graphstrategy extends AbstractSGStrat2Graphstrategy<Place
     }
 
     @Override
-    Transition applySymmmetry(Transition t, Symmetry sym, GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> hlstrat) {
+//    Transition applySymmmetry(Transition t, Symmetry sym, GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> hlstrat) {
+//    Transition applySymmmetry(Transition t, Symmetry sym, GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> hlstrat) {
+    Transition applySymmmetry(Transition t, Symmetry sym, AbstractGameGraph<Place, Transition, ILLDecision, DecisionSet, DecisionSet, GameGraphFlow<Transition, DecisionSet>> hlstrat) {
         PetriGameWithTransits pgame = hlstrat.getInitial().getGame();
 
         String hlID = HL2PGConverter.getOrigID(t);

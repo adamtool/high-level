@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import uniol.apt.adt.exception.StructureException;
 import uniol.apt.adt.extension.Extensible;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.synthesis.highlevel.ColoredPlace;
@@ -32,6 +33,26 @@ public class HLDecisionSet extends Extensible implements IDecisionSet<ColoredPla
     private final boolean mcut;
     private final OneEnvHLPG hlgame;
     private final boolean bad;
+    private int id = -1;
+
+    /**
+     * It is not that nice to set IDs later, but for using it in the graphs and
+     * allow it the create independent from it, it was easier this way.
+     *
+     * @param id
+     */
+    @Override
+    public void setId(int id) {
+        if (this.id != -1) {
+            throw new StructureException("Cannot set id to " + id + " because this decision set already has the " + this.id);
+        }
+        this.id = id;
+    }
+
+    @Override
+    public void overwriteId(int id) {
+        this.id = id;
+    }
 //
 //    public DecisionSet(Set<IDecision> decisions) {
 //        this.decisions = decisions;

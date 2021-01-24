@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.Set;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphUsingIDs;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.ILLDecision;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
@@ -33,14 +33,16 @@ public abstract class AbstractExplicitSolver<W extends Condition<W>>
         return winningRegion(p1, null).contains(getGraph().getInitial());
     }
 
-    public GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraphStrategy() throws CalculationInterruptedException {
+//    public GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraphStrategy() throws CalculationInterruptedException {
+    public GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraphStrategy() throws CalculationInterruptedException {
         boolean p1 = false;
         GGStrategyBuilder<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> builder = new GGStrategyBuilder<>();
         return builder.calculateGraphStrategy(getGraph(), p1, winningRegion(p1, null));
     }
 
     @Override
-    protected GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(PetriGameWithTransits game) {
+//    protected GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(PetriGameWithTransits game) {
+    protected GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(PetriGameWithTransits game) {
         return GGBuilder.getInstance().create(game);
     }
 

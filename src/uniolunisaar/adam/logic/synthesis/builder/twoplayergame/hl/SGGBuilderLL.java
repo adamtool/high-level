@@ -6,8 +6,8 @@ import java.util.HashSet;
 import java.util.Set;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IntegerID;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraph;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IntegerID;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphByHashCode;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.StateIdentifier;
@@ -116,13 +116,14 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, Dec
      *
      * Compare Huber's et al. algorithm
      *
-     * Here only the number of states are reduced. Not the reduction of the edges
-     * presented in the RvG paper is implemented.
-     * 
+     * Here only the number of states are reduced. Not the reduction of the
+     * edges presented in the RvG paper is implemented.
+     *
      * @param hlgame
      * @return
      */
     public GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> create(HLPetriGame hlgame) {
+//    public GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> create(HLPetriGame hlgame) {
         // Convert the high-level game to its low-level version
         PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
         // calculate the system transitions
@@ -132,6 +133,7 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, Dec
 
         // Create the graph iteratively
         GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> srg = new GameGraph<>(hlgame.getName() + "_SRG", init);
+//        GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> srg = new GameGraphUsingIDs<>(hlgame.getName() + "_SRG", init);
         addStatesIteratively(hlgame, srg, init, pgame.getTransitions(), sysTransitions);
         return srg;
     }

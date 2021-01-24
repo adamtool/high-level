@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import uniol.apt.adt.exception.StructureException;
 import uniol.apt.adt.extension.Extensible;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
@@ -26,12 +27,32 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
     private final boolean mcut;
     private final PetriGameWithTransits game;
     private final boolean bad;
+    private int id = -1;
+
+    /**
+     * It is not that nice to set IDs later, but for using it in the graphs and
+     * allow it the create independent from it, it was easier this way.
+     *
+     * @param id
+     */
+    @Override
+    public void setId(int id) {
+        if (this.id != -1) {
+            throw new StructureException("Cannot set id to " + id + " because this decision set already has the id " + this.id);
+        }
+        this.id = id;
+    }
+
+    @Override
+    public void overwriteId(int id) {
+        this.id = id;
+    }
+
 //
 //    public DecisionSet(Set<IDecision> decisions) {
 //        this.decisions = decisions;
 //        this.mcut = false;
 //    }
-
     public DecisionSet(DecisionSet dcs) {
         this.mcut = dcs.mcut;
         this.game = dcs.game;
@@ -418,7 +439,7 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
 
     @Override
     public int getId() {
-        return hashCode();
+        return id;
     }
 
     @Override

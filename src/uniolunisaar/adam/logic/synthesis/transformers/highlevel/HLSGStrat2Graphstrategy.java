@@ -1,6 +1,6 @@
 package uniolunisaar.adam.logic.synthesis.transformers.highlevel;
 
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraph;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.hlapproach.HLDecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.hlapproach.IHLDecision;
@@ -29,7 +29,9 @@ public class HLSGStrat2Graphstrategy extends AbstractSGStrat2Graphstrategy<Color
     }
 
     @Override
-    ColoredTransition applySymmmetry(ColoredTransition t, Symmetry sym, GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> hlstrat) {
+//    ColoredTransition applySymmmetry(ColoredTransition t, Symmetry sym, GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> hlstrat) {
+//    ColoredTransition applySymmmetry(ColoredTransition t, Symmetry sym, GameGraphUsingIDs<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> hlstrat) {
+    ColoredTransition applySymmmetry(ColoredTransition t, Symmetry sym, AbstractGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> hlstrat) {
         return t.apply(sym);
     }
 

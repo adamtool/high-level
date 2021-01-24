@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.hlapproach.HLDecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.hlapproach.HLEnvDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
@@ -22,7 +23,6 @@ import uniolunisaar.adam.ds.synthesis.highlevel.Valuation;
 import uniolunisaar.adam.ds.synthesis.highlevel.ValuationIterator;
 import uniolunisaar.adam.ds.synthesis.highlevel.Valuations;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IntegerID;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.StateIdentifier;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.hlapproach.HLCommitmentSet;
 
@@ -96,19 +96,21 @@ public class SGGBuilderHL extends SGGBuilder<ColoredPlace, ColoredTransition, IH
      * game.
      *
      * Compare Huber's et al. algorithm
-     * 
-     * Here only the number of states are reduced. Not the reduction of the edges
-     * presented in the RvG paper is implemented.
+     *
+     * Here only the number of states are reduced. Not the reduction of the
+     * edges presented in the RvG paper is implemented.
      *
      * @param hlgame
      * @return
      */
     public GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> create(OneEnvHLPG hlgame) {
+//    public GameGraphUsingIDs<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> create(OneEnvHLPG hlgame) {
         // create initial decision set
         HLDecisionSet init = createInitDCS(hlgame);
 
         // Create the graph iteratively
         GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> srg = new GameGraph<>(hlgame.getName() + "_HL_SGG", init);
+//        GameGraphUsingIDs<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> srg = new GameGraphUsingIDs<>(hlgame.getName() + "_HL_SGG", init);
         addStatesIteratively(hlgame, srg, init, hlgame.getTransitions(), hlgame.getSystemTransitions());
         return srg;
     }

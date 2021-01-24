@@ -5,8 +5,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import uniol.apt.util.Pair;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraph;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphUsingIDs;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecisionSet;
 import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
@@ -38,14 +39,17 @@ public abstract class AbstractSGStrat2Graphstrategy<P, T, DC extends IDecision<P
      */
 //    public <P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, ID extends StateIdentifier, F extends GameGraphFlow<T, ID>, DCout extends IDecision<Place, Transition>, Sout extends IDecisionSet<Place, Transition, DCout, Sout>, Fout extends GameGraphFlow<Transition, ID>>
 //            GameGraph<Place, Transition, DCout, Sout, GameGraphFlow<Transition, Sout>> builtStrategy(PetriGame game, GameGraph<P, T, DC, S, GameGraphFlow<T, S>> strategy) {
-    public GameGraph<P, T, DC, S, F> builtStrategy(HLPetriGame hlgame, GameGraph<P, T, DC, S, F> hlstrat) {
+//    public GameGraph<P, T, DC, S, F> builtStrategy(HLPetriGame hlgame, GameGraph<P, T, DC, S, F> hlstrat) {
+//    public GameGraphUsingIDs<P, T, DC, S, F> builtStrategy(HLPetriGame hlgame, GameGraphUsingIDs<P, T, DC, S, F> hlstrat) {
+    public GameGraphUsingIDs<P, T, DC, S, F> builtStrategy(HLPetriGame hlgame, AbstractGameGraph<P, T, DC, S, S, F> hlstrat) {
         Map<S, Pair<S, Symmetry>> stateMapping = new HashMap<>(); // mappes D^L -> D^H
         LinkedList<S> todoStates = new LinkedList<>(); // states D^L which still have to be processed
 
         Symmetries syms = hlgame.getSymmetries();
 
         S initHL = hlstrat.getInitial();
-        GameGraph<P, T, DC, S, F> strategy = new GameGraph<>("Low-Level strategy of " + hlstrat.getName(), initHL);
+//        GameGraph<P, T, DC, S, F> strategy = new GameGraph<>("Low-Level strategy of " + hlstrat.getName(), initHL);
+        GameGraphUsingIDs<P, T, DC, S, F> strategy = new GameGraphUsingIDs<>("Low-Level strategy of " + hlstrat.getName(), initHL);
         stateMapping.put(strategy.getInitial(), new Pair<>(initHL, null));
         todoStates.push(strategy.getInitial());
 
@@ -90,7 +94,9 @@ public abstract class AbstractSGStrat2Graphstrategy<P, T, DC extends IDecision<P
         return strategy;
     }
 
-    private void addSuccessor(GameGraph<P, T, DC, S, F> strategy, S pre, T t, Pair<S, Symmetry> postPair, S hlPost, LinkedList<S> todoStates, Map<S, Pair<S, Symmetry>> stateMapping) {
+//    private void addSuccessor(GameGraph<P, T, DC, S, F> strategy, S pre, T t, Pair<S, Symmetry> postPair, S hlPost, LinkedList<S> todoStates, Map<S, Pair<S, Symmetry>> stateMapping) {
+//    private void addSuccessor(GameGraphUsingIDs<P, T, DC, S, F> strategy, S pre, T t, Pair<S, Symmetry> postPair, S hlPost, LinkedList<S> todoStates, Map<S, Pair<S, Symmetry>> stateMapping) {
+    private void addSuccessor(AbstractGameGraph<P, T, DC, S, S, F> strategy, S pre, T t, Pair<S, Symmetry> postPair, S hlPost, LinkedList<S> todoStates, Map<S, Pair<S, Symmetry>> stateMapping) {
         S post = postPair.getFirst();
         if (!strategy.contains(post)) { // if we not already added the state
             todoStates.push(post);
@@ -121,6 +127,8 @@ public abstract class AbstractSGStrat2Graphstrategy<P, T, DC extends IDecision<P
         throw new RuntimeException("Could not find a corresponding symmetry for " + succHL.toString() + " and " + succLL.toString() + ". This should never happen!");
     }
 
-    abstract T applySymmmetry(T t, Symmetry currentSymmetry, GameGraph<P, T, DC, S, F> hlstrat);
+//    abstract T applySymmmetry(T t, Symmetry currentSymmetry, GameGraph<P, T, DC, S, F> hlstrat);
+//    abstract T applySymmmetry(T t, Symmetry currentSymmetry, GameGraphUsingIDs<P, T, DC, S, F> hlstrat);
+    abstract T applySymmmetry(T t, Symmetry currentSymmetry, AbstractGameGraph<P, T, DC, S, S, F> hlstrat);
 
 }

@@ -1,5 +1,6 @@
 package uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.hlapproach;
 
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.hlapproach.HLDecisionSet;
@@ -31,6 +32,7 @@ public class HLASafetyWithoutType2SolverHLApproach extends HLASafetyWithoutType2
 
     @Override
     protected GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> calculateGraph(HLPetriGame hlgame) {
+//    protected GameGraphUsingIDs<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> calculateGraph(HLPetriGame hlgame) {
         return SGGBuilderHL.getInstance().create(new OneEnvHLPG(hlgame, true));
     }
 
@@ -40,7 +42,9 @@ public class HLASafetyWithoutType2SolverHLApproach extends HLASafetyWithoutType2
     }
 
     @Override
-    public GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> calculateLLGraphStrategy() throws CalculationInterruptedException {
+//    public GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> calculateLLGraphStrategy() throws CalculationInterruptedException {
+//    public GameGraphUsingIDs<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> calculateLLGraphStrategy() throws CalculationInterruptedException {
+    public AbstractGameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> calculateLLGraphStrategy() throws CalculationInterruptedException {
         return HLSGStrat2Graphstrategy.getInstance().builtStrategy(getSolvingObject().getGame(), calculateGraphStrategy());
     }
 

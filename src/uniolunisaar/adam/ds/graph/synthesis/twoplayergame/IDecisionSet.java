@@ -51,4 +51,6 @@ public interface IDecisionSet<P, T, DC extends IDecision<P, T>, S extends IDecis
     @Override
     public int getId();
 
+    public void setId(int id);
+    public void overwriteId(int id);
 }

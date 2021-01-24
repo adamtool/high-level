@@ -11,8 +11,9 @@ import java.util.Set;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.util.Pair;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraph;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphUsingIDs;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.StateIdentifier;
@@ -48,7 +49,9 @@ public abstract class AbstractPGStrategyBuilder<P, T, DC extends IDecision<P, T>
      * @param ggStrategy
      * @return
      */
-    public PetriGameWithTransits builtStrategy(String name, GameGraph<P, T, DC, S, GameGraphFlow<T, S>> ggStrategy) {
+//    public PetriGameWithTransits builtStrategy(String name, GameGraph<P, T, DC, S, GameGraphFlow<T, S>> ggStrategy) {
+//    public PetriGameWithTransits builtStrategy(String name, GameGraphUsingIDs<P, T, DC, S, GameGraphFlow<T, S>> ggStrategy) {
+    public PetriGameWithTransits builtStrategy(String name, AbstractGameGraph<P, T, DC, S, S, GameGraphFlow<T, S>> ggStrategy) {
 //    public PetriGame builtStrategy(String name, GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy) {
         Logger.getInstance().addMessage("Calculate Petri game strategy.");
         PetriGameWithTransits strategy = new PetriGameWithTransits("Winning strategy of the system players of the net '" + name + "'.");
@@ -93,7 +96,9 @@ public abstract class AbstractPGStrategyBuilder<P, T, DC extends IDecision<P, T>
 
     abstract void copyExtension(Place to, P from);
 
-    private void calculateStrategyByBFS(GameGraph<P, T, DC, S, GameGraphFlow<T, S>> ggStrategy, PetriGameWithTransits strategy) {
+//    private void calculateStrategyByBFS(GameGraph<P, T, DC, S, GameGraphFlow<T, S>> ggStrategy, PetriGameWithTransits strategy) {
+//    private void calculateStrategyByBFS(GameGraphUsingIDs<P, T, DC, S, GameGraphFlow<T, S>> ggStrategy, PetriGameWithTransits strategy) {
+    private void calculateStrategyByBFS(AbstractGameGraph<P, T, DC, S, S, GameGraphFlow<T, S>> ggStrategy, PetriGameWithTransits strategy) {
 //    private void calculateStrategyByBFS(GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy, PetriGame strategy, DecisionSet initialState, List<Place> initialMarking) {
 
         Map<S, List<T>> transitionMap = new HashMap<>();

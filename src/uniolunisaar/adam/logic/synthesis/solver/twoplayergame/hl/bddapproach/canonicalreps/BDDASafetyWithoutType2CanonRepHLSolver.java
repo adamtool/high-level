@@ -3,7 +3,6 @@ package uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.ca
 import java.util.List;
 import java.util.Map;
 import net.sf.javabdd.BDD;
-import net.sf.javabdd.BDDDomain;
 import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.exceptions.pnwt.NetNotSafeException;

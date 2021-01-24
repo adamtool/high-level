@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecisionSet;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
 import uniolunisaar.adam.ds.synthesis.pgwt.IPetriGame;
 import uniolunisaar.adam.ds.objectives.Condition;
@@ -32,13 +32,17 @@ import uniolunisaar.adam.tools.Logger;
 public abstract class AbstractSolver<W extends Condition<W>, G extends IPetriGame, SO extends SolvingObject<G, W, SO>, SOP extends SolverOptions, P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends GameGraphFlow<T, S>>
         extends Solver<G, W, SO, SOP> {
 
-    private GameGraph<P, T, DC, S, F> graph = null;
+//    private GameGraph<P, T, DC, S, F> graph = null;
+//    private GameGraphUsingIDs<P, T, DC, S, F> graph = null;
+    private AbstractGameGraph<P, T, DC, S, S, F> graph = null;
 
     public AbstractSolver(SO solverObject, SOP options) {
         super(solverObject, options);
     }
 
-    protected abstract GameGraph<P, T, DC, S, F> calculateGraph(G game);
+//    protected abstract GameGraph<P, T, DC, S, F> calculateGraph(G game);
+//    protected abstract GameGraphUsingIDs<P, T, DC, S, F> calculateGraph(G game);
+    protected abstract AbstractGameGraph<P, T, DC, S, S, F> calculateGraph(G game);
 
     protected Set<S> attractor(Collection<S> init, boolean p1, Map<Integer, Set<S>> distance) throws CalculationInterruptedException {
         Set<S> attr = new HashSet<>(init);
@@ -91,7 +95,9 @@ public abstract class AbstractSolver<W extends Condition<W>, G extends IPetriGam
         return attr;
     }
 
-    public GameGraph<P, T, DC, S, F> getGraph() {
+//    public GameGraph<P, T, DC, S, F> getGraph() {
+//    public GameGraphUsingIDs<P, T, DC, S, F> getGraph() {
+    public AbstractGameGraph<P, T, DC, S, S, F> getGraph() {
         if (graph == null) {
             graph = calculateGraph(getSolvingObject().getGame());
         }

@@ -59,7 +59,12 @@ public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDe
             for (SymmetryIterator iti = syms.iterator(); iti.hasNext();) {
                 Symmetry sym = iti.next(); // todo: get rid of the identity symmetry, just do it in this case before looping
                 copySucc = succ.apply(sym);
-                if (srg.contains(copySucc)) {
+                // note: this contains is more expensive using getValues().contains from the ID hashmap
+                //       then having them directly stored in a map. But the main problem when using 
+                //        this method with the GameGraphUsingIDs is that we create here a new state which does not
+                //         have any id, and contains does not return to corresponding object of the graph and this 
+                //          is even more expensive.
+                if (srg.contains(copySucc)) { 
                     newOne = false;
                     break;
                 }
