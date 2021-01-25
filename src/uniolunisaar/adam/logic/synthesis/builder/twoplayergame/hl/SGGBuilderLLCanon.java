@@ -55,7 +55,7 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
     public HashMap<OrderedDecisionSet, OrderedDecisionSet> dcs2canon = new HashMap<>();
 
     public SaveMapping saveMapping = SaveMapping.ALL;
-    public boolean withBidi = false;
+    public boolean withBidi = true;
 
     /**
      * It's the same as for SGGBuilderLL Todo: Do it properly ...
