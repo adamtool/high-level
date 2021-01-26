@@ -25,10 +25,11 @@ public class GGStrategyBuilder<P, T, DC extends IDecision<P, T>, S extends IDeci
 
 //    public GameGraph<P, T, DC, S, F> calculateGraphStrategy(GameGraph<P, T, DC, S, F> graph, boolean p1, Set<S> winningRegion) throws CalculationInterruptedException {
 //    public GameGraphUsingIDs<P, T, DC, S, F> calculateGraphStrategy(GameGraphUsingIDs<P, T, DC, S, F> graph, boolean p1, Set<S> winningRegion) throws CalculationInterruptedException {
-    public GameGraphUsingIDs<P, T, DC, S, F> calculateGraphStrategy(AbstractGameGraph<P, T, DC, S, S, F> graph, boolean p1, Set<S> winningRegion) throws CalculationInterruptedException {
-        S init = graph.getInitial();// Create the initial state
+    public GameGraphUsingIDs<P, T, DC, S, F> calculateGraphStrategy(AbstractGameGraph<P, T, DC, S, S, F> graph,AbstractGameGraph<P, T, DC, S, S, F> emptyStrat, boolean p1, Set<S> winningRegion) throws CalculationInterruptedException {
+        S init = graph.getInitial();
 //        GameGraph<P, T, DC, S, F> strat = new GameGraph<>(graph.getName() + "_HLstrat", init);
         GameGraphUsingIDs<P, T, DC, S, F> strat = new GameGraphUsingIDs<>(graph.getName() + "_HLstrat", init);
+//        AbstractGameGraph<P, T, DC, S, S, F> strat =emptyStrat;
         LinkedList<S> added = new LinkedList<>();
         added.add(init);
         while (!added.isEmpty()) { // as long as new successors had been added

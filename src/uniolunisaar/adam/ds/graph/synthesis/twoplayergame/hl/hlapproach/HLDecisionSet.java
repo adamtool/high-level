@@ -312,7 +312,14 @@ public class HLDecisionSet extends Extensible implements IDecisionSet<ColoredPla
         return marking;
     }
 
-    private boolean calcNdet(Set<IHLDecision> dcs) {
+    /**
+     * NDet version which searches for the fireability of the transitions in the
+     * reachabillity graph of the original game.
+     *
+     * @param dcs
+     * @return
+     */
+    private boolean calcNdetOnPG(Set<IHLDecision> dcs) {
         Set<ColoredPlace> marking = getMarking(dcs);
         Set<Transition> trans = hlgame.getTransitions();
         Set<ColoredTransition> choosenTrans = new HashSet<>();
@@ -352,6 +359,56 @@ public class HLDecisionSet extends Extensible implements IDecisionSet<ColoredPla
                     }
                     if (shared && hlgame.eventuallyEnabled(t1, t2)) { // here check added for firing in the original game
                         return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * NDet version which uses the first version of the ndet from the gandalf
+     * paper.
+     *
+     * @param dcs
+     * @return
+     */
+    private boolean calcNdet(Set<IHLDecision> dcs) {
+        Set<ColoredPlace> marking = getMarking(dcs);
+        Set<Transition> trans = hlgame.getTransitions();
+        Set<ColoredTransition> choosenTrans = new HashSet<>();
+        for (Transition t1 : trans) { // create low-level transition
+            for (ValuationIterator it = hlgame.getValuations(t1).iterator(); it.hasNext();) {
+                Valuation val = it.next();
+                ColoredTransition ct = new ColoredTransition(hlgame, t1, val);
+                if (!ct.isValid()) {
+                    continue;
+                }
+                // check if it is choosen in dcs
+                Set<ColoredPlace> preT1 = ct.getPreset();
+                boolean choosen = true;
+                for (IHLDecision decision : dcs) {
+                    if (preT1.contains(decision.getPlace()) && !decision.isChoosen(ct)) {
+                        choosen = false;
+                    }
+                }
+                if (choosen) {
+                    choosenTrans.add(ct);
+                }
+            }
+        }
+        for (ColoredTransition t1 : choosenTrans) { // todo: to stupid loops also tests t1 t2 and t2, t1.
+            for (ColoredTransition t2 : choosenTrans) {
+                if (!t1.equals(t2)) {
+                    // sharing a system place?
+                    Set<ColoredPlace> preT1 = t1.getPreset();
+                    Set<ColoredPlace> preT2 = t2.getPreset();
+                    Set<ColoredPlace> intersect = new HashSet<>(preT1);
+                    intersect.retainAll(preT2);
+                    for (ColoredPlace place : intersect) {
+                        if (!hlgame.isEnvironment(place.getPlace()) && marking.contains(place)) {
+                            return true;
+                        }
                     }
                 }
             }

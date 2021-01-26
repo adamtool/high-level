@@ -52,12 +52,12 @@ public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, 
         return !attr.contains(getGraph().getInitial());
     }
 
-    public AbstractGameGraph<P, T, DC, S, S, F> calculateGraphStrategy() throws CalculationInterruptedException {
+    public AbstractGameGraph<P, T, DC, S, S, F> calculateGraphStrategy(AbstractGameGraph<P, T, DC, S, S, F> graph, AbstractGameGraph<P, T, DC, S, S, F> emptyStrategy) throws CalculationInterruptedException {
 //    public GameGraph<P, T, DC, S, F> calculateGraphStrategy() throws CalculationInterruptedException {
 //    public GameGraphUsingIDs<P, T, DC, S, F> calculateGraphStrategy() throws CalculationInterruptedException {
         boolean p1 = false;
         GGStrategyBuilder<P, T, DC, S, F> builder = new GGStrategyBuilder<>();
-        return builder.calculateGraphStrategy(getGraph(), p1, winRegionSafety(p1, null));
+        return builder.calculateGraphStrategy(getGraph(), emptyStrategy, p1, winRegionSafety(p1, null));
     }
 
 //    public GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateLLGraphStrategy() throws CalculationInterruptedException {

@@ -8,7 +8,6 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphUsingIDs;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.ILLDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.hlapproach.HLDecisionSet;
@@ -143,8 +142,12 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
         diff = System.currentTimeMillis() - time;
 //        timeLLApproach += diff;
         Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy LL approach (size " + sizeLL + "): " + llapproach + "" + Math.round((diff / 1000.0f) * 100.0) / 100.0);
-//        System.out.println(solverLL.getGraph().getBadStatesView().size());
+        System.out.println(solverLL.getGraph().getBadStatesView().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "hl2llGG", solverLL.getGraph());
+        HLTools.saveGraph2PDF(outputDir + "hl2LLGGStrat", solverLL.calculateGraphStrategy());
+        HLTools.saveGraph2PDF(outputDir + "hl2LLGGLLStrat", solverLL.calculateLLGraphStrategy());
+//        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
+        PGTools.savePG2PDF(outputDir + "hl2llPGStrat", solverLL.getStrategy(), false);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANON REPS
         time = System.currentTimeMillis();
 
@@ -156,9 +159,12 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
         diff = System.currentTimeMillis() - time;
 //        timeLLApproach += diff;
         Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy canon approach (size " + sizeCanon + "): " + canonApproach + "" + Math.round((diff / 1000.0f) * 100.0) / 100.0);
-////        System.out.println(solverCanon.getGraph().getBadStatesView().size());
+        HLTools.saveGraph2PDF(outputDir + "hlcanonGGStrat", solverCanon.calculateGraphStrategy());
+        HLTools.saveGraph2PDF(outputDir + "hlcanonGGLLStrat", solverCanon.calculateLLGraphStrategy());
+//        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
+        PGTools.savePG2PDF(outputDir + "hlcanonPGStrat", solverCanon.getStrategy(), false);
+        System.out.println(solverCanon.getGraph().getBadStatesView().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "hlcanonGG", solverCanon.getGraph());
-
 //        // %%%%%%% BDD
 //        time = System.currentTimeMillis();
         BDDSolverOptions opt = new BDDSolverOptions(true);
@@ -281,7 +287,7 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
         time = System.currentTimeMillis();
         ExplicitASafetyWithoutType2Solver solverExp = (ExplicitASafetyWithoutType2Solver) ExplicitSolverFactory.getInstance().getSolver(pgame, new ExplicitSolverOptions());
 //        GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> stratExpl = solverExp.calculateGraphStrategy();
-        GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> stratExpl = solverExp.calculateGraphStrategy();
+        AbstractGameGraph<Place, Transition, ILLDecision, DecisionSet, DecisionSet, GameGraphFlow<Transition, DecisionSet>> stratExpl = solverExp.calculateGraphStrategy();
         diff = System.currentTimeMillis() - time;
         timeExplApproach += diff;
         Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% LL graph strategy explicit " + Math.round((diff / 1000.0f) * 100.0) / 100.0);

@@ -3,8 +3,8 @@ package uniolunisaar.adam.logic.synthesis.builder.pgwt.highlevel;
 import java.util.Set;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphUsingIDs;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.ILLDecision;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
@@ -26,7 +26,8 @@ public class LLPGStrategyBuilder extends AbstractPGStrategyBuilder<Place, Transi
     }
 
 //    public PetriGameWithTransits builtStrategy(PetriGameWithTransits game, GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy) {
-    public PetriGameWithTransits builtStrategy(PetriGameWithTransits game, GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy) {
+//    public PetriGameWithTransits builtStrategy(PetriGameWithTransits game, GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy) {
+    public PetriGameWithTransits builtStrategy(PetriGameWithTransits game, AbstractGameGraph<Place, Transition, ILLDecision, DecisionSet, DecisionSet, GameGraphFlow<Transition, DecisionSet>> ggStrategy) {
         PetriGameWithTransits strategy = builtStrategy(game.getName(), ggStrategy);
 
         TransitCalculator.copyTokenflowsFromGameToStrategy(game, strategy);

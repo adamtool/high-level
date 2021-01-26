@@ -316,7 +316,15 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
         return marking;
     }
 
-    private boolean calcNdet(Set<ILLDecision> dcs) {
+    /**
+     * NDet version which searches for the fireability of the transitions in the
+     * reachabillity graph of the original game.
+     *
+     * @param dcs
+     * @return
+     */
+    private boolean calcNdetOnPG(Set<ILLDecision> dcs) {
+//    private boolean calcNdet(Set<ILLDecision> dcs) {
         Set<Place> marking = getMarking(dcs);
         Set<Transition> trans = game.getTransitions();
         Set<Transition> choosenTrans = new HashSet<>();
@@ -333,6 +341,9 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
                 choosenTrans.add(t);
             }
         }
+        if (choosenTrans.size() < 2) {
+            return false;
+        }
         for (Transition t1 : choosenTrans) { // create low-level transition
             for (Transition t2 : choosenTrans) {
                 if (!t1.getId().equals(t2.getId())) {
@@ -348,11 +359,55 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
                         }
                     }
                     if (shared && game.eventuallyEnabled(t1, t2)) { // here check added for firing in the original game
+//                    if (shared && marking.containsAll(t1.getPreset()) && marking.containsAll(t2.getPreset())) {
                         return true;
                     }
                 }
             }
         }
+        return false;
+    }
+
+    /**
+     * NDet version which uses the first version of the ndet from the gandalf
+     * paper.
+     *
+     * @param dcs
+     * @return
+     */
+    private boolean calcNdet(Set<ILLDecision> dcs) {
+        Set<Place> marking = getMarking(dcs);
+        Set<Transition> firableTrans = new HashSet<>();
+        for (ILLDecision decision : dcs) {
+            for (Transition transition : decision.getPlace().getPostset()) {
+                if (decision.isChoosen(transition) && marking.containsAll(transition.getPreset())) {
+                    firableTrans.add(transition);
+                }
+            }
+        }
+        if (firableTrans.size() < 2) {
+            return false;
+        }
+//        System.out.println("asdf");
+//        System.out.println(firableTrans.toString()); 
+
+        for (Transition t1 : firableTrans) { 
+            for (Transition t2 : firableTrans) {
+                if (!t1.getId().equals(t2.getId())) {
+                    // sharing a system place?
+                    Set<Place> preT1 = t1.getPreset();
+                    Set<Place> preT2 = t2.getPreset();
+                    Set<Place> intersect = new HashSet<>(preT1);
+                    intersect.retainAll(preT2);
+                    for (Place place : intersect) {
+                        if (!game.isEnvironment(place)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
         return false;
     }
 
