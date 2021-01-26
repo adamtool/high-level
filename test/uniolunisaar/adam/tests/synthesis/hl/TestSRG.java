@@ -14,6 +14,7 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.io.parser.ParseException;
 import uniol.apt.module.exception.ModuleException;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLDecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractCommitmentSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IntegerID;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
@@ -25,7 +26,6 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.hlapproach.IHLDecis
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.ILLDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.hlapproach.HLCommitmentSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLCommitmentSet;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLDecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLEnvDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLSysDecision;
 import uniolunisaar.adam.ds.synthesis.highlevel.Color;

@@ -1,5 +1,9 @@
 package uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.canonicalreps;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
@@ -19,6 +23,7 @@ import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.HLASafetyWithou
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.HLSolverOptions;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.HLSolvingObject;
 import uniolunisaar.adam.logic.synthesis.transformers.highlevel.LLSGStrat2Graphstrategy;
+import uniolunisaar.adam.tools.Logger;
 
 /**
  *
@@ -61,6 +66,79 @@ public class HLASafetyWithoutType2SolverCanonApproach extends HLASafetyWithoutTy
         AbstractGameGraph<Place, Transition, ILLDecision, DecisionSet, DecisionSet, GameGraphFlow<Transition, DecisionSet>> strat = new GameGraphUsingIDs<>(getGraph().getName() + "_HLstrat", init);
         return LLSGStrat2Graphstrategy.getInstance().builtStrategy(getSolvingObject().getGame(), calculateGraphStrategy(getGraph(), strat));
 //        throw new UnsupportedOperationException("NotYetImplemented: The best is still to come!");
+    }
+
+    /**
+     * The same as the super method, but just using the ids of the states.
+     *
+     * @param init
+     * @param p1
+     * @param distance
+     * @return
+     * @throws CalculationInterruptedException
+     */
+    @Override
+    protected Set<DecisionSet> attractor(Collection<DecisionSet> init, boolean p1, Map<Integer, Set<DecisionSet>> distance) throws CalculationInterruptedException {
+        GameGraphUsingIDsBidiMap<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> graph = (GameGraphUsingIDsBidiMap<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>>) getGraph();
+        Set<Integer> attr = new HashSet<>();
+        Set<Integer> lastRound = new HashSet<>();
+        for (DecisionSet in : init) {
+            attr.add(in.getId());
+            lastRound.add(in.getId());
+        }
+        int i = 0;
+        while (!lastRound.isEmpty()) {
+            if (Thread.interrupted()) {
+                CalculationInterruptedException e = new CalculationInterruptedException();
+                Logger.getInstance().addError(e.getMessage(), e);
+                throw e;
+            }
+            // todo: currently no distance support
+//            if (distance != null) {
+//                distance.put(i++, lastRound);
+//            }
+            // all predecessors of the states already in the attractor (note: cannot only use the last added)  
+            lastRound.clear();
+            for (Integer id : attr) {
+                DecisionSet state = graph.getState(id);
+                Collection<GameGraphFlow<Transition, DecisionSet>> predecessors = getGraph().getPresetView(state);
+                for (GameGraphFlow<Transition, DecisionSet> preFlow : predecessors) { // all predecessors
+                    DecisionSet pre = preFlow.getSource();
+                    // if it is already in the attractor we have nothing to do
+                    if (attr.contains(pre.getId())) {
+                        continue;
+                    }
+                    boolean belongsToThePlayer = (p1 && pre.isMcut()) || (!p1 && !pre.isMcut()); // it belongs to the current player
+                    Collection<GameGraphFlow<Transition, DecisionSet>> successors = getGraph().getPostsetView(pre);
+                    boolean allInAttr = true;
+                    for (GameGraphFlow<Transition, DecisionSet> succFlow : successors) { /// all successors
+                        DecisionSet succ = succFlow.getTarget();
+                        if (attr.contains(succ.getId())) { // is in the attractor
+                            if (belongsToThePlayer) { // it's belongs to the current player
+                                // thus one successor in the attractor is enough
+                                // and pre is already the good one
+                                break;
+                            }
+                        } else {
+                            allInAttr = false; // found a bad one
+                            if (!belongsToThePlayer) {
+                                break; // one is enough, I can stop
+                            }
+                        }
+                    }
+                    if (allInAttr) { // it's the state of the other player and all successors are already in the attractor
+                        lastRound.add(pre.getId());
+                    }
+                }
+            }
+            attr.addAll(lastRound);
+        }
+
+        Set<DecisionSet> out = new HashSet<>();
+        for (Integer id : attr) {
+            out.add(graph.getState(id));
+        }
+        return out;
     }
 
 }
