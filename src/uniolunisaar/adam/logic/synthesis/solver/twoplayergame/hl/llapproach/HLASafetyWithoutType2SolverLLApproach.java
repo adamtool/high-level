@@ -37,7 +37,7 @@ public class HLASafetyWithoutType2SolverLLApproach extends HLASafetyWithoutType2
 
     @Override
 //    protected GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(HLPetriGame hlgame) {
-    protected AbstractGameGraph<Place, Transition, ILLDecision, DecisionSet,DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(HLPetriGame hlgame) {
+    protected AbstractGameGraph<Place, Transition, ILLDecision, DecisionSet, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(HLPetriGame hlgame) {
 //    protected GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(HLPetriGame hlgame) {
         return SGGBuilderLL.getInstance().create(hlgame);
     }
@@ -66,19 +66,20 @@ public class HLASafetyWithoutType2SolverLLApproach extends HLASafetyWithoutType2
 
         return LLSGStrat2Graphstrategy.getInstance().builtStrategy(getSolvingObject().getGame(), calculateGraphStrategy(getGraph(), strat));
     }
-    
-    
-     /**
+
+    /**
      * The same as the super method, but just using the ids of the states.
      *
      * @param init
      * @param p1
      * @param distance
+     * @param withAbortion
+     * @param abortionState
      * @return
      * @throws CalculationInterruptedException
      */
     @Override
-    protected Set<DecisionSet> attractor(Collection<DecisionSet> init, boolean p1, Map<Integer, Set<DecisionSet>> distance) throws CalculationInterruptedException {
+    protected Set<DecisionSet> attractor(Collection<DecisionSet> init, boolean p1, Map<Integer, Set<DecisionSet>> distance, boolean withAbortion, DecisionSet abortionState) throws CalculationInterruptedException {
         GameGraphUsingIDsBidiMap<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> graph = (GameGraphUsingIDsBidiMap<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>>) getGraph();
         Set<Integer> attr = new HashSet<>();
         Set<Integer> lastRound = new HashSet<>();
@@ -127,6 +128,10 @@ public class HLASafetyWithoutType2SolverLLApproach extends HLASafetyWithoutType2
                         }
                     }
                     if (allInAttr) { // it's the state of the other player and all successors are already in the attractor
+                        // if the abortion state is added, we can stop with an empty winning region (for safety)
+                        if (withAbortion && pre.getId() == abortionState.getId()) {
+                            return null;
+                        }
                         lastRound.add(pre.getId());
                     }
                 }

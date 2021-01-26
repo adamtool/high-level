@@ -22,7 +22,10 @@ public class ExplicitASafetyWithoutType2Solver extends AbstractExplicitSolver<Sa
 
     @Override
     Set<DecisionSet> winningRegion(boolean p1, Map<Integer, Set<DecisionSet>> distance) throws CalculationInterruptedException {
-        Set<DecisionSet> attr = attractor(getGraph().getBadStatesView(), !p1, distance);
+        Set<DecisionSet> attr = attractor(getGraph().getBadStatesView(), !p1, distance, true, getGraph().getInitial());
+        if (attr == null) { // init was in the attractor
+            return new HashSet<>(); // so there is no winning region
+        }
         Set<DecisionSet> winning = new HashSet<>(getGraph().getStatesView());
         winning.removeAll(attr);
         return winning;

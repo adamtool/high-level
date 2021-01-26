@@ -1,12 +1,8 @@
 package uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.hlapproach;
 
-import uniol.apt.adt.pn.Place;
-import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.DecisionSet;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.ILLDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.hlapproach.HLDecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.hlapproach.IHLDecision;
 import uniolunisaar.adam.ds.synthesis.highlevel.ColoredPlace;

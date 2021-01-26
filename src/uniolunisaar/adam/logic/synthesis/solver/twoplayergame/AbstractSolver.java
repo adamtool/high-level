@@ -44,7 +44,7 @@ public abstract class AbstractSolver<W extends Condition<W>, G extends IPetriGam
 //    protected abstract GameGraphUsingIDs<P, T, DC, S, F> calculateGraph(G game);
     protected abstract AbstractGameGraph<P, T, DC, S, S, F> calculateGraph(G game);
 
-    protected Set<S> attractor(Collection<S> init, boolean p1, Map<Integer, Set<S>> distance) throws CalculationInterruptedException {
+    protected Set<S> attractor(Collection<S> init, boolean p1, Map<Integer, Set<S>> distance, boolean withAbortion, S abortionState) throws CalculationInterruptedException {
         Set<S> attr = new HashSet<>(init);
         Set<S> lastRound = new HashSet<>(init);
         int i = 0;
@@ -86,6 +86,10 @@ public abstract class AbstractSolver<W extends Condition<W>, G extends IPetriGam
                         }
                     }
                     if (allInAttr) { // it's the state of the other player and all successors are already in the attractor
+                        // if the abortion state is added, we can stop with an empty winning region (for safety)
+                        if (withAbortion && pre.equals(abortionState)) {
+                            return null;
+                        }
                         lastRound.add(pre);
                     }
                 }

@@ -27,7 +27,10 @@ public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, 
     }
 
     public Set<S> winRegionSafety(boolean p1, Map<Integer, Set<S>> distance) throws CalculationInterruptedException {
-        Set<S> attr = attractor(getGraph().getBadStatesView(), !p1, distance);
+        Set<S> attr = attractor(getGraph().getBadStatesView(), !p1, distance, true, getGraph().getInitial());
+        if (attr == null) { // init was in the attractor
+            return new HashSet<>(); // so there is no winning region
+        }
 //        System.out.println(attr.toString());        
 //        System.out.println("bad size " + getGraph().getBadStatesView().size());
 //        System.out.println("attr size " + attr.size());
@@ -48,8 +51,10 @@ public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, 
 
     public boolean isWinning(boolean p1) throws CalculationInterruptedException {
 //        return winRegionSafety(p1, null).contains(getGraph().getInitial()); // don't need to do the removeAll:
-        Set<S> attr = attractor(getGraph().getBadStatesView(), !p1, null);
-        return !attr.contains(getGraph().getInitial());
+        S init = getGraph().getInitial();
+        Set<S> attr = attractor(getGraph().getBadStatesView(), !p1, null, true, init);
+//        return !attr.contains(init);
+        return attr != null;
     }
 
     public AbstractGameGraph<P, T, DC, S, S, F> calculateGraphStrategy(AbstractGameGraph<P, T, DC, S, S, F> graph, AbstractGameGraph<P, T, DC, S, S, F> emptyStrategy) throws CalculationInterruptedException {
