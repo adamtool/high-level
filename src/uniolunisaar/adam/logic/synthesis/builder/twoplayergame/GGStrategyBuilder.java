@@ -9,7 +9,6 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphUsingIDs;
 import uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException;
 
 /**
@@ -25,11 +24,11 @@ public class GGStrategyBuilder<P, T, DC extends IDecision<P, T>, S extends IDeci
 
 //    public GameGraph<P, T, DC, S, F> calculateGraphStrategy(GameGraph<P, T, DC, S, F> graph, boolean p1, Set<S> winningRegion) throws CalculationInterruptedException {
 //    public GameGraphUsingIDs<P, T, DC, S, F> calculateGraphStrategy(GameGraphUsingIDs<P, T, DC, S, F> graph, boolean p1, Set<S> winningRegion) throws CalculationInterruptedException {
-    public GameGraphUsingIDs<P, T, DC, S, F> calculateGraphStrategy(AbstractGameGraph<P, T, DC, S, S, F> graph,AbstractGameGraph<P, T, DC, S, S, F> emptyStrat, boolean p1, Set<S> winningRegion) throws CalculationInterruptedException {
+    public AbstractGameGraph<P, T, DC, S, S, F> calculateGraphStrategy(AbstractGameGraph<P, T, DC, S, S, F> graph, AbstractGameGraph<P, T, DC, S, S, F> initStrat, boolean p1, Set<S> winningRegion) throws CalculationInterruptedException {
         S init = graph.getInitial();
 //        GameGraph<P, T, DC, S, F> strat = new GameGraph<>(graph.getName() + "_HLstrat", init);
-        GameGraphUsingIDs<P, T, DC, S, F> strat = new GameGraphUsingIDs<>(graph.getName() + "_HLstrat", init);
-//        AbstractGameGraph<P, T, DC, S, S, F> strat =emptyStrat;
+//        GameGraphUsingIDs<P, T, DC, S, F> strat = new GameGraphUsingIDs<>(graph.getName() + "_HLstrat", init);
+        AbstractGameGraph<P, T, DC, S, S, F> strat = initStrat;
         LinkedList<S> added = new LinkedList<>();
         added.add(init);
         while (!added.isEmpty()) { // as long as new successors had been added
@@ -41,8 +40,8 @@ public class GGStrategyBuilder<P, T, DC extends IDecision<P, T>, S extends IDeci
             for (F succFlow : successors) {
                 S successor = succFlow.getTarget();
                 if (winningRegion.contains(successor)) {
-                    if (!strat.contains(successor.getId())) {
-                        strat.addStateWithNewId(successor);
+                    if (!strat.containsExistingState(successor)) {
+                        strat.addFreshState(successor);
                         strat.addFlow(succFlow);
                         added.push(successor);
                     } else {
@@ -67,7 +66,7 @@ public class GGStrategyBuilder<P, T, DC extends IDecision<P, T>, S extends IDeci
      */
     @Deprecated
 //    private List<F> getFlow(GameGraph<P, T, DC, S, F> graph, S pre, S post, boolean one) {
-    private List<F> getFlow(GameGraphUsingIDs<P, T, DC, S, F> graph, S pre, S post, boolean one) {
+    private List<F> getFlow(AbstractGameGraph<P, T, DC, S, S, F> graph, S pre, S post, boolean one) {
         List<F> flows = new ArrayList<>();
         for (F f : graph.getFlowsView()) {
             if (f.getSource().equals(pre) && f.getTarget().equals(post)) {

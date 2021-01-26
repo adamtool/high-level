@@ -65,13 +65,19 @@ public class GameGraphUsingIDs<P, T, DC extends IDecision<P, T>, S extends IDeci
         return states.containsValue(state);
     }
 
+    @Override
+    public boolean containsExistingState(S state) {
+        return contains(state.getId());
+    }
+
     /**
      * This method can be used for the strategies to use a State and overwrite
      * its ID.
      *
      * @param state
      */
-    public void addStateWithNewId(S state) {
+    @Override
+    public void addFreshState(S state) {
         state.overwriteId(idCounter++);
         addStateWithID(state);
     }
@@ -108,7 +114,6 @@ public class GameGraphUsingIDs<P, T, DC extends IDecision<P, T>, S extends IDeci
     @Override
     public S getCorrespondingState(S state) {
         for (Map.Entry<Integer, S> entry : states.entrySet()) {
-            Integer key = entry.getKey();
             S value = entry.getValue();
             if (value.equals(state)) {
                 return value;

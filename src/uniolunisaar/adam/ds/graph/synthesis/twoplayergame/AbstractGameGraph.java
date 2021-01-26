@@ -29,7 +29,11 @@ public abstract class AbstractGameGraph<P, T, DC extends IDecision<P, T>, S exte
 
     public abstract boolean contains(S state);
 
+    public abstract boolean containsExistingState(S state);
+
     public abstract void addState(S state);
+
+    public abstract void addFreshState(S state);
 
     public abstract S getState(ID id);
 

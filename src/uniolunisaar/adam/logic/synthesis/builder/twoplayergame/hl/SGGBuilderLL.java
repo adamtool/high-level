@@ -6,10 +6,12 @@ import java.util.HashSet;
 import java.util.Set;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraph;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IntegerID;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphByHashCode;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphUsingIDs;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphUsingIDsBidiMap;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.StateIdentifier;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.ILLDecision;
@@ -122,7 +124,7 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, Dec
      * @param hlgame
      * @return
      */
-    public GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> create(HLPetriGame hlgame) {
+    public AbstractGameGraph<Place, Transition, ILLDecision, DecisionSet, DecisionSet, GameGraphFlow<Transition, DecisionSet>> create(HLPetriGame hlgame) {
 //    public GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> create(HLPetriGame hlgame) {
         // Convert the high-level game to its low-level version
         PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
@@ -132,8 +134,9 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, Dec
         LLDecisionSet init = createInitDecisionSet(pgame);
 
         // Create the graph iteratively
-        GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> srg = new GameGraph<>(hlgame.getName() + "_SRG", init);
+//        GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> srg = new GameGraph<>(hlgame.getName() + "_SRG", init);
 //        GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> srg = new GameGraphUsingIDs<>(hlgame.getName() + "_SRG", init);
+        GameGraphUsingIDsBidiMap<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> srg = new GameGraphUsingIDsBidiMap<>(hlgame.getName() + "_SRG", init);
         addStatesIteratively(hlgame, srg, init, pgame.getTransitions(), sysTransitions);
         return srg;
     }

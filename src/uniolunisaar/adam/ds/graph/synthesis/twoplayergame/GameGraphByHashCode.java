@@ -32,12 +32,23 @@ public class GameGraphByHashCode<P, T, DC extends IDecision<P, T>, S extends IDe
         return states.containsKey(state.hashCode());
 //        return states.values().contains(state);
     }
+    
+    @Override
+    public boolean containsExistingState(S state) {
+        return contains(state);
+    }
 
     @Override
     public void addState(S state) {
         states.put(state.hashCode(), state);
     }
 
+    
+    @Override
+    public void addFreshState(S state) {
+        addState(state);
+    }
+    
     @Override
     public S getState(IntegerID id) {
         return states.get(id.getId());

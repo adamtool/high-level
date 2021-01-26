@@ -254,6 +254,9 @@ public class HLTools {
         // States
         sb.append("#states\n");
         for (DCS state : graph.getStatesView()) {
+            if (state.getId() == -1) {
+                state.setId(state.hashCode());
+            }
             // mcut?
 //            String shape = (state.isMcut()) ? mcutShape : sysShape;
             String color = (state.isMcut()) ? mcutColor : sysColor;
@@ -274,6 +277,9 @@ public class HLTools {
         sb.append("\n#flows\n");
         for (F f : graph.getFlowsView()) {
 //            sb.append(f.getSource().toString()).append("->").append(f.getTarget().toString());
+if(f.getSource().getId()==-1) {
+    System.out.println(f.getSource().toString());
+}
             sb.append(f.getSource().getId()).append("->").append(f.getTarget().getId());
             T t = f.getTransition();
             String label = (t == null) ? "T" : t.toString();

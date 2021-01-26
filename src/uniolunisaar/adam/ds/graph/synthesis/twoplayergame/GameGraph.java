@@ -54,6 +54,11 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
     }
 
     @Override
+    public boolean containsExistingState(S state) {
+        return contains(state);
+    }
+
+    @Override
     public void addState(S state) {
         if (state.isBad()) {
             badStates.add(state);
@@ -67,13 +72,29 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
     }
 
     @Override
+    public void addFreshState(S state) {
+        addState(state);
+    }
+
+    @Override
     public S getState(S id) {
         return id;
     }
 
+    /**
+     * This is an expensive method, because we iterate over all states.
+     *
+     * @param state
+     * @return
+     */
     @Override
     public S getCorrespondingState(S state) {
-        return state;
+        for (S state1 : states) {
+            if (state1.equals(state)) {
+                return state1;
+            }
+        }
+        return null;
     }
 
     /**

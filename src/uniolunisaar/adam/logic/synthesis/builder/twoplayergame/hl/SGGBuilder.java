@@ -57,14 +57,19 @@ public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDe
             boolean newOne = true;
             S copySucc = succ;
             for (SymmetryIterator iti = syms.iterator(); iti.hasNext();) {
-                Symmetry sym = iti.next(); // todo: get rid of the identity symmetry, just do it in this case before looping
+                Symmetry sym = iti.next();
                 copySucc = succ.apply(sym);
                 // note: this contains is more expensive using getValues().contains from the ID hashmap
                 //       then having them directly stored in a map. But the main problem when using 
                 //        this method with the GameGraphUsingIDs is that we create here a new state which does not
-                //         have any id, and contains does not return to corresponding object of the graph and this 
+                //         have any id, and contains does not return the corresponding object of the graph and this 
                 //          is even more expensive.
-                if (srg.contains(copySucc)) { 
+//                if (srg.contains(copySucc)) { 
+                // but anyhow it's better to do it, because of the problem mentioned below. 
+                // It's not good practice to have such an inconsistent state, even though it
+                // can be handled with, e.g. in printing the strategy and so on.
+                copySucc = srg.getCorrespondingState(copySucc);
+                if (copySucc != null) {
                     newOne = false;
                     break;
                 }
@@ -75,6 +80,13 @@ public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDe
                 srg.addState(succ);
                 todo.add(id);
             } else {
+                // attention: this leads to not having the same instances for 
+                // the successors in the flow and the states stored in the graph
+                // We would have to get here the corresponding state found with 
+                // the contains above to have this properly done. But this would
+                // be more expensive. Cannot here just replace the old one
+                // with copySucc, because then the already added flows would
+                // have the problem.
                 id = srg.getID(copySucc);
             }
             srg.addFlow(new GameGraphFlow<>(srg.getID(pre), t, id));

@@ -43,21 +43,11 @@ public class GameGraphUsingIDsBidiMap<P, T, DC extends IDecision<P, T>, S extend
         this.states.put(initial.getId(), initial);
         this.badStates = new HashSet<>();
         this.preSet = new HashMap<>();
+        this.preSet.put(initial.getId(), new HashSet<>());
         this.postSet = new HashMap<>();
+        this.postSet.put(initial.getId(), new HashSet<>());
     }
 
-//    public GameGraphFlow createFlow(S source, T transition, S target) {
-//        F f = new GameGraphFlow<T, S>(source, transition, target);
-//        this.addFlow(f);
-//        return f;
-//    }
-    /**
-     * This should be way cheaper as contains(S state). So if the state already
-     * has an id use this method.
-     *
-     * @param id
-     * @return
-     */
     public boolean contains(int id) {
         return states.containsKey(id);
     }
@@ -67,13 +57,19 @@ public class GameGraphUsingIDsBidiMap<P, T, DC extends IDecision<P, T>, S extend
         return states.containsValue(state);
     }
 
+    @Override
+    public boolean containsExistingState(S state) {
+        return contains(state.getId());
+    }
+
     /**
      * This method can be used for the strategies to use a State and overwrite
      * its ID.
      *
      * @param state
      */
-    public void addStateWithNewId(S state) {
+    @Override
+    public void addFreshState(S state) {
         state.overwriteId(idCounter++);
         addStateWithID(state);
     }
@@ -93,6 +89,8 @@ public class GameGraphUsingIDsBidiMap<P, T, DC extends IDecision<P, T>, S extend
         if (state.isBad()) {
             badStates.add(state);
         }
+        this.preSet.put(state.getId(), new HashSet<>());
+        this.postSet.put(state.getId(), new HashSet<>());
         states.put(state.getId(), state);
     }
 
@@ -104,6 +102,22 @@ public class GameGraphUsingIDsBidiMap<P, T, DC extends IDecision<P, T>, S extend
     @Override
     public S getCorrespondingState(S state) {
         return states.get(states.getKey(state));
+    }
+
+    @Override
+    public void addFlow(F flow) {
+        super.addFlow(flow);
+        // additionally automatically add it to the pre- and postsets
+        Set<F> pre = preSet.get(flow.getTarget().getId());
+        if (pre == null) {
+            pre = new HashSet<>();
+        }
+        pre.add(flow);
+        Set<F> post = postSet.get(flow.getSource().getId());
+        if (post == null) {
+            post = new HashSet<>();
+        }
+        post.add(flow);
     }
 
     /**
@@ -145,8 +159,9 @@ public class GameGraphUsingIDsBidiMap<P, T, DC extends IDecision<P, T>, S extend
         return post;
     }
 
+    @Deprecated
     private Set<F> calculatePostset(S state) {
-        Set<F> post = new HashSet<>();
+          Set<F> post = new HashSet<>();
         for (F flow : getFlows()) {
 //            if (flow.getSource().equals(state)) {
             if (flow.getSource().getId() == state.getId()) {// since we have here IDs, this should be a cheap comparison                 
@@ -156,6 +171,20 @@ public class GameGraphUsingIDsBidiMap<P, T, DC extends IDecision<P, T>, S extend
         return post;
     }
 
+//    /**
+//     * Attention: don't change the set when using this method
+//     *
+//     * @param state
+//     * @return
+//     */
+//    Set<F> getPostset(S state) {
+//        Set<F> post = postSet.get(state.getId());
+//        if (post == null) {
+//            post = calculatePostset(state);
+//            postSet.put(state.getId(), post);
+//        }
+//        return post;
+//    }
     /**
      * Attention: don't change the set when using this method
      *
@@ -163,12 +192,7 @@ public class GameGraphUsingIDsBidiMap<P, T, DC extends IDecision<P, T>, S extend
      * @return
      */
     Set<F> getPostset(S state) {
-        Set<F> post = postSet.get(state.getId());
-        if (post == null) {
-            post = calculatePostset(state);
-            postSet.put(state.getId(), post);
-        }
-        return post;
+        return postSet.get(state.getId());
     }
 
     @Override
@@ -187,8 +211,9 @@ public class GameGraphUsingIDsBidiMap<P, T, DC extends IDecision<P, T>, S extend
         return pre;
     }
 
+    @Deprecated
     private Set<F> calculatePreset(S state) {
-        Set<F> pre = new HashSet<>();
+          Set<F> pre = new HashSet<>();
         for (F flow : getFlows()) {
 //            if (flow.getTarget().equals(state)) {
             if (flow.getTarget().getId() == state.getId()) {// since we have here IDs, this should be a cheap comparison               
@@ -197,6 +222,21 @@ public class GameGraphUsingIDsBidiMap<P, T, DC extends IDecision<P, T>, S extend
         }
         return pre;
     }
+//
+//    /**
+//     * Attention: don't change the set when using this method
+//     *
+//     * @param state
+//     * @return
+//     */
+//    Set<F> getPreset(S state) {
+//        Set<F> pre = preSet.get(state.getId());
+//        if (pre == null) {
+//            pre = calculatePreset(state);
+//            preSet.put(state.getId(), pre);
+//        }
+//        return pre;
+//    }
 
     /**
      * Attention: don't change the set when using this method
@@ -205,12 +245,7 @@ public class GameGraphUsingIDsBidiMap<P, T, DC extends IDecision<P, T>, S extend
      * @return
      */
     Set<F> getPreset(S state) {
-        Set<F> pre = preSet.get(state.getId());
-        if (pre == null) {
-            pre = calculatePreset(state);
-            preSet.put(state.getId(), pre);
-        }
-        return pre;
+        return preSet.get(state.getId());
     }
 
     @Override

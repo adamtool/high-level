@@ -142,16 +142,17 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
         diff = System.currentTimeMillis() - time;
 //        timeLLApproach += diff;
         Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy LL approach (size " + sizeLL + "): " + llapproach + "" + Math.round((diff / 1000.0f) * 100.0) / 100.0);
-        System.out.println(solverLL.getGraph().getBadStatesView().size());
+//        System.out.println(solverLL.getGraph().getBadStatesView().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "hl2llGG", solverLL.getGraph());
-        HLTools.saveGraph2PDF(outputDir + "hl2LLGGStrat", solverLL.calculateGraphStrategy());
-        HLTools.saveGraph2PDF(outputDir + "hl2LLGGLLStrat", solverLL.calculateLLGraphStrategy());
+//        System.out.println("strat size" + solverLL.calculateGraphStrategy().getStatesView().size());
+//        HLTools.saveGraph2DotAndPDF(outputDir + "hl2LLGGStrat", solverLL.calculateGraphStrategy());
+//        HLTools.saveGraph2PDF(outputDir + "hl2LLGGLLStrat", solverLL.calculateLLGraphStrategy());
 //        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
-        PGTools.savePG2PDF(outputDir + "hl2llPGStrat", solverLL.getStrategy(), false);
+//        PGTools.savePG2PDF(outputDir + "hl2llPGStrat", solverLL.getStrategy(), false);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANON REPS
         time = System.currentTimeMillis();
 
-        SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.NONE;
+//        SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.NONE;
         HLASafetyWithoutType2SolverCanonApproach solverCanon = (HLASafetyWithoutType2SolverCanonApproach) HLSolverFactoryCanonApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
         boolean canonApproach = solverCanon.existsWinningStrategy();
         int sizeCanon = solverCanon.getGraph().getStatesView().size();
@@ -159,11 +160,11 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
         diff = System.currentTimeMillis() - time;
 //        timeLLApproach += diff;
         Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy canon approach (size " + sizeCanon + "): " + canonApproach + "" + Math.round((diff / 1000.0f) * 100.0) / 100.0);
-        HLTools.saveGraph2PDF(outputDir + "hlcanonGGStrat", solverCanon.calculateGraphStrategy());
-        HLTools.saveGraph2PDF(outputDir + "hlcanonGGLLStrat", solverCanon.calculateLLGraphStrategy());
-//        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
-        PGTools.savePG2PDF(outputDir + "hlcanonPGStrat", solverCanon.getStrategy(), false);
-        System.out.println(solverCanon.getGraph().getBadStatesView().size());
+//        HLTools.saveGraph2PDF(outputDir + "hlcanonGGStrat", solverCanon.calculateGraphStrategy());
+//        HLTools.saveGraph2PDF(outputDir + "hlcanonGGLLStrat", solverCanon.calculateLLGraphStrategy());
+////        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
+//        PGTools.savePG2PDF(outputDir + "hlcanonPGStrat", solverCanon.getStrategy(), false);
+//        System.out.println(solverCanon.getGraph().getBadStatesView().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "hlcanonGG", solverCanon.getGraph());
 //        // %%%%%%% BDD
 //        time = System.currentTimeMillis();
