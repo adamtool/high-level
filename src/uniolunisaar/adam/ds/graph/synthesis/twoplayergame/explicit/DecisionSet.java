@@ -30,6 +30,8 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
     // todo: this id cannot properly used when using the membership approaches (due to adding the flows to existing symmetric states)!
     private int id = -1;
 
+    private String idChain = null;
+
     /**
      * It is not that nice to set IDs later, but for using it in the graphs and
      * allow it the create independent from it, it was easier this way.
@@ -391,7 +393,7 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
 //        System.out.println("asdf");
 //        System.out.println(firableTrans.toString()); 
 
-        for (Transition t1 : firableTrans) { 
+        for (Transition t1 : firableTrans) {
             for (Transition t2 : firableTrans) {
                 if (!t1.getId().equals(t2.getId())) {
                     // sharing a system place?
@@ -580,7 +582,7 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
      *
      * @return
      */
-    public String getIDChain() {
+    private String calculateIDChain() {
         if (decisions == null) {
             return "";
         }
@@ -589,5 +591,21 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
             sb.append(iterator.next().getIDChain()).append("|");
         }
         return sb.toString();
+    }
+
+    /**
+     * Returns a concatenated String of all IDChains of the decisions. If the
+     * set is ordered it obeys the order.
+     *
+     * Attention if you first use this method, than change the object, and use
+     * this method again, you won't get a correct value;
+     *
+     * @return
+     */
+    public String getIDChain() {
+        if (idChain == null) {
+            idChain = calculateIDChain();
+        }
+        return idChain;
     }
 }

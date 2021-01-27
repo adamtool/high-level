@@ -27,25 +27,14 @@ public abstract class HLASafetyWithoutType2Solver<P, T, DC extends IDecision<P, 
     }
 
     public Set<S> winRegionSafety(boolean p1, Map<Integer, Set<S>> distance) throws CalculationInterruptedException {
-        Set<S> attr = attractor(getGraph().getBadStatesView(), !p1, distance, true, getGraph().getInitial());
-        if (attr == null) { // init was in the attractor
-            return new HashSet<>(); // so there is no winning region
-        }
-//        System.out.println(attr.toString());        
-//        System.out.println("bad size " + getGraph().getBadStatesView().size());
-//        System.out.println("attr size " + attr.size());
-        Set<S> winning = new HashSet<>(getGraph().getStatesView());
-//        System.out.println("graph size " + winning.size());
-//        boolean changed = winning.removeAll(attr);
-        winning.removeAll(attr);
-//        System.out.println(changed);
-//        System.out.println("winning size " + winning.size());
-
-//        for (S s : winning) {
-//            System.out.println(s.toString());
-//            System.out.println("");
+        Set<S> attr = attractor(getGraph().getBadStatesView(), !p1, distance, false, null);
+        // this is not true, there could be state in the winning region even though the initial state is contained in the attractor
+//        Set<S> attr = attractor(getGraph().getBadStatesView(), !p1, distance, true, getGraph().getInitial());
+//        if (attr == null) { // init was in the attractor
+//            return new HashSet<>(); // so there is no winning region
 //        }
-//        System.out.println(winning.size());
+        Set<S> winning = new HashSet<>(getGraph().getStatesView());
+        winning.removeAll(attr);
         return winning;
     }
 

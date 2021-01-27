@@ -113,7 +113,7 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
     }
 
     @Override
-    protected BDD attractor(BDD F, boolean p1, BDD gameGraph, Map<Integer, BDD> distance) throws CalculationInterruptedException {
+    protected BDD attractor(BDD F, boolean p1, BDD gameGraph, Map<Integer, BDD> distance, boolean withAbortion, BDD abortionStates) throws CalculationInterruptedException {
         Logger.getInstance().addMessage("Calculation of attractor BDD ...", "INTERMEDIATE_TIMING");
         long time = System.currentTimeMillis();
         // Calculate the possibly restricted transitions to the given game graph
@@ -146,6 +146,9 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
 ////            BDDTools.printDecodedDecisionSets(makeCanonical(pre).and(getNotTop()), this, true);
 
             BDD canonPre = makeCanonical(pre);
+            if (withAbortion && !canonPre.and(abortionStates).isZero()) {
+                return null;
+            }
             Q_ = canonPre.or(Q);
 
 //            System.out.println(" %%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANON PRE AND NOT TOP");
@@ -240,6 +243,7 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
 //        BDDTools.printDecodedDecisionSets(getBufferedWinDCSs().and(init).and(canon), this, true);
 //        System.out.println("%%%%%%%%%%%%%%%%%% WINNING CUT INIt CUT BAD");
 //        BDDTools.printDecodedDecisionSets(getBufferedWinDCSs().and(init).and(badStates()), this, true); /zero
+//        return !((getBufferedWinDCSs().and(makeCanonical(getInitialDCSs()))).isZero());
         return !((getBufferedWinDCSs().and(makeCanonical(getInitialDCSs()))).isZero());
 //        return true;
     }
@@ -260,7 +264,7 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
         // is it OK, to have makeCanonical around the getBufferedDCSs?
 //        BDD fixedPoint = attractor(badStates(), true, makeCanonical(getBufferedDCSs()), distance).not().and(getBufferedDCSs());
 //        BDD fixedPoint = attractor(makeCanonical(badStates()), true, getBufferedDCSs(), distance).not().and(getBufferedDCSs());
-        BDD fixedPoint = attractor(makeCanonical(badStates()), true, getFactory().one(), distance).not().and(getBufferedDCSs());
+        BDD fixedPoint = attractor(makeCanonical(badStates()), true, getFactory().one(), distance, false, null).not().and(getBufferedDCSs());
 //        BDD fixedPoint = attractor(badStates(), true, getFactory().one(), distance).not().and(getBufferedDCSs());
 //        BDD fixedPoint = attractor(badStates(), true, getFactory().one(), distance).not();
 //        BDDTools.printDecodedDecisionSets(fixedPoint.andWith(codePlace(getGame().getNet().getPlace("env1"), 0, 0)), this, true);

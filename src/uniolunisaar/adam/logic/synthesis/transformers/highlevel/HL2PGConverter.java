@@ -114,7 +114,18 @@ public class HL2PGConverter {
         return sb.toString();
     }
 
-    public static String valToTransitionIdentifier(Valuation val) {
+    /**
+     * This sorting is quite expensive because we use it for applying the
+     * symmetries a lot. Did not check whether in this case it would be better
+     * to use a TreeMap (add/remove/contains in log(n) (sort ArrayList
+     * n*log(n))). Now we use the hashcode as identifier.
+     *
+     * @param val
+     * @return
+     */
+    @Deprecated
+//    public static String valToTransitionIdentifier(Valuation val) {
+    public static String valToTransitionIdentifierSorted(Valuation val) {
         StringBuilder sb = new StringBuilder();
         // sort the valuation first
         TreeMap<Variable, Color> sorted = val.getSorted(); // todo: maybe think of s.th. better? Could be quite expensive. Possibly better to let Valuation directly be sorted?
@@ -127,8 +138,12 @@ public class HL2PGConverter {
         return sb.toString();
     }
 
+    public static int valToTransitionIdentifier(Valuation val) {
+        return val.hashCode();
+    }
+
     public static String getTransitionID(String origID, Valuation val) {
-        return origID + ID_DELIM + valToTransitionIdentifier(val);
+        return origID.concat(ID_DELIM) + valToTransitionIdentifier(val);
     }
 
     public static void setColorsAndID2Extension(Place llPlace, String origID, List<Color> colors) {

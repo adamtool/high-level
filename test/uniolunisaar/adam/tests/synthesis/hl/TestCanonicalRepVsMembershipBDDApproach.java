@@ -8,7 +8,6 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphUsingIDs;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.ILLDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.hlapproach.HLDecisionSet;

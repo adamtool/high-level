@@ -222,11 +222,10 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
      * @return
      */
     private BDD symmetries(Symmetries syms) throws CalculationInterruptedException {
-        Logger.getInstance().addMessage("Calculation of symmetry BDD ...", "INTERMEDIATE_TIMING");        
+        Logger.getInstance().addMessage("Calculation of symmetry BDD ...", "INTERMEDIATE_TIMING");
         long time = System.currentTimeMillis();
 
 //        BDD start = getWellformed(0).andWith(getWellformed(1)); // this seems to be faster then just getOne()
-        
         BDD symsBDD = getZero();
         SymmetryIterator symit = syms.iterator();
 //        if (symit.hasNext()) {
@@ -239,7 +238,7 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
                 throw e;
             }
             Symmetry sym = iti.next();
-           
+
 //            System.out.println(sym.toString());
 //            BDD symm = getOne();
             BDD symm = getWellformed(0).andWith(getWellformed(1)); // this seems to be faster then just getOne()
@@ -338,8 +337,21 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
         return symsBDD;
     }
 
+    /**
+     * With abortion = true, the return value is null iff some abortionState is
+     * contained in the attractor.
+     *
+     * @param F
+     * @param p1
+     * @param gameGraph
+     * @param distance
+     * @param withAbortion
+     * @param abortionStates
+     * @return
+     * @throws CalculationInterruptedException
+     */
     @Override
-    protected BDD attractor(BDD F, boolean p1, BDD gameGraph, Map<Integer, BDD> distance) throws CalculationInterruptedException {
+    protected BDD attractor(BDD F, boolean p1, BDD gameGraph, Map<Integer, BDD> distance, boolean withAbortion, BDD abortionStates) throws CalculationInterruptedException {
         // also all symmetric are bad
         gameGraph = getSuccs(gameGraph.and(getSymmetries()));
         // Calculate the possibly restricted transitions to the given game graph
@@ -362,6 +374,9 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
             Q = Q_;
             BDD pre = p1 ? pre(Q, sysTrans, envTrans) : pre(Q, envTrans, sysTrans);
             pre = getSuccs(pre.and(getSymmetries())).and(getBufferedDCSs());
+            if (withAbortion && !pre.and(abortionStates).isZero()) {
+                return null;
+            }
             Q_ = pre.or(Q);
         }
         return Q_.andWith(getWellformed(0));
@@ -380,7 +395,7 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
         // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO : FOR BENCHMARKS
         Logger.getInstance().addMessage("Calculating fixpoint ...");
         // todo: it should be expensive to calculate the buffered dcss!? Why did I chose to use it? BECAUSE THIS SEEMS REALLY TO BE FASTER?
-        BDD fixedPoint = attractor(badStates(), true, getBufferedDCSs(), distance).not().and(getBufferedDCSs());//fixpointOuter();
+        BDD fixedPoint = attractor(badStates(), true, getBufferedDCSs(), distance, false, null).not().and(getBufferedDCSs());//fixpointOuter();
 //        BDD fixedPoint = attractor(badStates(), true, getFactory().one(), distance).not();
 //        BDDTools.printDecodedDecisionSets(fixedPoint.andWith(codePlace(getGame().getNet().getPlace("env1"), 0, 0)), this, true);
 //        BDDTools.printDecodedDecisionSets(fixedPoint.andWith(codePlace(getGame().getNet().getPlace("env1"), 0, 0)).andWith(getBufferedSystemTransition()), this, true);

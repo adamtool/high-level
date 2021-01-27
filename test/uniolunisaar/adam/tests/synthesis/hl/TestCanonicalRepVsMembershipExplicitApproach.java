@@ -158,7 +158,7 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
         boolean canonApproach = solverCanon.existsWinningStrategy();
         int sizeCanon = solverCanon.getGraph().getStatesView().size();
         int sizeCanonFlows = solverCanon.getGraph().getFlowsView().size();
-        System.out.println(SGGBuilderLLCanon.getInstance().dcs2canon.size());
+        System.out.println(SGGBuilderLLCanon.getInstance().dcsOrdered2canon.size());
         
 //        int sizeCanon = -1;
         diff = System.currentTimeMillis() - time;

@@ -14,6 +14,7 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.StateIdentifier;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.CommitmentSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.ILLDecision;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.canonreps.CanonDecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.canonreps.LexiILLDecisionComparator;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.canonreps.OrderedCommitmentSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.canonreps.OrderedDecisionSet;
@@ -52,7 +53,8 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
         NONE
     }
     // todo: just a hack to check if it's faster
-    public HashMap<OrderedDecisionSet, OrderedDecisionSet> dcs2canon = new HashMap<>();
+    public HashMap<OrderedDecisionSet, OrderedDecisionSet> dcsOrdered2canon = new HashMap<>();
+    public HashMap<CanonDecisionSet, CanonDecisionSet> dcs2canon = new HashMap<>();
 
     public SaveMapping saveMapping = SaveMapping.ALL;
     public boolean withBidi = true;
@@ -98,7 +100,7 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
         }
         OrderedDecisionSet dcs = new OrderedDecisionSet(inits, false, false, pgame, hlgame.getSymmetries());
         if (saveMapping != SaveMapping.NONE) {
-            dcs2canon.put(dcs, dcs);
+            dcsOrdered2canon.put(dcs, dcs);
         }
         return dcs;
     }

@@ -21,6 +21,9 @@ import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl.SGGBuilderLLCa
 
 /**
  *
+ * This approach uses an order set to store the elements. The class
+ * CanonDecisionSet however uses the normal structure and sort it when needed.
+ *
  * @author Manuel Gieseking
  */
 public class OrderedDecisionSet extends LLDecisionSet {
@@ -38,16 +41,16 @@ public class OrderedDecisionSet extends LLDecisionSet {
         if (mapping == SGGBuilderLLCanon.SaveMapping.NONE) {
             return getCanonical(dcs);
         } else {
-            OrderedDecisionSet canon = SGGBuilderLLCanon.getInstance().dcs2canon.get(dcs);
+            OrderedDecisionSet canon = SGGBuilderLLCanon.getInstance().dcsOrdered2canon.get(dcs);
             if (canon == null) {
                 canon = getCanonical(dcs);
                 if (mapping == SGGBuilderLLCanon.SaveMapping.SOME) {
-                    SGGBuilderLLCanon.getInstance().dcs2canon.put(dcs, canon);
+                    SGGBuilderLLCanon.getInstance().dcsOrdered2canon.put(dcs, canon);
                 } else {
                     for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
                         Symmetry sym = iterator.next();
                         OrderedDecisionSet symDcs = dcs.apply(sym);
-                        SGGBuilderLLCanon.getInstance().dcs2canon.put(symDcs, canon);
+                        SGGBuilderLLCanon.getInstance().dcsOrdered2canon.put(symDcs, canon);
                     }
                 }
             }

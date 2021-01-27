@@ -114,7 +114,7 @@ public abstract class AbstractCommitmentSet<T> {
     protected Set<T> getTransitions() {
         return transitions;
     }
- 
+
     @Override
     public int hashCode() {
         int hash = 7;

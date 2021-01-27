@@ -85,20 +85,19 @@ public class TestHashSet {
         Assert.assertTrue(setCopy.contains(test));
         test.setId("peter");
         Assert.assertFalse(setCopy.contains(test));
-        
+
         setCopy.add(test);
         Assert.assertTrue(setCopy.contains(test));
         test.setId("klaus");
         Assert.assertFalse(setCopy.contains(test));
         boolean isEqual = false;
         for (TestObj testObj : setCopy) {
-            if(testObj.equals(test)) {
+            if (testObj.equals(test)) {
                 isEqual = true;
             }
         }
         Assert.assertTrue(isEqual); // IT is a problem to change the fields of hashed elements, because the hash changes but it is not updated by the set
         Assert.assertFalse(setCopy.contains(new TestObj("peter")));
-        
 
     }
 
@@ -145,6 +144,32 @@ public class TestHashSet {
         set2.add(new ColoredTransition(game, game.getTransition("asdf"), v2));
 
         Assert.assertFalse(set1.hashCode() == set2.hashCode());
+
+    }
+
+    @Test
+    public void testValuations() {
+        Valuation v1 = new Valuation();
+        v1.put(new Variable("x"), new Color("c1"));
+        v1.put(new Variable("y"), new Color("c2"));
+
+        Valuation v2 = new Valuation();
+        v2.put(new Variable("x"), new Color("c1"));
+        v2.put(new Variable("y"), new Color("c2"));
+
+        Assert.assertTrue(v1.equals(v2));
+
+        Valuation v3 = new Valuation();
+        v3.put(new Variable("y"), new Color("c2"));
+        v3.put(new Variable("x"), new Color("c1"));
+
+        Assert.assertTrue(v1.equals(v3));
+
+        Valuation v4 = new Valuation();
+        v4.put(new Variable("y"), new Color("c1"));
+        v4.put(new Variable("x"), new Color("c2"));
+
+        Assert.assertFalse(v1.equals(v4));
 
     }
 }
