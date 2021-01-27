@@ -47,7 +47,7 @@ public class LLSGStrat2Graphstrategy extends AbstractSGStrat2Graphstrategy<Place
             Color c = entry.getValue();
             newVal.put(var, sym.get(c));
         }
-        return pgame.getTransition(HL2PGConverter.getTransitionID(hlID, newVal));
+        return HL2PGConverter.getTransition(pgame, hlID, newVal);
     }
 
 }

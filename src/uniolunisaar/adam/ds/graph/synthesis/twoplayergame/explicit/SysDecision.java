@@ -1,5 +1,6 @@
 package uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit;
 
+import java.util.Iterator;
 import java.util.Objects;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
@@ -65,6 +66,11 @@ public class SysDecision extends AbstractSysDecision<Place, Transition, Commitme
     @Override
     public String getIDChain() {
         return getPlace().getId().concat("+").concat(getC().getIDChain());
+    }
+
+    @Override
+    public String getIDChainByFirstSorting() {
+        return getPlace().getId().concat("+").concat(getC().getIDChainByFirstSorting());
     }
 
 }

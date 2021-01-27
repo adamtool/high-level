@@ -3,6 +3,8 @@ package uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.TreeSet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
@@ -54,7 +56,7 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
     }
     // todo: just a hack to check if it's faster
     public HashMap<OrderedDecisionSet, OrderedDecisionSet> dcsOrdered2canon = new HashMap<>();
-    public HashMap<CanonDecisionSet, CanonDecisionSet> dcs2canon = new HashMap<>();
+    public HashMap<Set<ILLDecision>, CanonDecisionSet> dcs2canon = new HashMap<>();
 
     public SaveMapping saveMapping = SaveMapping.ALL;
     public boolean withBidi = true;
@@ -105,8 +107,16 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
         return dcs;
     }
 
-    private LLDecisionSet createUnOrderedInitDecisionSet(HLPetriGame hlgame, PetriGameWithTransits pgame) {
-        TreeSet<ILLDecision> inits = new TreeSet<>(new LexiILLDecisionComparator());
+    /**
+     * In contrast to the OrderedDecisionSet approach does this approach order
+     * the decision set each time an order is needed.
+     *
+     * @param hlgame
+     * @param pgame
+     * @return
+     */
+    private LLDecisionSet createCanonInitDecisionSet(HLPetriGame hlgame, PetriGameWithTransits pgame) {
+        Set<ILLDecision> inits = new HashSet<>();
         for (Place place : pgame.getPlaces()) {
             if (place.getInitialToken().getValue() > 0) {
                 if (pgame.isEnvironment(place)) {
@@ -116,7 +126,10 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
                 }
             }
         }
-        LLDecisionSet dcs = new LLDecisionSet(inits, false, false, pgame);
+        CanonDecisionSet dcs = new CanonDecisionSet(inits, false, false, pgame, hlgame.getSymmetries());
+        if (saveMapping != SaveMapping.NONE) {
+            dcs2canon.put(inits, dcs);
+        }
         return dcs;
     }
 
@@ -142,7 +155,7 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
         Collection<Transition> sysTransitions = putSysAndSingleEnvTransitionsToExtention(pgame);
         // create initial decision set
         LLDecisionSet init = createOrderedInitDecisionSet(hlgame, pgame);
-//        LLDecisionSet init = createUnOrderedInitDecisionSet(hlgame, pgame);
+//        LLDecisionSet init = createCanonInitDecisionSet(hlgame, pgame);
 
         // Create the graph iteratively
         AbstractGameGraph<Place, Transition, ILLDecision, DecisionSet, DecisionSet, GameGraphFlow<Transition, DecisionSet>> srg;

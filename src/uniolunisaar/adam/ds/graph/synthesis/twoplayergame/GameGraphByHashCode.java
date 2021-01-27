@@ -6,8 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Think that this method had the problems with the identifying of different
- * nodes with the same hash value. But I'm not sure!
+ * This method had the problems with the identifying of different
+ * nodes with the same hash value. Hash values are not meant to be unique, just
+ * a helper for finding elements in data structures fast and then checking with 
+ * is equal.
  *
  * @author Manuel Gieseking
  * @param <P>

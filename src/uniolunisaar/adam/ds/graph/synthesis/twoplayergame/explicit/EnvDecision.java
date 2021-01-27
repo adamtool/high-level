@@ -63,4 +63,9 @@ public class EnvDecision extends AbstractEnvDecision<Place, Transition> implemen
         return getPlace().getId();
     }
 
+    @Override
+    public String getIDChainByFirstSorting() {
+        return getPlace().getId();
+    }
+
 }

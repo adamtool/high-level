@@ -2,6 +2,7 @@ package uniolunisaar.adam.logic.synthesis.transformers.highlevel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.TreeMap;
 import uniol.apt.adt.exception.FlowExistsException;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Node;
+import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.util.Pair;
@@ -118,14 +120,13 @@ public class HL2PGConverter {
      * This sorting is quite expensive because we use it for applying the
      * symmetries a lot. Did not check whether in this case it would be better
      * to use a TreeMap (add/remove/contains in log(n) (sort ArrayList
-     * n*log(n))). Now we use the hashcode as identifier.
+     * n*log(n))). We cannot use the hash code because there is no guarantee
+     * that there a now collisions.
      *
      * @param val
      * @return
      */
-    @Deprecated
-//    public static String valToTransitionIdentifier(Valuation val) {
-    public static String valToTransitionIdentifierSorted(Valuation val) {
+    private static String valToTransitionIdentifier(Valuation val) {
         StringBuilder sb = new StringBuilder();
         // sort the valuation first
         TreeMap<Variable, Color> sorted = val.getSorted(); // todo: maybe think of s.th. better? Could be quite expensive. Possibly better to let Valuation directly be sorted?
@@ -138,12 +139,12 @@ public class HL2PGConverter {
         return sb.toString();
     }
 
-    public static int valToTransitionIdentifier(Valuation val) {
-        return val.hashCode();
+    private static String calculateTransitionID(String origID, Valuation val) {
+        return origID.concat(ID_DELIM) + valToTransitionIdentifier(val);
     }
 
-    public static String getTransitionID(String origID, Valuation val) {
-        return origID.concat(ID_DELIM) + valToTransitionIdentifier(val);
+    public static Transition getTransition(PetriNet llPetriGame, String origID, Valuation val) {
+        return ((Map<TransitionKey, Transition>) llPetriGame.getExtension(AdamExtensions.convTransitionMapping.name())).get(new TransitionKey(origID, val));
     }
 
     public static void setColorsAndID2Extension(Place llPlace, String origID, List<Color> colors) {
@@ -296,6 +297,7 @@ public class HL2PGConverter {
     }
 
     private static void addTransitions(HLPetriGame hlgame, PetriGameWithTransits pg, boolean save2Extension) {
+        Map<TransitionKey, Transition> transitionMapping = new HashMap<>();
         for (Transition t : hlgame.getTransitions()) {
             // For every valuation create a transition
             Valuations vals = hlgame.getValuations(t);
@@ -304,7 +306,9 @@ public class HL2PGConverter {
                 IPredicate pred = hlgame.getPredicate(t);
                 if (pred.check(val)) { // only when the valuation satisfies the predicate                        
                     // Create the transition
-                    Transition tLL = pg.createTransition(getTransitionID(t.getId(), val));
+                    String id = calculateTransitionID(t.getId(), val);
+                    Transition tLL = pg.createTransition(id);
+                    transitionMapping.put(new TransitionKey(t.getId(), val), tLL);
                     if (save2Extension) {
                         setValuationAndID2Extension(tLL, t.getId(), new Valuation(val));
                     }
@@ -318,6 +322,7 @@ public class HL2PGConverter {
                 }
             }
         }
+        pg.putExtension(AdamExtensions.convTransitionMapping.name(), transitionMapping);
     }
 
     private static void createFlows(Transition tLL, Flow flowHL, Valuation val, HLPetriGame hlgame, PetriGameWithTransits pg, boolean pre) {

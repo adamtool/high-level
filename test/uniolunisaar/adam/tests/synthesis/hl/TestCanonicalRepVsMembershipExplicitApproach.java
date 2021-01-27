@@ -102,8 +102,10 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
 
     @Test
     public void testCM() throws Exception {
-        int a = 2;
-        int b = 4;
+//        int a = 2;
+//        int b = 4;
+        int a = 4;
+        int b = 2;
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(a, b, true);
         HLTools.saveHLPG2PDF(outputDir + "CM" + a + b, hlgame);
         PGTools.savePG2PDF(outputDir + "CM" + a + b + "_ll", HL2PGConverter.convert(hlgame), false);
@@ -159,7 +161,7 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
         int sizeCanon = solverCanon.getGraph().getStatesView().size();
         int sizeCanonFlows = solverCanon.getGraph().getFlowsView().size();
         System.out.println(SGGBuilderLLCanon.getInstance().dcsOrdered2canon.size());
-        
+
 //        int sizeCanon = -1;
         diff = System.currentTimeMillis() - time;
 //        timeLLApproach += diff;

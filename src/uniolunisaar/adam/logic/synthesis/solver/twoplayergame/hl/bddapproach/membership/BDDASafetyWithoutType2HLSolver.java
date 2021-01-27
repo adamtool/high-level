@@ -270,7 +270,7 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
                             Color c = entry.getValue();
                             newVal.put(var, sym.get(c));
                         }
-                        Transition tNew = getGame().getTransition(HL2PGConverter.getTransitionID(hlID, newVal));
+                        Transition tNew = HL2PGConverter.getTransition(getGame(), hlID, newVal);
                         int transIdNew = getSolvingObject().getDevidedTransitions()[newPartition - 1].indexOf(tNew);
                         symm.andWith(getFactory().ithVar(getTransitionDomain(0, partition - 1).vars()[transId]).biimpWith(getFactory().ithVar(getTransitionDomain(1, newPartition - 1).vars()[transIdNew])));
                     }
@@ -327,7 +327,7 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
                         Color c = entry.getValue();
                         newVal.put(var, sym.get(c));
                     }
-                    Transition tNew = getGame().getTransition(HL2PGConverter.getTransitionID(hlID, newVal));
+                    Transition tNew = HL2PGConverter.getTransition(getGame(), hlID, newVal);
                     int idNew = getSolvingObject().getDevidedTransitions()[i - 1].indexOf(tNew);
                     symm.andWith(getFactory().ithVar(getTransitionDomain(0, i - 1).vars()[id]).impWith(getFactory().ithVar(getTransitionDomain(1, i - 1).vars()[idNew])));
                 }

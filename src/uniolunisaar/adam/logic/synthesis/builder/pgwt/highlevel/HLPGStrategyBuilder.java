@@ -31,7 +31,7 @@ public class HLPGStrategyBuilder extends AbstractPGStrategyBuilder<ColoredPlace,
 
     @Override
     String getTransitionID(ColoredTransition transition) {
-        return HL2PGConverter.getTransitionID(transition.getTransition().getId(), transition.getVal());
+        return HL2PGConverter.getTransition(transition.getTransition().getGraph(), transition.getTransition().getId(), transition.getVal()).getId();
     }
 
     @Override

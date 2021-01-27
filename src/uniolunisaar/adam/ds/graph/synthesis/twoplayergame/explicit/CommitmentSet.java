@@ -1,10 +1,14 @@
 package uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractCommitmentSet;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.canonreps.LexiTransitionIDComparator;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 
@@ -109,4 +113,18 @@ public class CommitmentSet extends AbstractCommitmentSet<Transition> {
         }
         return sb.toString();
     }
+
+    public String getIDChainByFirstSorting() {
+        if (getTransitions() == null) {
+            return (isTop()) ? "T" : "";
+        }
+        List<Transition> trans = new ArrayList<>(getTransitions());
+        Collections.sort(trans, new LexiTransitionIDComparator());
+        StringBuilder sb = new StringBuilder();
+        for (Iterator<Transition> iterator = trans.iterator(); iterator.hasNext();) {
+            sb.append(iterator.next().getId()).append("-");
+        }
+        return sb.toString();
+    }
+
 }

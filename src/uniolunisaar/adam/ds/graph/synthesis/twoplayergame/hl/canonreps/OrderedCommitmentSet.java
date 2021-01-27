@@ -58,7 +58,7 @@ public class OrderedCommitmentSet extends LLCommitmentSet {
                 Color c = entry.getValue();
                 newVal.put(var, sym.get(c));
             }
-            tr.add(getGame().getTransition(HL2PGConverter.getTransitionID(hlID, newVal)));
+            tr.add(HL2PGConverter.getTransition(getGame(), hlID, newVal));
         }
         return new OrderedCommitmentSet(getGame(), tr);
     }

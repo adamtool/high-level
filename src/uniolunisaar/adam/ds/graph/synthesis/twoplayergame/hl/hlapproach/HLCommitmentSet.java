@@ -81,7 +81,7 @@ public class HLCommitmentSet extends AbstractCommitmentSet<ColoredTransition> {
         }
         Set<Transition> transitions = new HashSet<>();
         for (ColoredTransition transition : getTransitions()) {
-            transitions.add(game.getTransition(HL2PGConverter.getTransitionID(transition.getTransition().getId(), transition.getVal())));
+            transitions.add(HL2PGConverter.getTransition(game, transition.getTransition().getId(), transition.getVal()));
         }
         return new LLCommitmentSet(game, transitions);
     }

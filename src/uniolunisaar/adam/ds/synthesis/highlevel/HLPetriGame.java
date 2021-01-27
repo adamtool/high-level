@@ -472,8 +472,8 @@ public class HLPetriGame extends Extensible implements IPetriGame {
         if (llGame == null) {
             llGame = HL2PGConverter.convert(this);
         }
-        Transition llt1 = llGame.getTransition(HL2PGConverter.getTransitionID(t1.getTransition().getId(), t1.getVal()));
-        Transition llt2 = llGame.getTransition(HL2PGConverter.getTransitionID(t2.getTransition().getId(), t2.getVal()));
+        Transition llt1 = HL2PGConverter.getTransition(llGame, t1.getTransition().getId(), t1.getVal());
+        Transition llt2 = HL2PGConverter.getTransition(llGame, t2.getTransition().getId(), t2.getVal());
         return llGame.eventuallyEnabled(llt1, llt2);
     }
 

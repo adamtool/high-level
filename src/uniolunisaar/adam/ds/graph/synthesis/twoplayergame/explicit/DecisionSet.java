@@ -502,10 +502,10 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
 
     @Override
     public int hashCode() {
-        int hash = 41;
-        hash = 37 * hash * Objects.hashCode(this.decisions);
-        hash = hash * (this.mcut ? 2 : 1);
-        hash = hash * (this.bad ? 3 : 1);
+        int hash = 7;
+        hash = 79 * hash + Objects.hashCode(this.decisions);
+        hash = 79 * hash + (this.mcut ? 1 : 0);
+        hash = 79 * hash + (this.bad ? 1 : 0);
         return hash;
     }
 
