@@ -56,7 +56,7 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
     }
 
     public enum Approach {
-        TREE_DCS,
+        ORDERED_DCS,
         ORDERED_BY_LIST,
         ORDERED_BY_TREE
     }
@@ -162,7 +162,7 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
         Collection<Transition> sysTransitions = putSysAndSingleEnvTransitionsToExtention(pgame);
         // create initial decision set
         LLDecisionSet init;
-        if (approach == Approach.TREE_DCS) {
+        if (approach == Approach.ORDERED_DCS) {
             init = createOrderedInitDecisionSet(hlgame, pgame);
         } else {
             init = createCanonInitDecisionSet(hlgame, pgame);

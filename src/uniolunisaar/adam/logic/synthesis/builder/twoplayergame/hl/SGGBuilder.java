@@ -57,8 +57,8 @@ public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDe
             boolean newOne = true;
             S copySucc = succ;
             SymmetryIterator symIt = syms.iterator();
-            // jump over identity
-            symIt.next();
+            // jump over identity (currently has a problem)
+//            symIt.next();
             for (SymmetryIterator iti = symIt; iti.hasNext();) {
                 Symmetry sym = iti.next();
                 copySucc = succ.apply(sym);

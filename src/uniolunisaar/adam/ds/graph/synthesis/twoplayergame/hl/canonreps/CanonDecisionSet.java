@@ -80,8 +80,8 @@ public class CanonDecisionSet extends LLDecisionSet {
 
 //        boolean notSorted = true;
         List<ILLDecision> smallest = inputDCS;
-        boolean calcSmallestID = true;
-        StringBuilder sbSmallestID = new StringBuilder();
+//        boolean calcSmallestID = true;
+//        StringBuilder sbSmallestID = new StringBuilder();
         // sort it 
         Collections.sort(smallest, new LexiILLDecisionWithCommitmentComparator());
         SymmetryIterator symIt = syms.iterator();
@@ -113,36 +113,40 @@ public class CanonDecisionSet extends LLDecisionSet {
             Collections.sort(symDCS, new LexiILLDecisionWithCommitmentComparator());
             boolean smaller = false;
             // old version comparing by symmetric
-            StringBuilder sbSym = new StringBuilder();
-//            StringBuilder sbSmallestID = new StringBuilder();
-            if (calcSmallestID) {
-                sbSmallestID.setLength(0);
-            }
+//            StringBuilder sbSym = new StringBuilder();
+////            StringBuilder sbSmallestID = new StringBuilder();
+//            if (calcSmallestID) {
+//                sbSmallestID.setLength(0);
+//            }
             for (int i = 0; i < symDCS.size(); i++) {
                 ILLDecision symDec = symDCS.get(i);
                 ILLDecision smallestDec = smallest.get(i);
 
                 // new version, check if it gets better
-//                if (symDec.getIDChainByFirstSorting().compareTo(smallestDec.getIDChainByFirstSorting()) < 0) {
-//                    smaller = true;
-//                    break;
-//                } else                 if (symDec.getIDChainByFirstSorting().compareTo(smallestDec.getIDChainByFirstSorting()) > 0) {
-//                    smaller = false;
-//                    break;
-//                }
-                sbSym.append(symDec.getIDChainByFirstSorting()).append("|");
-                if (calcSmallestID) {
-                    sbSmallestID.append(smallestDec.getIDChainByFirstSorting()).append("|");
+                String symID = symDec.getIDChainByFirstSorting();
+                String smallestID = smallestDec.getIDChainByFirstSorting();
+                int compare = symID.compareTo(smallestID);
+                if (compare < 0) {
+                    smaller = true;
+                    break;
+                } else if (compare > 0) {
+                    smaller = false;
+                    break;
                 }
+//                sbSym.append(symDec.getIDChainByFirstSorting()).append("|");
+//                if (calcSmallestID) {
+//                    sbSmallestID.append(smallestDec.getIDChainByFirstSorting()).append("|");
+//                }
             }
-//            if (smaller) {
-            if (sbSym.toString().compareTo(sbSmallestID.toString()) < 0) {
+            if (smaller) {
+//            if (sbSym.toString().compareTo(sbSmallestID.toString()) < 0) {
                 smallest = symDCS;
-                calcSmallestID = true;
+//                calcSmallestID = true;
 //              notSorted = false;
-            } else if (calcSmallestID) {
-                calcSmallestID = false;
             }
+//            } else if (calcSmallestID) {
+//                calcSmallestID = false;
+//            }
         }
         Set<ILLDecision> ret = new HashSet<>(smallest);
         return ret;
@@ -154,8 +158,8 @@ public class CanonDecisionSet extends LLDecisionSet {
 
 //        boolean notSorted = true;
         TreeSet<ILLDecision> smallest = inputDCS;
-        boolean calcSmallestID = true;
-        StringBuilder sbSmallestID = new StringBuilder();
+//        boolean calcSmallestID = true;
+//        StringBuilder sbSmallestID = new StringBuilder();
         SymmetryIterator symIt = syms.iterator();
         // jump over identity
         symIt.next();
@@ -182,35 +186,43 @@ public class CanonDecisionSet extends LLDecisionSet {
 //                notSorted = false;
 //            }
             boolean smaller = true;
-            StringBuilder sbSym = new StringBuilder();
-//            StringBuilder sbSmallestID = new StringBuilder();
-            if (calcSmallestID) {
-                sbSmallestID.setLength(0);
-            }
+//            StringBuilder sbSym = new StringBuilder();
+////            StringBuilder sbSmallestID = new StringBuilder();
+//            if (calcSmallestID) {
+//                sbSmallestID.setLength(0);
+//            }
             Iterator<ILLDecision> itSym = symDCS.iterator();
             Iterator<ILLDecision> itSmallest = smallest.iterator();
             while (itSym.hasNext()) {
                 ILLDecision symDec = itSym.next();
                 ILLDecision smallestDec = itSmallest.next();
-//                if (symDec.getIDChainByFirstSorting().compareTo(smallestDec.getIDChainByFirstSorting()) > 0) {
-//                    smaller = false;
-//                    break;
-//                }
-                sbSym.append(symDec.getIDChainByFirstSorting()).append("|");
-                if (calcSmallestID) {
-                    sbSmallestID.append(smallestDec.getIDChainByFirstSorting()).append("|");
+                // new version, check if it gets better
+                String symID = symDec.getIDChainByFirstSorting();
+                String smallestID = smallestDec.getIDChainByFirstSorting();
+                int compare = symID.compareTo(smallestID);
+                if (compare < 0) {
+                    smaller = true;
+                    break;
+                } else if (compare > 0) {
+                    smaller = false;
+                    break;
                 }
+//                sbSym.append(symDec.getIDChainByFirstSorting()).append("|");
+//                if (calcSmallestID) {
+//                    sbSmallestID.append(smallestDec.getIDChainByFirstSorting()).append("|");
+//                }
             }
-//            if (smaller) {
-            if (sbSym.toString().compareTo(sbSmallestID.toString()) < 0) {
+            if (smaller) {
+//            if (sbSym.toString().compareTo(sbSmallestID.toString()) < 0) {
                 smallest = symDCS;
-                calcSmallestID = true;
+//                calcSmallestID = true;
 //              notSorted = false;
-            } else if (calcSmallestID) {
-                calcSmallestID = false;
             }
+//            } else if (calcSmallestID) {
+//                calcSmallestID = false;
+//            }
         }
-        return smallest;
+        return new HashSet<>(smallest);
     }
 
     // these methods could be used, when some datastructure is used which
