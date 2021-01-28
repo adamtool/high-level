@@ -157,6 +157,7 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
 
         SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.SOME;
         SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.TREE_DCS;
+//        SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_BY_LIST;
         HLASafetyWithoutType2SolverCanonApproach solverCanon = (HLASafetyWithoutType2SolverCanonApproach) HLSolverFactoryCanonApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
         boolean canonApproach = solverCanon.existsWinningStrategy();
         int sizeCanon = solverCanon.getGraph().getStatesView().size();

@@ -10,7 +10,6 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IntegerID;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphByHashCode;
-import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphUsingIDs;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphUsingIDsBidiMap;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.StateIdentifier;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.DecisionSet;

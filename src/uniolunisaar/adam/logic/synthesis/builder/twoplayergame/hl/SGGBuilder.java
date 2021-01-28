@@ -56,7 +56,10 @@ public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDe
         for (S succ : succs) {
             boolean newOne = true;
             S copySucc = succ;
-            for (SymmetryIterator iti = syms.iterator(); iti.hasNext();) {
+            SymmetryIterator symIt = syms.iterator();
+            // jump over identity
+            symIt.next();
+            for (SymmetryIterator iti = symIt; iti.hasNext();) {
                 Symmetry sym = iti.next();
                 copySucc = succ.apply(sym);
                 // note: this contains is more expensive using getValues().contains from the ID hashmap

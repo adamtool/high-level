@@ -60,7 +60,10 @@ public class OrderedDecisionSet extends LLDecisionSet {
 
     public OrderedDecisionSet getCanonical(OrderedDecisionSet dcs) {
         OrderedDecisionSet smallest = dcs;
-        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+        SymmetryIterator symIt = syms.iterator();
+        // jump over identity
+        symIt.next();
+        for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
             Symmetry sym = iterator.next();
             OrderedDecisionSet symDcs = dcs.apply(sym);
             if (symDcs.getIDChain().compareTo(smallest.getIDChain()) < 0) {

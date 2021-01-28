@@ -80,7 +80,10 @@ public class CanonDecisionSet extends LLDecisionSet {
         StringBuilder sbSmallestID = new StringBuilder();
         // sort it 
         Collections.sort(smallest, new LexiILLDecisionWithCommitmentComparator());
-        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+        SymmetryIterator symIt = syms.iterator();
+        // jump over identity
+        symIt.next();
+        for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
             Symmetry sym = iterator.next();
             // apply the symmetry
             List<ILLDecision> symDCS = new ArrayList<>();
