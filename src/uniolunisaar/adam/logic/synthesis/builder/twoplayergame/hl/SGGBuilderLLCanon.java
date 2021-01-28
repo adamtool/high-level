@@ -54,12 +54,19 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
         SOME,
         NONE
     }
+
+    public enum Approach {
+        TREE_DCS,
+        ORDERED_BY_LIST,
+        ORDERED_BY_TREE
+    }
     // todo: just a hack to check if it's faster
     public HashMap<OrderedDecisionSet, OrderedDecisionSet> dcsOrdered2canon = new HashMap<>();
     public HashMap<Set<ILLDecision>, CanonDecisionSet> dcs2canon = new HashMap<>();
 
     public SaveMapping saveMapping = SaveMapping.ALL;
     public boolean withBidi = true;
+    public Approach approach = Approach.ORDERED_BY_TREE;
 
     /**
      * It's the same as for SGGBuilderLL Todo: Do it properly ...
@@ -154,8 +161,12 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
         // calculate the system transitions
         Collection<Transition> sysTransitions = putSysAndSingleEnvTransitionsToExtention(pgame);
         // create initial decision set
-        LLDecisionSet init = createOrderedInitDecisionSet(hlgame, pgame);
-//        LLDecisionSet init = createCanonInitDecisionSet(hlgame, pgame);
+        LLDecisionSet init;
+        if (approach == Approach.TREE_DCS) {
+            init = createOrderedInitDecisionSet(hlgame, pgame);
+        } else {
+            init = createCanonInitDecisionSet(hlgame, pgame);
+        }
 
         // Create the graph iteratively
         AbstractGameGraph<Place, Transition, ILLDecision, DecisionSet, DecisionSet, GameGraphFlow<Transition, DecisionSet>> srg;

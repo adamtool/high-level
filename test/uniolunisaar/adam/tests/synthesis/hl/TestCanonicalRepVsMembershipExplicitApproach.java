@@ -104,8 +104,8 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
     public void testCM() throws Exception {
 //        int a = 2;
 //        int b = 4;
-        int a = 4;
-        int b = 2;
+        int a = 2;
+        int b = 4;
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(a, b, true);
         HLTools.saveHLPG2PDF(outputDir + "CM" + a + b, hlgame);
         PGTools.savePG2PDF(outputDir + "CM" + a + b + "_ll", HL2PGConverter.convert(hlgame), false);
@@ -156,11 +156,12 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
         time = System.currentTimeMillis();
 
         SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.SOME;
+        SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.TREE_DCS;
         HLASafetyWithoutType2SolverCanonApproach solverCanon = (HLASafetyWithoutType2SolverCanonApproach) HLSolverFactoryCanonApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
         boolean canonApproach = solverCanon.existsWinningStrategy();
         int sizeCanon = solverCanon.getGraph().getStatesView().size();
         int sizeCanonFlows = solverCanon.getGraph().getFlowsView().size();
-        System.out.println(SGGBuilderLLCanon.getInstance().dcsOrdered2canon.size());
+//        System.out.println(SGGBuilderLLCanon.getInstance().dcsOrdered2canon.size());
 
 //        int sizeCanon = -1;
         diff = System.currentTimeMillis() - time;
