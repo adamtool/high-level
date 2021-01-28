@@ -104,7 +104,8 @@ public class CanonDecisionSet extends LLDecisionSet {
 //            }
             // sort the symmetric one
             Collections.sort(symDCS, new LexiILLDecisionWithCommitmentComparator());
-            boolean smaller = true;
+            boolean smaller = false;
+            // old version comparing by symmetric
             StringBuilder sbSym = new StringBuilder();
 //            StringBuilder sbSmallestID = new StringBuilder();
             if (calcSmallestID) {
@@ -113,7 +114,12 @@ public class CanonDecisionSet extends LLDecisionSet {
             for (int i = 0; i < symDCS.size(); i++) {
                 ILLDecision symDec = symDCS.get(i);
                 ILLDecision smallestDec = smallest.get(i);
-//                if (symDec.getIDChainByFirstSorting().compareTo(smallestDec.getIDChainByFirstSorting()) > 0) {
+
+                // new version, check if it gets better
+//                if (symDec.getIDChainByFirstSorting().compareTo(smallestDec.getIDChainByFirstSorting()) < 0) {
+//                    smaller = true;
+//                    break;
+//                } else                 if (symDec.getIDChainByFirstSorting().compareTo(smallestDec.getIDChainByFirstSorting()) > 0) {
 //                    smaller = false;
 //                    break;
 //                }

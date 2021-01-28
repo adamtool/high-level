@@ -104,8 +104,8 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
     public void testCM() throws Exception {
 //        int a = 2;
 //        int b = 4;
-        int a = 2;
-        int b = 4;
+        int a = 4;
+        int b = 2;
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(a, b, true);
         HLTools.saveHLPG2PDF(outputDir + "CM" + a + b, hlgame);
         PGTools.savePG2PDF(outputDir + "CM" + a + b + "_ll", HL2PGConverter.convert(hlgame), false);
@@ -114,8 +114,8 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
 
     @Test
     public void testPD() throws Exception {
-        int a = 1;
-        int b = 3;
+        int a = 2;
+        int b = 1;
         HLPetriGame hlgame = PackageDeliveryHL.generateEwithPool(a, b, true);
         HLTools.saveHLPG2PDF(outputDir + "PD" + a + b, hlgame);
         PGTools.savePG2PDF(outputDir + "PD" + a + b + "_ll", HL2PGConverter.convert(hlgame), false);
@@ -189,6 +189,7 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
         Boolean llBDD = solverExplBDD.existsWinningStrategy();
         diff = System.currentTimeMillis() - time;
         Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% LL strategy explicit BDD exists: " + llBDD + " " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
+//        BDDTools.saveGraph2DotAndPDF(outputDir + "BDDGG", solverExplBDD.getGraphGame(), solverExplBDD);
 
     }
 

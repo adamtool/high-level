@@ -111,23 +111,27 @@ public class HLASafetyWithoutType2SolverCanonApproach extends HLASafetyWithoutTy
                     }
                     boolean belongsToThePlayer = (p1 && pre.isMcut()) || (!p1 && !pre.isMcut()); // it belongs to the current player
                     Collection<GameGraphFlow<Transition, DecisionSet>> successors = getGraph().getPostsetView(pre);
-                    boolean allInAttr = true;
+                    boolean noneInAttr = true;
+                    boolean add = true;
                     for (GameGraphFlow<Transition, DecisionSet> succFlow : successors) { /// all successors
                         DecisionSet succ = succFlow.getTarget();
                         if (attr.contains(succ.getId())) { // is in the attractor
+                            noneInAttr = false; // there is at least one
                             if (belongsToThePlayer) { // it's belongs to the current player
                                 // thus one successor in the attractor is enough
                                 // and pre is already the good one
+                                add = true;
                                 break;
                             }
                         } else {
-                            allInAttr = false; // found a bad one
+                            // found a bad one
                             if (!belongsToThePlayer) {
+                                add = false;
                                 break; // one is enough, I can stop
                             }
                         }
                     }
-                    if (allInAttr) { // it's the state of the other player and all successors are already in the attractor
+                    if (add && !noneInAttr) { // it's the state of the other player and all successors are already in the attractor
                         // if the abortion state is added, we can stop with an empty winning region (for safety)
                         if (withAbortion && pre.getId() == abortionState.getId()) {
                             return null;
