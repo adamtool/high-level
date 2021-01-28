@@ -47,7 +47,11 @@ public class OrderedDecisionSet extends LLDecisionSet {
                 if (mapping == SGGBuilderLLCanon.SaveMapping.SOME) {
                     SGGBuilderLLCanon.getInstance().dcsOrdered2canon.put(dcs, canon);
                 } else {
-                    for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+                    SGGBuilderLLCanon.getInstance().dcsOrdered2canon.put(dcs, canon);
+                    SymmetryIterator symIt = syms.iterator();
+                    // jump over identity
+                    symIt.next();
+                    for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
                         Symmetry sym = iterator.next();
                         OrderedDecisionSet symDcs = dcs.apply(sym);
                         SGGBuilderLLCanon.getInstance().dcsOrdered2canon.put(symDcs, canon);

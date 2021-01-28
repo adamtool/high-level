@@ -55,8 +55,12 @@ public class CanonDecisionSet extends LLDecisionSet {
                 canonDCS = new CanonDecisionSet(canon, mcut, bad, game, syms);
                 if (mapping == SGGBuilderLLCanon.SaveMapping.SOME) { // remember this pair
                     SGGBuilderLLCanon.getInstance().dcs2canon.put(decisions, canonDCS);
-                } else { // calculate also all symmetric dcs to store also those combis
-                    for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+                } else { // calculate also all symmetric dcs to store also those combis                    
+                    SGGBuilderLLCanon.getInstance().dcs2canon.put(decisions, canonDCS);
+                    SymmetryIterator symIt = syms.iterator();
+                    // jump over identity
+                    symIt.next();
+                    for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
                         Symmetry sym = iterator.next();
                         // apply the symmetry
                         Set<ILLDecision> symDCS = new HashSet<>();
@@ -152,7 +156,10 @@ public class CanonDecisionSet extends LLDecisionSet {
         TreeSet<ILLDecision> smallest = inputDCS;
         boolean calcSmallestID = true;
         StringBuilder sbSmallestID = new StringBuilder();
-        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+        SymmetryIterator symIt = syms.iterator();
+        // jump over identity
+        symIt.next();
+        for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
             Symmetry sym = iterator.next();
             // apply the symmetry
             TreeSet<ILLDecision> symDCS = new TreeSet<>(new LexiILLDecisionWithCommitmentComparator());
