@@ -194,7 +194,7 @@ public class CanonDecisionSet extends LLDecisionSet {
 //                Collections.sort(smallest, new LexiILLDecisionWithCommitmentComparator());
 //                notSorted = false;
 //            }
-            boolean smaller = true;
+            boolean smaller = false;
 //            StringBuilder sbSym = new StringBuilder();
 ////            StringBuilder sbSmallestID = new StringBuilder();
 //            if (calcSmallestID) {

@@ -63,6 +63,7 @@ public class OrderedDecisionSet extends LLDecisionSet {
     }
 
     public OrderedDecisionSet getCanonical(OrderedDecisionSet dcs) {
+        LexiILLDecisionComparator comp = new LexiILLDecisionComparator();
         OrderedDecisionSet smallest = dcs;
         SymmetryIterator symIt = syms.iterator();
         // jump over identity
@@ -70,8 +71,27 @@ public class OrderedDecisionSet extends LLDecisionSet {
         for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
             Symmetry sym = iterator.next();
             OrderedDecisionSet symDcs = dcs.apply(sym);
-//            symDcs. //todo:
-            if (symDcs.getIDChain().compareTo(smallest.getIDChain()) < 0) {
+//            // old version
+//            if (symDcs.getIDChain().compareTo(smallest.getIDChain()) < 0) {
+//                smallest = symDcs;
+//            }
+            // now also allow to break inbetween
+            Iterator<ILLDecision> itSym = symDcs.getDecisionsIterator();
+            Iterator<ILLDecision> itSmallest = smallest.getDecisionsIterator();
+            boolean smaller = false;
+            while (itSym.hasNext()) {
+                ILLDecision symDec = itSym.next();
+                ILLDecision smallestDec = itSmallest.next();
+                int compare = comp.compare(symDec, smallestDec);
+                if (compare < 0) {
+                    smaller = true;
+                    break;
+                } else if (compare > 0) {
+                    smaller = false;
+                    break;
+                }
+            }
+            if (smaller) {
                 smallest = symDcs;
             }
         }
