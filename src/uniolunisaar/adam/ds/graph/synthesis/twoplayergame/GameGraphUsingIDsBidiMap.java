@@ -85,7 +85,7 @@ public class GameGraphUsingIDsBidiMap<P, T, DC extends IDecision<P, T>, S extend
         addStateWithID(state);
     }
 
-    private void addStateWithID(S state) {        
+    private void addStateWithID(S state) {
         if (state.isBad()) {
             badStates.add(state);
         }
@@ -129,7 +129,8 @@ public class GameGraphUsingIDsBidiMap<P, T, DC extends IDecision<P, T>, S extend
      *
      * @return
      */
-    Collection<S> getStates() {
+    @Override
+    public Collection<S> getStates() {
         return states.values();
     }
 
@@ -138,7 +139,8 @@ public class GameGraphUsingIDsBidiMap<P, T, DC extends IDecision<P, T>, S extend
      *
      * @return
      */
-    Set<S> getBadStates() {
+    @Override
+    public Set<S> getBadStates() {
         return badStates;
     }
 
@@ -195,7 +197,7 @@ public class GameGraphUsingIDsBidiMap<P, T, DC extends IDecision<P, T>, S extend
      * @param state
      * @return
      */
-    Set<F> getPostset(S state) {
+    public Set<F> getPostset(S state) {
         return postSet.get(state.getId());
     }
 
@@ -248,7 +250,7 @@ public class GameGraphUsingIDsBidiMap<P, T, DC extends IDecision<P, T>, S extend
      * @param state
      * @return
      */
-    Set<F> getPreset(S state) {
+    public Set<F> getPreset(S state) {
         return preSet.get(state.getId());
     }
 

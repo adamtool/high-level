@@ -87,7 +87,9 @@ public class HLASafetyWithoutType2SolverCanonApproach extends HLASafetyWithoutTy
             attr.add(in.getId());
             lastRound.add(in.getId());
         }
+//        int round = 0;
         while (!lastRound.isEmpty()) {
+//            System.out.println("round " + round++);
             if (Thread.interrupted()) {
                 CalculationInterruptedException e = new CalculationInterruptedException();
                 Logger.getInstance().addError(e.getMessage(), e);
@@ -101,7 +103,8 @@ public class HLASafetyWithoutType2SolverCanonApproach extends HLASafetyWithoutTy
             lastRound.clear();
             for (Integer id : attr) {
                 DecisionSet state = graph.getState(id);
-                Collection<GameGraphFlow<Transition, DecisionSet>> predecessors = getGraph().getPresetView(state);
+//                Collection<GameGraphFlow<Transition, DecisionSet>> predecessors = graph.getPresetView(state);
+                Set<GameGraphFlow<Transition, DecisionSet>> predecessors = graph.getPreset(state);
                 for (GameGraphFlow<Transition, DecisionSet> preFlow : predecessors) { // all predecessors
                     DecisionSet pre = preFlow.getSource();
                     // if it is already in the attractor we have nothing to do
@@ -109,7 +112,8 @@ public class HLASafetyWithoutType2SolverCanonApproach extends HLASafetyWithoutTy
                         continue;
                     }
                     boolean belongsToThePlayer = (p1 && pre.isMcut()) || (!p1 && !pre.isMcut()); // it belongs to the current player
-                    Collection<GameGraphFlow<Transition, DecisionSet>> successors = getGraph().getPostsetView(pre);
+//                    Collection<GameGraphFlow<Transition, DecisionSet>> successors = graph.getPostsetView(pre);
+                    Set<GameGraphFlow<Transition, DecisionSet>> successors = graph.getPostset(pre);
                     boolean noneInAttr = true;
                     boolean add = true;
                     for (GameGraphFlow<Transition, DecisionSet> succFlow : successors) { /// all successors
@@ -139,6 +143,7 @@ public class HLASafetyWithoutType2SolverCanonApproach extends HLASafetyWithoutTy
                     }
                 }
             }
+//            System.out.println("add:"+lastRound.toString());
             attr.addAll(lastRound);
         }
 

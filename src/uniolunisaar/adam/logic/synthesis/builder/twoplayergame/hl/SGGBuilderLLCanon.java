@@ -24,6 +24,7 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLDecisi
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLEnvDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLSysDecision;
 import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
+import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.GameGraphBuilder;
 import uniolunisaar.adam.logic.synthesis.transformers.highlevel.HL2PGConverter;
@@ -60,6 +61,13 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
         ORDERED_BY_LIST,
         ORDERED_BY_TREE
     }
+
+    //todo: make it properly with locks, just a quick hack to not save it in
+    // CanonDecisionSet and OrderedDecisionSet, because even this pointer is 
+    // kind of expensive to copy for this large amount of states
+    private Symmetries currentSymmetries;
+    private PetriGameWithTransits currentLLGame;
+
     // todo: just a hack to check if it's faster
     public HashMap<OrderedDecisionSet, OrderedDecisionSet> dcsOrdered2canon = new HashMap<>();
     public HashMap<Set<ILLDecision>, CanonDecisionSet> dcs2canon = new HashMap<>();
@@ -67,10 +75,18 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
     public SaveMapping saveMapping = SaveMapping.ALL;
     public boolean withBidi = true;
     public Approach approach = Approach.ORDERED_BY_TREE;
-    
+
     public void clearBufferedData() {
         dcs2canon.clear();
         dcsOrdered2canon.clear();
+    }
+
+    public Symmetries getCurrentSymmetries() {
+        return currentSymmetries;
+    }
+
+    public PetriGameWithTransits getCurrentLLGame() {
+        return currentLLGame;
     }
 
     /**
@@ -138,7 +154,8 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
                 }
             }
         }
-        CanonDecisionSet dcs = new CanonDecisionSet(inits, false, false, pgame, hlgame.getSymmetries());
+//        CanonDecisionSet dcs = new CanonDecisionSet(inits, false, false, pgame, hlgame.getSymmetries());
+        CanonDecisionSet dcs = new CanonDecisionSet(inits, false, false, pgame);
         if (saveMapping != SaveMapping.NONE) {
             dcs2canon.put(inits, dcs);
         }
@@ -163,6 +180,10 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
     public AbstractGameGraph<Place, Transition, ILLDecision, DecisionSet, DecisionSet, GameGraphFlow<Transition, DecisionSet>> create(HLPetriGame hlgame) {
         // Convert the high-level game to its low-level version
         PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
+        // set the current values
+        currentLLGame = pgame;
+        currentSymmetries = hlgame.getSymmetries();
+
         // calculate the system transitions
         Collection<Transition> sysTransitions = putSysAndSingleEnvTransitionsToExtention(pgame);
         // create initial decision set

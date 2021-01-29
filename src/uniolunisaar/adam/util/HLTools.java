@@ -253,7 +253,7 @@ public class HLTools {
 
         // States
         sb.append("#states\n");
-        for (DCS state : graph.getStatesView()) {
+        for (DCS state : graph.getStates()) {
             if (state.getId() == -1) {
                 state.setId(state.hashCode());
             }
@@ -275,7 +275,7 @@ public class HLTools {
 
         // Flows
         sb.append("\n#flows\n");
-        for (F f : graph.getFlowsView()) {
+        for (F f : graph.getFlows()) {
 //            sb.append(f.getSource().toString()).append("->").append(f.getTarget().toString());
 if(f.getSource().getId()==-1) {
     System.out.println(f.getSource().toString());

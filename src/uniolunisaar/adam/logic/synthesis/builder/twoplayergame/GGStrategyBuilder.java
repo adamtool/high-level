@@ -68,7 +68,7 @@ public class GGStrategyBuilder<P, T, DC extends IDecision<P, T>, S extends IDeci
 //    private List<F> getFlow(GameGraph<P, T, DC, S, F> graph, S pre, S post, boolean one) {
     private List<F> getFlow(AbstractGameGraph<P, T, DC, S, S, F> graph, S pre, S post, boolean one) {
         List<F> flows = new ArrayList<>();
-        for (F f : graph.getFlowsView()) {
+        for (F f : graph.getFlows()) {
             if (f.getSource().equals(pre) && f.getTarget().equals(post)) {
                 flows.add(f);
                 if (one) {

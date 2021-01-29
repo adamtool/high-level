@@ -127,7 +127,8 @@ public class GameGraphUsingIDs<P, T, DC extends IDecision<P, T>, S extends IDeci
      *
      * @return
      */
-    Collection<S> getStates() {
+    @Override
+    public Collection<S> getStates() {
         return states.values();
     }
 
@@ -136,7 +137,8 @@ public class GameGraphUsingIDs<P, T, DC extends IDecision<P, T>, S extends IDeci
      *
      * @return
      */
-    Set<S> getBadStates() {
+    @Override
+    public Set<S> getBadStates() {
         return badStates;
     }
 

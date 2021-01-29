@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.ILLDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLDecisionSet;
-import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.SymmetryIterator;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
@@ -21,11 +20,13 @@ import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl.SGGBuilderLLCa
  */
 public class CanonDecisionSet extends LLDecisionSet {
 
-    private final Symmetries syms;
-
-    public CanonDecisionSet(Set<ILLDecision> decisions, boolean mcut, boolean bad, PetriGameWithTransits game, Symmetries syms) {
+//    private final Symmetries syms;
+//    public CanonDecisionSet(Set<ILLDecision> decisions, boolean mcut, boolean bad, PetriGameWithTransits game, Symmetries syms) {
+//        super(decisions, mcut, bad, game);
+//        this.syms = syms;
+//    }
+    public CanonDecisionSet(Set<ILLDecision> decisions, boolean mcut, boolean bad, PetriGameWithTransits game) {
         super(decisions, mcut, bad, game);
-        this.syms = syms;
     }
 
     @Override
@@ -39,7 +40,8 @@ public class CanonDecisionSet extends LLDecisionSet {
             } else {
                 canon = makeCanonicalTrees(decisions);
             }
-            CanonDecisionSet dcs = new CanonDecisionSet(canon, mcut, bad, game, syms);
+//            CanonDecisionSet dcs = new CanonDecisionSet(canon, mcut, bad, game, syms);
+            CanonDecisionSet dcs = new CanonDecisionSet(canon, mcut, bad, game);
             return dcs;
         } else {
             // search if already a saved one exists
@@ -52,12 +54,14 @@ public class CanonDecisionSet extends LLDecisionSet {
                 } else {
                     canon = makeCanonicalTrees(decisions);
                 }
-                canonDCS = new CanonDecisionSet(canon, mcut, bad, game, syms);
+//                canonDCS = new CanonDecisionSet(canon, mcut, bad, game, syms);
+                canonDCS = new CanonDecisionSet(canon, mcut, bad, game);
                 if (mapping == SGGBuilderLLCanon.SaveMapping.SOME) { // remember this pair
                     SGGBuilderLLCanon.getInstance().dcs2canon.put(decisions, canonDCS);
                 } else { // calculate also all symmetric dcs to store also those combis                    
                     SGGBuilderLLCanon.getInstance().dcs2canon.put(decisions, canonDCS);
-                    SymmetryIterator symIt = syms.iterator();
+//                    SymmetryIterator symIt = syms.iterator();
+                    SymmetryIterator symIt = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator();
                     // jump over identity
                     symIt.next();
                     for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
@@ -76,6 +80,7 @@ public class CanonDecisionSet extends LLDecisionSet {
     }
 
     private Set<ILLDecision> makeCanonicalLists(Set<ILLDecision> dcs) {
+        LexiILLDecisionWithCommitmentComparator comp = new LexiILLDecisionWithCommitmentComparator();
         List<ILLDecision> inputDCS = new ArrayList<>(dcs);
 
 //        boolean notSorted = true;
@@ -83,8 +88,9 @@ public class CanonDecisionSet extends LLDecisionSet {
 //        boolean calcSmallestID = true;
 //        StringBuilder sbSmallestID = new StringBuilder();
         // sort it 
-        Collections.sort(smallest, new LexiILLDecisionWithCommitmentComparator());
-        SymmetryIterator symIt = syms.iterator();
+        Collections.sort(smallest, comp);
+//        SymmetryIterator symIt = syms.iterator();
+        SymmetryIterator symIt = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator();
         // jump over identity
         symIt.next();
         for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
@@ -110,7 +116,7 @@ public class CanonDecisionSet extends LLDecisionSet {
 //                notSorted = false;
 //            }
             // sort the symmetric one
-            Collections.sort(symDCS, new LexiILLDecisionWithCommitmentComparator());
+            Collections.sort(symDCS, comp);
             boolean smaller = false;
             // old version comparing by symmetric
 //            StringBuilder sbSym = new StringBuilder();
@@ -122,10 +128,11 @@ public class CanonDecisionSet extends LLDecisionSet {
                 ILLDecision symDec = symDCS.get(i);
                 ILLDecision smallestDec = smallest.get(i);
 
-                // new version, check if it gets better
-                String symID = symDec.getIDChainByFirstSorting();
-                String smallestID = smallestDec.getIDChainByFirstSorting();
-                int compare = symID.compareTo(smallestID);
+//                // new version, check if it gets better
+//                String symID = symDec.getIDChainByFirstSorting(); // here check just place!
+//                String smallestID = smallestDec.getIDChainByFirstSorting();
+//                int compare = symID.compareTo(smallestID);
+                int compare = comp.compare(symDec, smallestDec);
                 if (compare < 0) {
                     smaller = true;
                     break;
@@ -153,20 +160,22 @@ public class CanonDecisionSet extends LLDecisionSet {
     }
 
     private Set<ILLDecision> makeCanonicalTrees(Set<ILLDecision> dcs) {
-        TreeSet<ILLDecision> inputDCS = new TreeSet<>(new LexiILLDecisionWithCommitmentComparator());
+        LexiILLDecisionWithCommitmentComparator comp = new LexiILLDecisionWithCommitmentComparator();
+        TreeSet<ILLDecision> inputDCS = new TreeSet<>(comp);
         inputDCS.addAll(dcs);
 
 //        boolean notSorted = true;
         TreeSet<ILLDecision> smallest = inputDCS;
 //        boolean calcSmallestID = true;
 //        StringBuilder sbSmallestID = new StringBuilder();
-        SymmetryIterator symIt = syms.iterator();
+//        SymmetryIterator symIt = syms.iterator();
+        SymmetryIterator symIt = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator();
         // jump over identity
         symIt.next();
         for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
             Symmetry sym = iterator.next();
             // apply the symmetry
-            TreeSet<ILLDecision> symDCS = new TreeSet<>(new LexiILLDecisionWithCommitmentComparator());
+            TreeSet<ILLDecision> symDCS = new TreeSet<>(comp);
             for (ILLDecision decision : inputDCS) {
                 symDCS.add((ILLDecision) decision.apply(sym));
             }
@@ -196,10 +205,11 @@ public class CanonDecisionSet extends LLDecisionSet {
             while (itSym.hasNext()) {
                 ILLDecision symDec = itSym.next();
                 ILLDecision smallestDec = itSmallest.next();
-                // new version, check if it gets better
-                String symID = symDec.getIDChainByFirstSorting();
-                String smallestID = smallestDec.getIDChainByFirstSorting();
-                int compare = symID.compareTo(smallestID);
+//                // new version, check if it gets better
+//                String symID = symDec.getIDChainByFirstSorting();
+//                String smallestID = smallestDec.getIDChainByFirstSorting();
+//                int compare = symID.compareTo(smallestID);
+                int compare = comp.compare(symDec, smallestDec);
                 if (compare < 0) {
                     smaller = true;
                     break;
@@ -229,7 +239,8 @@ public class CanonDecisionSet extends LLDecisionSet {
     // preserves an order (e.g. List, vs. HashSet). Then sorting would 
     // have an effect.
     public CanonDecisionSet createDecisionSetWhenDCSEnsureAnOrder(Set<ILLDecision> decisions, boolean mcut, boolean bad, PetriGameWithTransits game) {
-        CanonDecisionSet dcs = new CanonDecisionSet(decisions, mcut, bad, game, syms);
+//        CanonDecisionSet dcs = new CanonDecisionSet(decisions, mcut, bad, game, syms);
+        CanonDecisionSet dcs = new CanonDecisionSet(decisions, mcut, bad, game);
         SGGBuilderLLCanon.SaveMapping mapping = SGGBuilderLLCanon.getInstance().saveMapping;
         if (mapping == SGGBuilderLLCanon.SaveMapping.NONE) {
             return makeCanonicalWhenDCSEnsureAnOrder(dcs);
@@ -240,7 +251,8 @@ public class CanonDecisionSet extends LLDecisionSet {
                 if (mapping == SGGBuilderLLCanon.SaveMapping.SOME) {
 //                    SGGBuilderLLCanon.getInstance().dcs2canon.put(dcs, canon);
                 } else {
-                    for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+//                    for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+                    for (SymmetryIterator iterator = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator(); iterator.hasNext();) {
                         Symmetry sym = iterator.next();
                         CanonDecisionSet symDcs = (CanonDecisionSet) dcs.apply(sym); // is ensured due overwritten createDecisionSet 
 //                        SGGBuilderLLCanon.getInstance().dcs2canon.put(symDcs, canon);
@@ -254,7 +266,8 @@ public class CanonDecisionSet extends LLDecisionSet {
     private CanonDecisionSet makeCanonicalWhenDCSEnsureAnOrder(CanonDecisionSet dcs) {
         // dcs.sort();
         CanonDecisionSet smallest = dcs;
-        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+//        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+        for (SymmetryIterator iterator = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator(); iterator.hasNext();) {
             Symmetry sym = iterator.next();
             CanonDecisionSet symDcs = (CanonDecisionSet) dcs.apply(sym); // is ensured due overwritten createDecisionSet 
             // symDcs.sort();

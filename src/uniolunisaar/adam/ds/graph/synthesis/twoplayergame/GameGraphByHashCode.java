@@ -4,12 +4,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
- * This method had the problems with the identifying of different
- * nodes with the same hash value. Hash values are not meant to be unique, just
- * a helper for finding elements in data structures fast and then checking with 
- * is equal.
+ * This method had the problems with the identifying of different nodes with the
+ * same hash value. Hash values are not meant to be unique, just a helper for
+ * finding elements in data structures fast and then checking with is equal.
  *
  * @author Manuel Gieseking
  * @param <P>
@@ -34,7 +34,7 @@ public class GameGraphByHashCode<P, T, DC extends IDecision<P, T>, S extends IDe
         return states.containsKey(state.hashCode());
 //        return states.values().contains(state);
     }
-    
+
     @Override
     public boolean containsExistingState(S state) {
         return contains(state);
@@ -45,12 +45,11 @@ public class GameGraphByHashCode<P, T, DC extends IDecision<P, T>, S extends IDe
         states.put(state.hashCode(), state);
     }
 
-    
     @Override
     public void addFreshState(S state) {
         addState(state);
     }
-    
+
     @Override
     public S getState(IntegerID id) {
         return states.get(id.getId());
@@ -59,6 +58,26 @@ public class GameGraphByHashCode<P, T, DC extends IDecision<P, T>, S extends IDe
     @Override
     public S getCorrespondingState(S state) {
         return state;
+    }
+
+    /**
+     * Attention: don't change the set when using this method
+     *
+     * @return
+     */
+    @Override
+    public Set<S> getStates() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    /**
+     * Attention: don't change the set when using this method
+     *
+     * @return
+     */
+    @Override
+    public Set<S> getBadStates() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

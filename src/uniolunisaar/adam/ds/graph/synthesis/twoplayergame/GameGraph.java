@@ -102,7 +102,8 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
      *
      * @return
      */
-    Set<S> getStates() {
+    @Override
+    public Set<S> getStates() {
         return states;
     }
 
@@ -111,7 +112,8 @@ public class GameGraph<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<
      *
      * @return
      */
-    Set<S> getBadStates() {
+    @Override
+    public Set<S> getBadStates() {
         return badStates;
     }
 

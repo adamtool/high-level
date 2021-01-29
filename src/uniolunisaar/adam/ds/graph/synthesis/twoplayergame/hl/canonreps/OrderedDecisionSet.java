@@ -70,6 +70,7 @@ public class OrderedDecisionSet extends LLDecisionSet {
         for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
             Symmetry sym = iterator.next();
             OrderedDecisionSet symDcs = dcs.apply(sym);
+//            symDcs. //todo:
             if (symDcs.getIDChain().compareTo(smallest.getIDChain()) < 0) {
                 smallest = symDcs;
             }

@@ -41,11 +41,15 @@ public abstract class AbstractGameGraph<P, T, DC extends IDecision<P, T>, S exte
 
     public abstract Collection<S> getStatesView();
 
+    public abstract Collection<S> getStates();
+
     public abstract Collection<F> getPostsetView(S state);
 
     public abstract Collection<F> getPresetView(S state);
 
     public abstract Collection<S> getBadStatesView();
+
+    public abstract Set<S> getBadStates();
 
     public abstract ID getID(S state);
 
@@ -65,7 +69,7 @@ public abstract class AbstractGameGraph<P, T, DC extends IDecision<P, T>, S exte
      *
      * @return
      */
-    Set<F> getFlows() {
+    public Set<F> getFlows() {
         return flows;
     }
 

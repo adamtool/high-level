@@ -34,7 +34,6 @@ public class SysDecision extends AbstractSysDecision<Place, Transition, Commitme
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.    
     }
 
-  
     @Override
     public String toDot() {
         StringBuilder sb = new StringBuilder("(");
@@ -66,6 +65,15 @@ public class SysDecision extends AbstractSysDecision<Place, Transition, Commitme
             idByFirstSorting = getPlace().getId().concat("+").concat(getC().getIDChainByFirstSorting());
         }
         return idByFirstSorting;
+    }
+
+    private String commitIdByFirstSorting = null;
+
+    public String getCommitmentSetIDChainByFirstSorting() {
+        if (commitIdByFirstSorting == null) {
+            commitIdByFirstSorting = getC().getIDChainByFirstSorting();
+        }
+        return commitIdByFirstSorting;
     }
 
 }
