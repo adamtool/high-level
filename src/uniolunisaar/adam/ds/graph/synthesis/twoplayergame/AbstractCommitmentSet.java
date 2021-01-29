@@ -118,11 +118,13 @@ public abstract class AbstractCommitmentSet<T> {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 59 * hash + (this.isTop ? 1 : 0);
-        hash = 13 * hash * Objects.hashCode(this.transitions);
+        hash = 97 * hash + (this.isTop ? 1 : 0);
+        hash = 97 * hash + Objects.hashCode(this.transitions);
         return hash;
     }
-
+    
+  
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -138,27 +140,9 @@ public abstract class AbstractCommitmentSet<T> {
         if (this.isTop != other.isTop) {
             return false;
         }
-        // todo: do it better?
-//        if (this.transitions == null && other.transitions == null) {
-//            return true;
-//        }
-//        if ((this.transitions != null && other.transitions == null) || (this.transitions == null && other.transitions != null)) {
-//            return false;
-//        }
-//        for (T transition : this.transitions) {
-//            if (!other.transitions.contains(transition)) {
-//                return false;
-//            }
-//        }
-//        for (T transition : other.transitions) {
-//            if (!this.transitions.contains(transition)) {
-//                return false;
-//            }
-//        }
         if (!Objects.equals(this.transitions, other.transitions)) {
             return false;
         }
-
         return true;
     }
 

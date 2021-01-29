@@ -1,7 +1,5 @@
 package uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit;
 
-import java.util.Iterator;
-import java.util.Objects;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractSysDecision;
@@ -36,15 +34,7 @@ public class SysDecision extends AbstractSysDecision<Place, Transition, Commitme
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.    
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 29 * hash * Objects.hashCode(getPlace());
-        int mult = Objects.hashCode(getC());
-        hash = 29 * hash * (mult == 0 ? 1 : mult);
-        return hash;
-    }
-
+  
     @Override
     public String toDot() {
         StringBuilder sb = new StringBuilder("(");

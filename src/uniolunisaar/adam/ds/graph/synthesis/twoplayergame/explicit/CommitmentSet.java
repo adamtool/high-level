@@ -60,21 +60,7 @@ public class CommitmentSet extends AbstractCommitmentSet<Transition> {
     public CommitmentSet apply(Symmetry sym) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 59 * hash + (isTop() ? 1 : 0);
-        int tr = 1;
-        if (getTransitions() != null) {
-            for (Transition transition : getTransitions()) {
-                tr *= Objects.hashCode(transition);
-            }
-        }
-        hash = 13 * hash * tr;
-        return hash;
-    }
-
+  
     @Override
     public String toDot() {
         StringBuilder sb = new StringBuilder();

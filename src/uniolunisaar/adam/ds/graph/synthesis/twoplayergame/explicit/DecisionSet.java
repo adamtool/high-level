@@ -504,9 +504,7 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 79 * hash + Objects.hashCode(this.decisions);
-        hash = 79 * hash + (this.mcut ? 1 : 0);
-        hash = 79 * hash + (this.bad ? 1 : 0);
+        hash = 17 * hash + Objects.hashCode(this.decisions);
         return hash;
     }
 
@@ -528,19 +526,6 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
         if (this.bad != other.bad) {
             return false;
         }
-//        for (ILLDecision decision : this.decisions) {
-//            if (!other.decisions.contains(decision)) {
-//                return false;
-//            }
-//        }
-//        for (ILLDecision decision : other.decisions) {
-//            if (!this.decisions.contains(decision)) {
-//                if (SGGBuilder.depth < 10) {
-//                    System.out.println(decision);
-//                }
-//                return false;
-//            }
-//        }
         if (!Objects.equals(this.decisions, other.decisions)) {
             return false;
         }

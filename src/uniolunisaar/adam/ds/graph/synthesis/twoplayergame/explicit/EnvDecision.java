@@ -1,6 +1,5 @@
 package uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit;
 
-import java.util.Objects;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractEnvDecision;
@@ -30,13 +29,6 @@ public class EnvDecision extends AbstractEnvDecision<Place, Transition> implemen
     @Override
     public EnvDecision apply(Symmetry sym) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.    
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 23;
-        hash = 29 * hash * Objects.hashCode(getPlace());
-        return hash;
     }
 
     @Override

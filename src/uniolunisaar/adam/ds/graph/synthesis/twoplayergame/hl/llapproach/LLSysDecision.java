@@ -2,7 +2,6 @@ package uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.CommitmentSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.SysDecision;
@@ -68,12 +67,4 @@ public class LLSysDecision extends SysDecision {
         return new LLSysDecision(getGame(), place, c);
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 29 * hash * HL2PGConverter.getHashCode(getPlace());
-        int mult = Objects.hashCode(getC());
-        hash = 29 * hash * (mult == 0 ? 1 : mult);
-        return hash;
-    }
 }

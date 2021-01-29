@@ -508,39 +508,39 @@ public class HLDecisionSet extends Extensible implements IDecisionSet<ColoredPla
         return hashCode();
     }
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 31 * hash * Objects.hashCode(this.decisions);
-        hash = hash * (this.mcut ? 2 : 1);
-        hash = hash * (this.bad ? 3 : 1);
-//        hash = 31 * hash + (this.mcut ? 1 : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final HLDecisionSet other = (HLDecisionSet) obj;
-        if (this.mcut != other.mcut) {
-            return false;
-        }
-        if (this.bad != other.bad) {
-            return false;
-        }
-        if (!Objects.equals(this.decisions, other.decisions)) {
-            return false;
-        }
-        return true;
-    }
+//    @Override
+//    public int hashCode() {
+//        int hash = 7;
+//        hash = 31 * hash * Objects.hashCode(this.decisions);
+//        hash = hash * (this.mcut ? 2 : 1);
+//        hash = hash * (this.bad ? 3 : 1);
+////        hash = 31 * hash + (this.mcut ? 1 : 0);
+//        return hash;
+//    }
+//
+//    @Override
+//    public boolean equals(Object obj) {
+//        if (this == obj) {
+//            return true;
+//        }
+//        if (obj == null) {
+//            return false;
+//        }
+//        if (getClass() != obj.getClass()) {
+//            return false;
+//        }
+//        final HLDecisionSet other = (HLDecisionSet) obj;
+//        if (this.mcut != other.mcut) {
+//            return false;
+//        }
+//        if (this.bad != other.bad) {
+//            return false;
+//        }
+//        if (!Objects.equals(this.decisions, other.decisions)) {
+//            return false;
+//        }
+//        return true;
+//    }
 
     @Override
     public String toDot() {
