@@ -21,6 +21,8 @@ import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.BDDSolverOptions;
 import uniolunisaar.adam.generators.highlevel.ConcurrentMachinesHL;
 import uniolunisaar.adam.generators.highlevel.PackageDeliveryHL;
+import uniolunisaar.adam.generators.highlevel.ClientServerHL;
+import uniolunisaar.adam.generators.highlevel.ContainerHabourHL;
 import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl.SGGBuilderLLCanon;
 import uniolunisaar.adam.logic.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
 import uniolunisaar.adam.logic.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;
@@ -101,11 +103,20 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
     }
 
     @Test
-    public void testCM() throws Exception {
-//        int a = 2;
-//        int b = 4;
+    public void testCS() throws Exception {
         int a = 4;
-        int b = 2;
+        HLPetriGame hlgame = ClientServerHL.create(a, true);
+        HLTools.saveHLPG2PDF(outputDir + "CS" + a, hlgame);
+        PGTools.savePG2PDF(outputDir + "CS" + a + "_ll", HL2PGConverter.convert(hlgame), false);
+        checkExistsStrat("CM" + a, hlgame);
+    }
+
+    @Test
+    public void testCM() throws Exception {
+        int a = 2;
+        int b = 4;
+//        int a = 4;
+//        int b = 2;
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(a, b, true);
         HLTools.saveHLPG2PDF(outputDir + "CM" + a + b, hlgame);
         PGTools.savePG2PDF(outputDir + "CM" + a + b + "_ll", HL2PGConverter.convert(hlgame), false);
