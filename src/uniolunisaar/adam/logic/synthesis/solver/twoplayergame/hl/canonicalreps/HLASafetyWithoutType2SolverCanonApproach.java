@@ -39,7 +39,6 @@ public class HLASafetyWithoutType2SolverCanonApproach extends HLASafetyWithoutTy
 //    protected GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(HLPetriGame hlgame) {
 //    protected GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(HLPetriGame hlgame) {
     protected AbstractGameGraph<Place, Transition, ILLDecision, DecisionSet, DecisionSet, GameGraphFlow<Transition, DecisionSet>> calculateGraph(HLPetriGame hlgame) {
-        System.out.println(" nutze canon");
         return SGGBuilderLLCanon.getInstance().create(hlgame);
     }
 

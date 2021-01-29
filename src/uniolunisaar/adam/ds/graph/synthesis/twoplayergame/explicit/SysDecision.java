@@ -68,9 +68,14 @@ public class SysDecision extends AbstractSysDecision<Place, Transition, Commitme
         return getPlace().getId().concat("+").concat(getC().getIDChain());
     }
 
+    private String idByFirstSorting = null;
+
     @Override
     public String getIDChainByFirstSorting() {
-        return getPlace().getId().concat("+").concat(getC().getIDChainByFirstSorting());
+        if (idByFirstSorting == null) {
+            idByFirstSorting = getPlace().getId().concat("+").concat(getC().getIDChainByFirstSorting());
+        }
+        return idByFirstSorting;
     }
 
 }
