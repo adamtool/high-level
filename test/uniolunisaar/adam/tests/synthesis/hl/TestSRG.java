@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import org.testng.Assert;
@@ -38,7 +39,6 @@ import uniolunisaar.adam.ds.synthesis.highlevel.oneenv.OneEnvHLPG;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.RotationIterator;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
-import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.SymmetryIterator;
 import uniolunisaar.adam.ds.synthesis.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.ds.objectives.local.Safety;
@@ -293,7 +293,7 @@ public class TestSRG {
     }
 
     private boolean checkSym(Symmetries syms, ILLDecision a, ILLDecision b) {
-        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+        for (Iterator<Symmetry> iterator = syms.iterator(); iterator.hasNext();) {
             Symmetry sym = iterator.next();
             a.apply(sym);
             if (a.equals(b)) {
@@ -305,7 +305,7 @@ public class TestSRG {
     }
 
     private boolean checkSym(Symmetries syms, LLDecisionSet a, LLDecisionSet b) {
-        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+        for (Iterator<Symmetry> iterator = syms.iterator(); iterator.hasNext();) {
             Symmetry sym = iterator.next();
             a.apply(sym);
             if (a.equals(b)) {

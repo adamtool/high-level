@@ -1,6 +1,7 @@
 package uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.Stack;
 import uniol.apt.adt.pn.Transition;
@@ -10,7 +11,6 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
 import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
-import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.SymmetryIterator;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.StateIdentifier;
 import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.GameGraphBuilder;
@@ -56,10 +56,10 @@ public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDe
         for (S succ : succs) {
             boolean newOne = true;
             S copySucc = succ;
-            SymmetryIterator symIt = syms.iterator();
+            Iterator<Symmetry> symIt = syms.iterator();
             // jump over identity (currently has a problem)
 //            symIt.next();
-            for (SymmetryIterator iti = symIt; iti.hasNext();) {
+            for (Iterator<Symmetry> iti = symIt; iti.hasNext();) {
                 Symmetry sym = iti.next();
                 copySucc = succ.apply(sym);
                 // note: this contains is more expensive using getValues().contains from the ID hashmap

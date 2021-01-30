@@ -2,6 +2,7 @@ package uniolunisaar.adam.tests.synthesis.hl;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -20,7 +21,6 @@ import uniolunisaar.adam.ds.synthesis.highlevel.arcexpressions.ArcExpression;
 import uniolunisaar.adam.ds.synthesis.highlevel.arcexpressions.ArcTuple;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
-import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.SymmetryIterator;
 import uniolunisaar.adam.ds.synthesis.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.ds.objectives.local.Safety;
@@ -192,7 +192,7 @@ public class TestSGGBDD {
 //        PGTools.savePG2PDF(outputDir + "DW" + size + "_convP", game2, false, 5);
 
         Symmetries syms = new Symmetries(hlgame.getBasicColorClasses());
-        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
+        for (Iterator<Symmetry> iterator = syms.iterator(); iterator.hasNext();) {
             Symmetry next = iterator.next();
 
             Logger.getInstance().addMessage(next.toString());

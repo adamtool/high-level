@@ -48,10 +48,10 @@ public class OrderedDecisionSet extends LLDecisionSet {
                     SGGBuilderLLCanon.getInstance().dcsOrdered2canon.put(dcs, canon);
                 } else {
                     SGGBuilderLLCanon.getInstance().dcsOrdered2canon.put(dcs, canon);
-                    SymmetryIterator symIt = syms.iterator();
+                    Iterator<Symmetry> symIt = syms.iterator();
                     // jump over identity
                     symIt.next();
-                    for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
+                    for (Iterator<Symmetry> iterator = symIt; iterator.hasNext();) {
                         Symmetry sym = iterator.next();
                         OrderedDecisionSet symDcs = dcs.apply(sym);
                         SGGBuilderLLCanon.getInstance().dcsOrdered2canon.put(symDcs, canon);
@@ -65,10 +65,10 @@ public class OrderedDecisionSet extends LLDecisionSet {
     public OrderedDecisionSet getCanonical(OrderedDecisionSet dcs) {
         LexiILLDecisionComparator comp = new LexiILLDecisionComparator();
         OrderedDecisionSet smallest = dcs;
-        SymmetryIterator symIt = syms.iterator();
+        Iterator<Symmetry> symIt = syms.iterator();
         // jump over identity
         symIt.next();
-        for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
+        for (Iterator<Symmetry> iterator = symIt; iterator.hasNext();) {
             Symmetry sym = iterator.next();
             OrderedDecisionSet symDcs = dcs.apply(sym);
 //            // old version

@@ -62,10 +62,10 @@ public class CanonDecisionSet extends LLDecisionSet {
                 } else { // calculate also all symmetric dcs to store also those combis                    
                     SGGBuilderLLCanon.getInstance().dcs2canon.put(decisions, canonDCS);
 //                    SymmetryIterator symIt = syms.iterator();
-                    SymmetryIterator symIt = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator();
+                    Iterator<Symmetry> symIt = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator();
                     // jump over identity
                     symIt.next();
-                    for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
+                    for (Iterator<Symmetry> iterator = symIt; iterator.hasNext();) {
                         Symmetry sym = iterator.next();
                         // apply the symmetry
                         Set<ILLDecision> symDCS = new HashSet<>();
@@ -91,13 +91,14 @@ public class CanonDecisionSet extends LLDecisionSet {
 //        boolean calcSmallestID = true;
 //        StringBuilder sbSmallestID = new StringBuilder();
 //        SymmetryIterator symIt = syms.iterator();
-        SymmetryIterator symIt = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator();
+//        SymmetryIterator symIt = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator();
+        Iterator<Symmetry> symIt = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator();
         // jump over identity
         symIt.next();
-        for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
+        for (Iterator<Symmetry> iterator = symIt; iterator.hasNext();) {
             Symmetry sym = iterator.next();
-            List<ILLDecision> back = calculateSmallestWhileApplyingSymmetry(sym, smallest, inputDCS, comp);
-//            List<ILLDecision> back = calculateSmallest(sym, smallest, inputDCS, comp);
+//            List<ILLDecision> back = calculateSmallestWhileApplyingSymmetry(sym, smallest, inputDCS, comp);
+            List<ILLDecision> back = calculateSmallest(sym, smallest, inputDCS, comp);
             if (back != null) {
                 smallest = back;
             }
@@ -112,6 +113,8 @@ public class CanonDecisionSet extends LLDecisionSet {
         for (ILLDecision decision : inputDCS) {
             symDCS.add((ILLDecision) decision.apply(sym));
         }
+        // sort the symmetric one
+        Collections.sort(symDCS, comp);
         boolean smaller = checkSmaller(symDCS.iterator(), smallest.iterator(), comp, false);
         if (smaller) {
             return symDCS;
@@ -180,32 +183,47 @@ public class CanonDecisionSet extends LLDecisionSet {
         List<ILLDecision> block = new ArrayList<>();
         Iterator<ILLDecision> smallestPosition = smallest.iterator();
         String hlIDPlace = null;
+//        System.out.println("neu ..........");
         for (Iterator<ILLDecision> iterator = inputDCS.iterator(); iterator.hasNext();) {
             // apply sym
             ILLDecision symDC = (ILLDecision) iterator.next().apply(sym);
+
             String hlIDCurrentPlace = HL2PGConverter.getOrigID(symDC.getPlace());
-            // still the same hl place
-            if (hlIDPlace == null || hlIDPlace.equals(hlIDCurrentPlace)) {
+            if (hlIDPlace == null) {
+//                System.out.println("==null");
+                hlIDPlace = hlIDCurrentPlace;
+                block.add(symDC);
+            } else if (hlIDPlace.equals(hlIDCurrentPlace)) {// still the same hl place
+//                System.out.println(" equals");
                 block.add(symDC); // just add it to the current block
             } else {
                 Collections.sort(block, comp);
-                boolean smallerOrEqual = checkSmaller(block.iterator(), smallestPosition, comp, true);
+                Iterator<ILLDecision> blockIT = block.iterator();
+                boolean smallerOrEqual = checkSmaller(blockIT, smallestPosition, comp, true);
                 if (smallerOrEqual) {
+                    // if break was used fast forward the smallest iterator to the next block           
+                    while (blockIT.hasNext()) {
+                        blockIT.next();
+                        smallestPosition.next();
+                    }
                     symDCS.addAll(block);
                     block = new ArrayList<>();
                     block.add(symDC);
                     hlIDPlace = hlIDCurrentPlace;
                 } else {
+//                    System.out.println("reutnr");
                     return null;
                 }
             }
         }
-        boolean smallerOrEqual = checkSmaller(block.iterator(), smallestPosition, comp, true);
-        if (smallerOrEqual) {
+        Collections.sort(block, comp);
+        boolean smaller = checkSmaller(block.iterator(), smallestPosition, comp, false);
+        if (smaller) {
             symDCS.addAll(block);
         } else {
             return null;
         }
+//        System.out.println(symDCS);
         return symDCS;
     }
 
@@ -219,12 +237,14 @@ public class CanonDecisionSet extends LLDecisionSet {
 //        boolean calcSmallestID = true;
 //        StringBuilder sbSmallestID = new StringBuilder();
 //        SymmetryIterator symIt = syms.iterator();
-        SymmetryIterator symIt = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator();
+//        SymmetryIterator symIt = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator();
+        Iterator<Symmetry> symIt = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator();
         // jump over identity
         symIt.next();
-        for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
+        for (Iterator<Symmetry> iterator = symIt; iterator.hasNext();) {
             Symmetry sym = iterator.next();
-            TreeSet<ILLDecision> back = calculateSmallestWhileApplyingSymmetry(sym, smallest, inputDCS, comp);
+//            TreeSet<ILLDecision> back = calculateSmallestWhileApplyingSymmetry(sym, smallest, inputDCS, comp);
+            TreeSet<ILLDecision> back = calculateSmallest(sym, smallest, inputDCS, comp);
             if (back != null) {
                 smallest = back;
             }
@@ -235,18 +255,26 @@ public class CanonDecisionSet extends LLDecisionSet {
     private TreeSet<ILLDecision> calculateSmallestWhileApplyingSymmetry(Symmetry sym, TreeSet<ILLDecision> smallest, TreeSet<ILLDecision> inputDCS, LexiILLDecisionWithCommitmentComparator comp) {
         TreeSet<ILLDecision> symDCS = new TreeSet<>(comp);
         TreeSet<ILLDecision> block = new TreeSet<>(comp);
-        Iterator<ILLDecision> inputDCSPosition = smallest.iterator();
+        Iterator<ILLDecision> smallestPosition = smallest.iterator();
         String hlIDPlace = null;
         for (Iterator<ILLDecision> iterator = inputDCS.iterator(); iterator.hasNext();) {
             // apply sym
             ILLDecision symDC = (ILLDecision) iterator.next().apply(sym);
             String hlIDCurrentPlace = HL2PGConverter.getOrigID(symDC.getPlace());
-            // still the same hl place
-            if (hlIDPlace == null || hlIDPlace.equals(hlIDCurrentPlace)) {
+            if (hlIDPlace == null) {
+                hlIDPlace = hlIDCurrentPlace;
+                block.add(symDC);
+            } else if (hlIDPlace.equals(hlIDCurrentPlace)) {// still the same hl place            
                 block.add(symDC); // just add it to the current block
             } else {
-                boolean smaller = checkSmaller(block.iterator(), inputDCSPosition, comp, true);
+                Iterator<ILLDecision> blockIT = block.iterator();
+                boolean smaller = checkSmaller(blockIT, smallestPosition, comp, true);
                 if (smaller) {
+                    // if break was used fast forward the smallest iterator to the next block           
+                    while (blockIT.hasNext()) {
+                        blockIT.next();
+                        smallestPosition.next();
+                    }
                     symDCS.addAll(block);
                     block = new TreeSet<>(comp);
                     block.add(symDC);
@@ -256,7 +284,7 @@ public class CanonDecisionSet extends LLDecisionSet {
                 }
             }
         }
-        boolean smaller = checkSmaller(block.iterator(), inputDCSPosition, comp, true);
+        boolean smaller = checkSmaller(block.iterator(), smallestPosition, comp, true);
         if (smaller) {
             symDCS.addAll(block);
         } else {
@@ -366,7 +394,7 @@ public class CanonDecisionSet extends LLDecisionSet {
 //                    SGGBuilderLLCanon.getInstance().dcs2canon.put(dcs, canon);
                 } else {
 //                    for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
-                    for (SymmetryIterator iterator = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator(); iterator.hasNext();) {
+                    for (Iterator<Symmetry> iterator = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator(); iterator.hasNext();) {
                         Symmetry sym = iterator.next();
                         CanonDecisionSet symDcs = (CanonDecisionSet) dcs.apply(sym); // is ensured due overwritten createDecisionSet 
 //                        SGGBuilderLLCanon.getInstance().dcs2canon.put(symDcs, canon);
@@ -381,7 +409,7 @@ public class CanonDecisionSet extends LLDecisionSet {
         // dcs.sort();
         CanonDecisionSet smallest = dcs;
 //        for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
-        for (SymmetryIterator iterator = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator(); iterator.hasNext();) {
+        for (Iterator<Symmetry> iterator = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator(); iterator.hasNext();) {
             Symmetry sym = iterator.next();
             CanonDecisionSet symDcs = (CanonDecisionSet) dcs.apply(sym); // is ensured due overwritten createDecisionSet 
             // symDcs.sort();

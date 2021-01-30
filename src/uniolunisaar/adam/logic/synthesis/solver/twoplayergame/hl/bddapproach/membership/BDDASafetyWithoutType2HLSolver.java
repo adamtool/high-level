@@ -1,6 +1,7 @@
 package uniolunisaar.adam.logic.synthesis.solver.twoplayergame.hl.bddapproach.membership;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import net.sf.javabdd.BDD;
@@ -10,7 +11,6 @@ import uniolunisaar.adam.ds.synthesis.highlevel.Color;
 import uniolunisaar.adam.ds.synthesis.highlevel.Valuation;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
-import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.SymmetryIterator;
 import uniolunisaar.adam.ds.synthesis.highlevel.terms.Variable;
 import uniolunisaar.adam.exceptions.pnwt.NetNotSafeException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NoSuitableDistributionFoundException;
@@ -227,11 +227,11 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
 
 //        BDD start = getWellformed(0).andWith(getWellformed(1)); // this seems to be faster then just getOne()
         BDD symsBDD = getZero();
-        SymmetryIterator symit = syms.iterator();
+        Iterator<Symmetry> symit = syms.iterator();
 //        if (symit.hasNext()) {
 //            symit.next(); // jump over identity
 //        }
-        for (SymmetryIterator iti = symit; iti.hasNext();) {
+        for (Iterator<Symmetry> iti = symit; iti.hasNext();) {
             if (Thread.interrupted()) {
                 CalculationInterruptedException e = new CalculationInterruptedException();
                 Logger.getInstance().addError(e.getMessage(), e);
@@ -296,7 +296,7 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
      */
     private BDD symmetriesProperlyPartitioned(Symmetries syms) {
         BDD symsBDD = getZero();
-        for (SymmetryIterator iti = syms.iterator(); iti.hasNext();) {
+        for (Iterator<Symmetry> iti = syms.iterator(); iti.hasNext();) {
             Symmetry sym = iti.next();
             BDD symm = getOne();
             // the symmetries for all places

@@ -1,6 +1,11 @@
 package uniolunisaar.adam.tests.synthesis.hl;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -108,10 +113,12 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
 //    }
     @Test
     public void testCM() throws Exception {
-        int a = 2;
-        int b = 4;
+//        int a = 2;
+//        int b = 4;
 //        int a = 4;
 //        int b = 2;
+        int a = 2;
+        int b = 1;
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(a, b, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM" + a + b, hlgame);
 //        PGTools.savePG2PDF(outputDir + "CM" + a + b + "_ll", HL2PGConverter.convert(hlgame), false);
@@ -168,11 +175,11 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
 //        }
         Logger.getInstance().addMessage("Mean: " + mean / ROUNDS, false, true);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANON REPS   
-        //        SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.NONE;
-        SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.SOME;
+        SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.NONE;
+//        SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.SOME;
 //            SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_DCS;
-        SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_BY_TREE;
-//        SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_BY_LIST;
+//        SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_BY_TREE;
+        SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_BY_LIST;
         mean = 0;
         for (int i = 0; i < ROUNDS; i++) {
             time = System.currentTimeMillis();
@@ -181,6 +188,21 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
             boolean canonApproach = solverCanon.existsWinningStrategy();
             int sizeCanon = solverCanon.getGraph().getStatesView().size();
             int sizeCanonFlows = solverCanon.getGraph().getFlows().size();
+
+            List<DecisionSet> statesView = new ArrayList<>(solverCanon.getGraph().getStates());
+            Comparator<DecisionSet> comp = new Comparator<>() {
+                @Override
+                public int compare(DecisionSet o1, DecisionSet o2) {
+                    return o1.getIDChain().compareTo(o2.getIDChain());
+                }
+            };
+            Collections.sort(statesView, comp);
+            System.out.println(statesView.size());
+            int a =1;
+            for (DecisionSet decisionSet : statesView) {
+                System.out.println(a++);
+//                System.out.println(decisionSet.toString());
+            }
 //        System.out.println(SGGBuilderLLCanon.getInstance().dcsOrdered2canon.size());
 
 //        int sizeCanon = -1;
