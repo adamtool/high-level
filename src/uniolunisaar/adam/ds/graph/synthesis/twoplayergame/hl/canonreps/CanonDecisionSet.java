@@ -80,6 +80,7 @@ public class CanonDecisionSet extends LLDecisionSet {
     }
 
     private Set<ILLDecision> makeCanonicalLists(Set<ILLDecision> dcs) {
+        boolean skipSomeSyms = SGGBuilderLLCanon.getInstance().skipSomeSymmetries;
         LexiILLDecisionWithCommitmentComparator comp = new LexiILLDecisionWithCommitmentComparator();
         List<ILLDecision> inputDCS = new ArrayList<>(dcs);
 
@@ -96,8 +97,12 @@ public class CanonDecisionSet extends LLDecisionSet {
         symIt.next();
         for (Iterator<Symmetry> iterator = symIt; iterator.hasNext();) {
             Symmetry sym = iterator.next();
-            List<ILLDecision> back = calculateSmallestWhileApplyingSymmetry(sym, smallest, inputDCS, comp);
-//            List<ILLDecision> back = calculateSmallest(sym, smallest, inputDCS, comp);
+            List<ILLDecision> back;
+            if (skipSomeSyms) {
+                back = calculateSmallestWhileApplyingSymmetry(sym, smallest, inputDCS, comp);
+            } else {
+                back = calculateSmallest(sym, smallest, inputDCS, comp);
+            }
             if (back != null) {
                 smallest = back;
             }
@@ -182,18 +187,15 @@ public class CanonDecisionSet extends LLDecisionSet {
         List<ILLDecision> block = new ArrayList<>();
         Iterator<ILLDecision> smallestPosition = smallest.iterator();
         String hlIDPlace = null;
-//        System.out.println("neu ..........");
         for (Iterator<ILLDecision> iterator = inputDCS.iterator(); iterator.hasNext();) {
             // apply sym
             ILLDecision symDC = (ILLDecision) iterator.next().apply(sym);
 
             String hlIDCurrentPlace = HL2PGConverter.getOrigID(symDC.getPlace());
             if (hlIDPlace == null) {
-//                System.out.println("==null");
                 hlIDPlace = hlIDCurrentPlace;
                 block.add(symDC);
             } else if (hlIDPlace.equals(hlIDCurrentPlace)) {// still the same hl place
-//                System.out.println(" equals");
                 block.add(symDC); // just add it to the current block
             } else {
                 Collections.sort(block, comp);
@@ -233,11 +235,11 @@ public class CanonDecisionSet extends LLDecisionSet {
         } else {
             return null;
         }
-//        System.out.println(symDCS);
         return symDCS;
     }
 
     private Set<ILLDecision> makeCanonicalTrees(Set<ILLDecision> dcs) {
+        boolean skipSomeSyms = SGGBuilderLLCanon.getInstance().skipSomeSymmetries;
         LexiILLDecisionWithCommitmentComparator comp = new LexiILLDecisionWithCommitmentComparator();
         TreeSet<ILLDecision> inputDCS = new TreeSet<>(comp);
         inputDCS.addAll(dcs);
@@ -253,8 +255,12 @@ public class CanonDecisionSet extends LLDecisionSet {
         symIt.next();
         for (Iterator<Symmetry> iterator = symIt; iterator.hasNext();) {
             Symmetry sym = iterator.next();
-            TreeSet<ILLDecision> back = calculateSmallestWhileApplyingSymmetry(sym, smallest, inputDCS, comp);
-//            TreeSet<ILLDecision> back = calculateSmallest(sym, smallest, inputDCS, comp);
+            TreeSet<ILLDecision> back;
+            if (skipSomeSyms) {
+                back = calculateSmallestWhileApplyingSymmetry(sym, smallest, inputDCS, comp);
+            } else {
+                back = calculateSmallest(sym, smallest, inputDCS, comp);
+            }
             if (back != null) {
                 smallest = back;
             }

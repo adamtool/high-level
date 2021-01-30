@@ -75,6 +75,7 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
     public SaveMapping saveMapping = SaveMapping.ALL;
     public boolean withBidi = true;
     public Approach approach = Approach.ORDERED_BY_TREE;
+    public boolean skipSomeSymmetries = true;
 
     public void clearBufferedData() {
         dcs2canon.clear();

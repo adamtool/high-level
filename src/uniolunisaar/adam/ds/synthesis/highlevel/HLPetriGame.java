@@ -35,6 +35,7 @@ import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
+import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.SymmetriesWithoutStoring;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.exceptions.synthesis.highlevel.IdentifierAlreadyExistentException;
 import uniolunisaar.adam.exceptions.synthesis.highlevel.NoNeighbourForUnorderedColorClassException;
@@ -625,6 +626,8 @@ public class HLPetriGame extends Extensible implements IPetriGame {
         winCon.buffer(game);
     }
 
+    public boolean storeSymmetries = true;
+
     /**
      * Attention: if you later changed the basic color classes, the symmetries
      * may possibly not fit anymore.
@@ -633,8 +636,11 @@ public class HLPetriGame extends Extensible implements IPetriGame {
      */
     public Iterable<Symmetry> getSymmetries() {
         if (symmetries == null) {
-            symmetries = new Symmetries(getBasicColorClasses());
-//            symmetries = new SymmetriesWithoutStoring(getBasicColorClasses());
+            if (storeSymmetries) {
+                symmetries = new Symmetries(getBasicColorClasses());
+            } else {
+                symmetries = new SymmetriesWithoutStoring(getBasicColorClasses());
+            }
         }
         return symmetries;
     }
