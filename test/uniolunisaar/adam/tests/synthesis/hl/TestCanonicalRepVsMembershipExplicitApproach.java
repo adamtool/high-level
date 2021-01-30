@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
@@ -25,6 +24,7 @@ import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.BDDSolverOptions;
 import uniolunisaar.adam.generators.highlevel.ConcurrentMachinesHL;
+import uniolunisaar.adam.generators.highlevel.PackageDeliveryHL;
 import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl.SGGBuilderLLCanon;
 import uniolunisaar.adam.logic.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolver;
 import uniolunisaar.adam.logic.synthesis.solver.symbolic.bddapproach.distrsys.DistrSysBDDSolverFactory;
@@ -113,27 +113,27 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
 //    }
     @Test
     public void testCM() throws Exception {
-//        int a = 2;
-//        int b = 4;
+        int a = 2;
+        int b = 4;
 //        int a = 4;
 //        int b = 2;
-        int a = 2;
-        int b = 1;
+//        int a = 2;
+//        int b = 1;
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(a, b, true);
 //        HLTools.saveHLPG2PDF(outputDir + "CM" + a + b, hlgame);
 //        PGTools.savePG2PDF(outputDir + "CM" + a + b + "_ll", HL2PGConverter.convert(hlgame), false);
         checkExistsStrat("CM" + a + "" + b, hlgame);
     }
 
-//    @Test
-//    public void testPD() throws Exception {
-//        int a = 2;
-//        int b = 1;
-//        HLPetriGame hlgame = PackageDeliveryHL.generateEwithPool(a, b, true);
-////        HLTools.saveHLPG2PDF(outputDir + "PD" + a + b, hlgame);
-////        PGTools.savePG2PDF(outputDir + "PD" + a + b + "_ll", HL2PGConverter.convert(hlgame), false);
-//        checkExistsStrat("PD" + a + "" + b, hlgame);
-//    }
+    @Test
+    public void testPD() throws Exception {
+        int a = 1;
+        int b = 2;
+        HLPetriGame hlgame = PackageDeliveryHL.generateEwithPool(a, b, true);
+//        HLTools.saveHLPG2PDF(outputDir + "PD" + a + b, hlgame);
+//        PGTools.savePG2PDF(outputDir + "PD" + a + b + "_ll", HL2PGConverter.convert(hlgame), false);
+        checkExistsStrat("PD" + a + "" + b, hlgame);
+    }
     private final int ROUNDS = 3;
 
     private void checkExistsStrat(String name, HLPetriGame hlgame) throws Exception {
@@ -153,30 +153,31 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
 //        HLTools.saveGraph2PDF(outputDir + name + "HL_Gstrat", stratHL);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOW LEVEL
         mean = 0;
-//        for (int i = 0; i < ROUNDS; i++) {
-//            time = System.currentTimeMillis();
-//            HLASafetyWithoutType2SolverLLApproach solverLL = (HLASafetyWithoutType2SolverLLApproach) HLSolverFactoryLLApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
-//            boolean llapproach = solverLL.existsWinningStrategy();
-//            int sizeLL = solverLL.getGraph().getStatesView().size();
-//            int sizeLLFlows = solverLL.getGraph().getFlows().size();
-////        int sizeLL = -1;
-//            diff = System.currentTimeMillis() - time;
-////        timeLLApproach += diff;
-//            double runningTime = Math.round((diff / 1000.0f) * 100.0) / 100.0;
-//            mean += runningTime;
-//            Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy LL approach (size " + sizeLL + "/" + sizeLLFlows + "): " + llapproach + " " + runningTime, false, true);
-////        System.out.println(solverLL.getGraph().getBadStatesView().size());
-////        HLTools.saveGraph2DotAndPDF(outputDir + "hl2llGG", solverLL.getGraph());
-////        System.out.println("strat size" + solverLL.calculateGraphStrategy().getStatesView().size());
-////        HLTools.saveGraph2DotAndPDF(outputDir + "hl2LLGGStrat", solverLL.calculateGraphStrategy());
-////        HLTools.saveGraph2PDF(outputDir + "hl2LLGGLLStrat", solverLL.calculateLLGraphStrategy());
-////        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
-////        PGTools.savePG2PDF(outputDir + "hl2llPGStrat", solverLL.getStrategy(), false);
-//        }
+        for (int i = 0; i < ROUNDS; i++) {
+            time = System.currentTimeMillis();
+            HLASafetyWithoutType2SolverLLApproach solverLL = (HLASafetyWithoutType2SolverLLApproach) HLSolverFactoryLLApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
+            boolean llapproach = solverLL.existsWinningStrategy();
+            int sizeLL = solverLL.getGraph().getStatesView().size();
+            int sizeLLFlows = solverLL.getGraph().getFlows().size();
+//        int sizeLL = -1;
+            diff = System.currentTimeMillis() - time;
+//        timeLLApproach += diff;
+            double runningTime = Math.round((diff / 1000.0f) * 100.0) / 100.0;
+            mean += runningTime;
+            Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy LL approach (size " + sizeLL + "/" + sizeLLFlows + "): " + llapproach + " " + runningTime, false, true);
+//        System.out.println(solverLL.getGraph().getBadStatesView().size());
+//        HLTools.saveGraph2DotAndPDF(outputDir + "hl2llGG", solverLL.getGraph());
+//        System.out.println("strat size" + solverLL.calculateGraphStrategy().getStatesView().size());
+//        HLTools.saveGraph2DotAndPDF(outputDir + "hl2LLGGStrat", solverLL.calculateGraphStrategy());
+//        HLTools.saveGraph2PDF(outputDir + "hl2LLGGLLStrat", solverLL.calculateLLGraphStrategy());
+//        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
+//        PGTools.savePG2PDF(outputDir + "hl2llPGStrat", solverLL.getStrategy(), false);
+            // s.th. like all what is saved in hlgame (like symmetries, and the stuff for the converter) should be cleared
+        }
         Logger.getInstance().addMessage("Mean: " + mean / ROUNDS, false, true);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANON REPS   
-        SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.NONE;
-//        SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.SOME;
+//        SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.NONE;
+        SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.SOME;
 //            SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_DCS;
 //        SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_BY_TREE;
         SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_BY_LIST;
@@ -189,22 +190,21 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
             int sizeCanon = solverCanon.getGraph().getStatesView().size();
             int sizeCanonFlows = solverCanon.getGraph().getFlows().size();
 
-            List<DecisionSet> statesView = new ArrayList<>(solverCanon.getGraph().getStates());
-            Comparator<DecisionSet> comp = new Comparator<>() {
-                @Override
-                public int compare(DecisionSet o1, DecisionSet o2) {
-                    return o1.getIDChain().compareTo(o2.getIDChain());
-                }
-            };
-            Collections.sort(statesView, comp);
-            System.out.println(statesView.size());
-            int a =1;
-            for (DecisionSet decisionSet : statesView) {
-                System.out.println(a++);
-//                System.out.println(decisionSet.toString());
-            }
+//            List<DecisionSet> statesView = new ArrayList<>(solverCanon.getGraph().getStates());
+//            Comparator<DecisionSet> comp = new Comparator<>() {
+//                @Override
+//                public int compare(DecisionSet o1, DecisionSet o2) {
+//                    return o1.getIDChain().compareTo(o2.getIDChain());
+//                }
+//            };
+//            Collections.sort(statesView, comp);
+//            System.out.println(statesView.size());
+//            int a =1;
+//            for (DecisionSet decisionSet : statesView) {
+//                System.out.println(a++);
+////                System.out.println(decisionSet.toString());
+//            }
 //        System.out.println(SGGBuilderLLCanon.getInstance().dcsOrdered2canon.size());
-
 //        int sizeCanon = -1;
             diff = System.currentTimeMillis() - time;
 //        timeLLApproach += diff;        
@@ -217,7 +217,7 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
 //        PGTools.savePG2PDF(outputDir + "hlcanonPGStrat", solverCanon.getStrategy(), false);
 //        System.out.println(solverCanon.getGraph().getBadStatesView().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "hlcanonGG", solverCanon.getGraph()); 
-            SGGBuilderLLCanon.getInstance().clearBufferedData();
+            SGGBuilderLLCanon.getInstance().clearBufferedData(); // s.th. like all what is saved in hlgame (like symmetries, and the stuff for the converter) should be cleared
         }
 
         Logger.getInstance().addMessage("Mapping: " + SGGBuilderLLCanon.getInstance().saveMapping.name(), false, true);

@@ -12,10 +12,9 @@ public class Symmetries extends ArrayList<Symmetry> {
 
     public Symmetries(Collection<BasicColorClass> classes) {
         SymmetriesWithoutStoring syms = new SymmetriesWithoutStoring(classes);
-//        Symmetries syms = new Symmetries(classes);
         for (SymmetryIterator iterator = syms.iterator(); iterator.hasNext();) {
             Symmetry next = iterator.next();
-            add(next);
+            add(new Symmetry(next));
         }
     }
 }

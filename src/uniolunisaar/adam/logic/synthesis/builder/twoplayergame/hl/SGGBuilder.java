@@ -1,7 +1,6 @@
 package uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.Stack;
 import uniol.apt.adt.pn.Transition;
@@ -9,7 +8,6 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
 import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
-import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.StateIdentifier;
@@ -26,7 +24,7 @@ import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.GameGraphBuilder;
  */
 public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDecisionSet<P, T, DC, S>, F extends GameGraphFlow<T, ? extends StateIdentifier>> extends GameGraphBuilder<HLPetriGame, P, T, DC, S, F> {
 
-    private Symmetries syms;
+    private Iterable<Symmetry> syms;
 
     @Override
     protected <ID extends StateIdentifier> void addStatesIteratively(HLPetriGame game, AbstractGameGraph<P, T, DC, S, ID, GameGraphFlow<T, ID>> srg, S init, Collection<Transition> allTransitions, Collection<Transition> systemTransitions) {
@@ -52,15 +50,16 @@ public abstract class SGGBuilder<P, T, DC extends IDecision<P, T>, S extends IDe
      * @param todo
      * @param srg
      */
-    <ID extends StateIdentifier> void addSuccessors(S pre, T t, Set<S> succs, Symmetries syms, Stack<ID> todo, AbstractGameGraph<P, T, DC, S, ID, GameGraphFlow<T, ID>> srg) {
+    <ID extends StateIdentifier> void addSuccessors(S pre, T t, Set<S> succs, Iterable<Symmetry> syms, Stack<ID> todo, AbstractGameGraph<P, T, DC, S, ID, GameGraphFlow<T, ID>> srg) {
         for (S succ : succs) {
             boolean newOne = true;
             S copySucc = succ;
-            Iterator<Symmetry> symIt = syms.iterator();
-            // jump over identity (currently has a problem)
-//            symIt.next();
-            for (Iterator<Symmetry> iti = symIt; iti.hasNext();) {
-                Symmetry sym = iti.next();
+//            Iterator<Symmetry> symIt = syms.iterator();
+//            // jump over identity (currently has a problem)
+////            symIt.next();
+//            for (Iterator<Symmetry> iti = symIt; iti.hasNext();) {
+//                Symmetry sym = iti.next();
+            for (Symmetry sym : syms) {
                 copySucc = succ.apply(sym);
                 // note: this contains is more expensive using getValues().contains from the ID hashmap
                 //       then having them directly stored in a map. But the main problem when using 

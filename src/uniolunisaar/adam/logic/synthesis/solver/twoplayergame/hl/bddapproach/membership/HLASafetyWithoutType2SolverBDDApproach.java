@@ -4,6 +4,7 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.symbolic.bddapproach.B
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.ds.objectives.local.Safety;
+import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.BDDSolverOptions;
 import uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.InvalidPartitionException;
@@ -24,7 +25,7 @@ public class HLASafetyWithoutType2SolverBDDApproach extends HLBDDSolver<Safety> 
 
     public HLASafetyWithoutType2SolverBDDApproach(HLBDDSolvingObject<Safety> solverObject, BDDSolverOptions options) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
         super(solverObject, options);
-        Symmetries syms = solverObject.getGame().getSymmetries();
+        Iterable<Symmetry> syms = solverObject.getGame().getSymmetries();
         solver = new BDDASafetyWithoutType2HLSolver(solverObject.getLLObj(), syms, options);
     }
 

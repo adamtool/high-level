@@ -15,8 +15,6 @@ import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.tools.CartesianProduct;
 import uniolunisaar.adam.tools.Tools;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLDecisionSet;
-import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
-import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.SymmetryIterator;
 import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl.SGGBuilderLLCanon;
 
 /**
@@ -28,14 +26,14 @@ import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl.SGGBuilderLLCa
  */
 public class OrderedDecisionSet extends LLDecisionSet {
 
-    private final Symmetries syms;
+    private final Iterable<Symmetry> syms;
 
-    public OrderedDecisionSet(TreeSet<ILLDecision> decisions, boolean mcut, boolean bad, PetriGameWithTransits game, Symmetries syms) {
+    public OrderedDecisionSet(TreeSet<ILLDecision> decisions, boolean mcut, boolean bad, PetriGameWithTransits game, Iterable<Symmetry> syms) {
         super(decisions, mcut, bad, game);
         this.syms = syms;
     }
 
-    public OrderedDecisionSet createDecisionSet(TreeSet<ILLDecision> decisions, boolean mcut, boolean bad, PetriGameWithTransits game, Symmetries syms) {
+    public OrderedDecisionSet createDecisionSet(TreeSet<ILLDecision> decisions, boolean mcut, boolean bad, PetriGameWithTransits game, Iterable<Symmetry> syms) {
         OrderedDecisionSet dcs = new OrderedDecisionSet(decisions, mcut, bad, game, syms);
         SGGBuilderLLCanon.SaveMapping mapping = SGGBuilderLLCanon.getInstance().saveMapping;
         if (mapping == SGGBuilderLLCanon.SaveMapping.NONE) {

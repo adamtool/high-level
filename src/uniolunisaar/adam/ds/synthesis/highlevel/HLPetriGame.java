@@ -27,7 +27,6 @@ import uniolunisaar.adam.ds.synthesis.highlevel.arcexpressions.IArcType;
 import uniolunisaar.adam.ds.synthesis.highlevel.arcexpressions.SetMinusTerm;
 import uniolunisaar.adam.ds.synthesis.highlevel.predicate.Constants;
 import uniolunisaar.adam.ds.synthesis.highlevel.predicate.IPredicate;
-import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.synthesis.highlevel.terms.PredecessorTerm;
 import uniolunisaar.adam.ds.synthesis.highlevel.terms.SuccessorTerm;
 import uniolunisaar.adam.ds.synthesis.highlevel.terms.Variable;
@@ -35,6 +34,8 @@ import uniolunisaar.adam.ds.synthesis.pgwt.IPetriGame;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.ds.objectives.Condition;
+import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.SymmetriesWithoutStoring;
+import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.exceptions.synthesis.highlevel.IdentifierAlreadyExistentException;
 import uniolunisaar.adam.exceptions.synthesis.highlevel.NoNeighbourForUnorderedColorClassException;
 import uniolunisaar.adam.exceptions.synthesis.highlevel.NoSuchColorDomainException;
@@ -57,7 +58,7 @@ import uniolunisaar.adam.logic.synthesis.transformers.highlevel.HL2PGConverter;
 public class HLPetriGame extends Extensible implements IPetriGame {
 
     private final Map<String, BasicColorClass> colorClasses;
-    private Symmetries symmetries;
+    private Iterable<Symmetry> symmetries;
     private final PetriGameWithTransits game;
 
     public HLPetriGame(HLPetriGame hlgame) {
@@ -630,9 +631,10 @@ public class HLPetriGame extends Extensible implements IPetriGame {
      *
      * @return
      */
-    public Symmetries getSymmetries() {
+    public Iterable<Symmetry> getSymmetries() {
         if (symmetries == null) {
-            symmetries = new Symmetries(getBasicColorClasses());
+//            symmetries = new Symmetries(getBasicColorClasses());
+            symmetries = new SymmetriesWithoutStoring(getBasicColorClasses());
         }
         return symmetries;
     }

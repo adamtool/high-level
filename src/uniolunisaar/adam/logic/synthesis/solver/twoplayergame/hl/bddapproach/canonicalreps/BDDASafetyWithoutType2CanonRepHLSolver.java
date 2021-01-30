@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import net.sf.javabdd.BDD;
 import uniol.apt.adt.pn.Place;
-import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.exceptions.pnwt.NetNotSafeException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NoSuitableDistributionFoundException;
 import uniolunisaar.adam.ds.objectives.local.Safety;
@@ -12,6 +11,7 @@ import uniolunisaar.adam.ds.synthesis.highlevel.BasicColorClass;
 import uniolunisaar.adam.ds.synthesis.highlevel.ColorDomain;
 import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
 import uniolunisaar.adam.ds.synthesis.highlevel.StaticColorClass;
+import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NotSupportedGameException;
 import uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException;
@@ -40,7 +40,7 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
     private final HLBDDSolvingObject<Safety> hlSolvingObject;
     private BDD canonicalRepresentatives = null;
 
-    public BDDASafetyWithoutType2CanonRepHLSolver(HLBDDSolvingObject<Safety> obj, Symmetries syms, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
+    public BDDASafetyWithoutType2CanonRepHLSolver(HLBDDSolvingObject<Safety> obj, Iterable<Symmetry> syms, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
         super(obj.getLLObj(), syms, opts);
         hlSolvingObject = obj;
     }

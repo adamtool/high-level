@@ -38,7 +38,7 @@ import uniolunisaar.adam.tools.Logger;
  */
 public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
 
-    private final Symmetries syms;
+    private final Iterable<Symmetry> syms;
 
     /**
      * Creates a new Safety solver for a given game.
@@ -55,12 +55,12 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
      * @throws
      * uniolunisaar.adam.exceptions.synthesis.pgwt.InvalidPartitionException
      */
-    public BDDASafetyWithoutType2HLSolver(DistrSysBDDSolvingObject<Safety> obj, Symmetries syms, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
+    public BDDASafetyWithoutType2HLSolver(DistrSysBDDSolvingObject<Safety> obj, Iterable<Symmetry> syms, BDDSolverOptions opts) throws NotSupportedGameException, NetNotSafeException, NoSuitableDistributionFoundException, InvalidPartitionException {
         super(obj, opts);
         this.syms = syms;
-        for (Symmetry sym : syms) {
-            System.out.println(sym.toString());
-        }
+//        for (Symmetry sym : syms) {
+//            System.out.println(sym.toString());
+//        }
     }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%% START WINNING CONDITION %%%%%%%%%%%%%%%%%%%%%%%%%
@@ -221,7 +221,7 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
      * @param syms
      * @return
      */
-    private BDD symmetries(Symmetries syms) throws CalculationInterruptedException {
+    private BDD symmetries(Iterable<Symmetry> syms) throws CalculationInterruptedException {
         Logger.getInstance().addMessage("Calculation of symmetry BDD ...", "INTERMEDIATE_TIMING");
         long time = System.currentTimeMillis();
 

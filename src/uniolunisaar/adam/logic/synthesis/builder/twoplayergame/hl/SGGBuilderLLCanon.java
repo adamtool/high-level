@@ -24,7 +24,7 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLDecisi
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLEnvDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLSysDecision;
 import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
-import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
+import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.GameGraphBuilder;
 import uniolunisaar.adam.logic.synthesis.transformers.highlevel.HL2PGConverter;
@@ -65,7 +65,7 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
     //todo: make it properly with locks, just a quick hack to not save it in
     // CanonDecisionSet and OrderedDecisionSet, because even this pointer is 
     // kind of expensive to copy for this large amount of states
-    private Symmetries currentSymmetries;
+    private Iterable<Symmetry> currentSymmetries;
     private PetriGameWithTransits currentLLGame;
 
     // todo: just a hack to check if it's faster
@@ -81,7 +81,7 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
         dcsOrdered2canon.clear();
     }
 
-    public Symmetries getCurrentSymmetries() {
+    public Iterable<Symmetry> getCurrentSymmetries() {
         return currentSymmetries;
     }
 

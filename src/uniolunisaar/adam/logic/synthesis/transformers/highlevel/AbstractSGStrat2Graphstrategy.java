@@ -11,7 +11,6 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphUsingIDs;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecisionSet;
 import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
-import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetries;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
 
 /**
@@ -45,7 +44,7 @@ public abstract class AbstractSGStrat2Graphstrategy<P, T, DC extends IDecision<P
         Map<S, Pair<S, Symmetry>> stateMapping = new HashMap<>(); // mappes D^L -> D^H
         LinkedList<S> todoStates = new LinkedList<>(); // states D^L which still have to be processed
 
-        Symmetries syms = hlgame.getSymmetries();
+        Iterable<Symmetry> syms = hlgame.getSymmetries();
 
         S initHL = hlstrat.getInitial();
 //        GameGraph<P, T, DC, S, F> strategy = new GameGraph<>("Low-Level strategy of " + hlstrat.getName(), initHL);
@@ -107,7 +106,7 @@ public abstract class AbstractSGStrat2Graphstrategy<P, T, DC extends IDecision<P
         strategy.addFlow(createFlow(pre, t, post));
     }
 
-    private Pair<S, Symmetry> findCorrespondingSuccessor(Set<S> succsLL, S succHL, Symmetries syms) {
+    private Pair<S, Symmetry> findCorrespondingSuccessor(Set<S> succsLL, S succHL, Iterable<Symmetry> syms) {
         for (Symmetry sym : syms) {
             S symState = succHL.apply(sym);
             if (succsLL.contains(symState)) {
@@ -117,7 +116,7 @@ public abstract class AbstractSGStrat2Graphstrategy<P, T, DC extends IDecision<P
         throw new RuntimeException("Could not find a corresponding symmetric successor for " + succHL.toString() + "in " + succsLL.toString() + ". This should never happen!");
     }
 
-    private Symmetry findCorrespondingSymmetry(S succLL, S succHL, Symmetries syms) {
+    private Symmetry findCorrespondingSymmetry(S succLL, S succHL, Iterable<Symmetry> syms) {
         for (Symmetry sym : syms) {
             S symState = succHL.apply(sym);
             if (succLL.equals(symState)) {
