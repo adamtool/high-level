@@ -13,6 +13,7 @@ import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.SymmetryIterator;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl.SGGBuilderLLCanon;
+import uniolunisaar.adam.logic.synthesis.transformers.highlevel.HL2PGConverter;
 
 /**
  *
@@ -83,80 +84,129 @@ public class CanonDecisionSet extends LLDecisionSet {
         LexiILLDecisionWithCommitmentComparator comp = new LexiILLDecisionWithCommitmentComparator();
         List<ILLDecision> inputDCS = new ArrayList<>(dcs);
 
+        // sort it 
+        Collections.sort(inputDCS, comp);
 //        boolean notSorted = true;
         List<ILLDecision> smallest = inputDCS;
 //        boolean calcSmallestID = true;
 //        StringBuilder sbSmallestID = new StringBuilder();
-        // sort it 
-        Collections.sort(smallest, comp);
 //        SymmetryIterator symIt = syms.iterator();
         SymmetryIterator symIt = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator();
         // jump over identity
         symIt.next();
         for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
             Symmetry sym = iterator.next();
-            // apply the symmetry
-            List<ILLDecision> symDCS = new ArrayList<>();
-            for (ILLDecision decision : inputDCS) {
-                symDCS.add((ILLDecision) decision.apply(sym));
+            List<ILLDecision> back = calculateSmallestWhileApplyingSymmetry(sym, smallest, inputDCS, comp);
+//            List<ILLDecision> back = calculateSmallest(sym, smallest, inputDCS, comp);
+            if (back != null) {
+                smallest = back;
             }
-            // this is only helpful when comparing general decision sets for symmetric they are of equal length
-//            // when it is shorter it is smaller
-//            if (symDCS.size() < smallest.size()) {
-//                smallest = symDCS;
-//                notSorted = true;
-//                continue;
-//            } else if (symDCS.size() > smallest.size()) { // when it is greater, it is NOT smaller
-//                continue;
-//            }
-//            // if the size is equal, then sort
-//            if (notSorted) {
-//                // sort the smallest
-//                Collections.sort(smallest, new LexiILLDecisionWithCommitmentComparator());
-//                notSorted = false;
-//            }
-            // sort the symmetric one
-            Collections.sort(symDCS, comp);
-            boolean smaller = false;
-            // old version comparing by symmetric
-//            StringBuilder sbSym = new StringBuilder();
-////            StringBuilder sbSmallestID = new StringBuilder();
-//            if (calcSmallestID) {
-//                sbSmallestID.setLength(0);
-//            }
-            for (int i = 0; i < symDCS.size(); i++) {
-                ILLDecision symDec = symDCS.get(i);
-                ILLDecision smallestDec = smallest.get(i);
-
-//                // new version, check if it gets better
-//                String symID = symDec.getIDChainByFirstSorting(); // here check just place!
-//                String smallestID = smallestDec.getIDChainByFirstSorting();
-//                int compare = symID.compareTo(smallestID);
-                int compare = comp.compare(symDec, smallestDec);
-                if (compare < 0) {
-                    smaller = true;
-                    break;
-                } else if (compare > 0) {
-                    smaller = false;
-                    break;
-                }
-//                sbSym.append(symDec.getIDChainByFirstSorting()).append("|");
-//                if (calcSmallestID) {
-//                    sbSmallestID.append(smallestDec.getIDChainByFirstSorting()).append("|");
-//                }
-            }
-            if (smaller) {
-//            if (sbSym.toString().compareTo(sbSmallestID.toString()) < 0) {
-                smallest = symDCS;
-//                calcSmallestID = true;
-//              notSorted = false;
-            }
-//            } else if (calcSmallestID) {
-//                calcSmallestID = false;
-//            }
         }
         Set<ILLDecision> ret = new HashSet<>(smallest);
         return ret;
+    }
+
+    private List<ILLDecision> calculateSmallest(Symmetry sym, List<ILLDecision> smallest, List<ILLDecision> inputDCS, LexiILLDecisionWithCommitmentComparator comp) {
+        // apply the symmetry
+        List<ILLDecision> symDCS = new ArrayList<>();
+        for (ILLDecision decision : inputDCS) {
+            symDCS.add((ILLDecision) decision.apply(sym));
+        }
+        boolean smaller = checkSmaller(symDCS.iterator(), smallest.iterator(), comp, false);
+        if (smaller) {
+            return symDCS;
+        }
+        return null;
+
+//        // this is only helpful when comparing general decision sets for symmetric they are of equal length
+////            // when it is shorter it is smaller
+////            if (symDCS.size() < smallest.size()) {
+////                smallest = symDCS;
+////                notSorted = true;
+////                continue;
+////            } else if (symDCS.size() > smallest.size()) { // when it is greater, it is NOT smaller
+////                continue;
+////            }
+////            // if the size is equal, then sort
+////            if (notSorted) {
+////                // sort the smallest
+////                Collections.sort(smallest, new LexiILLDecisionWithCommitmentComparator());
+////                notSorted = false;
+////            }
+//        // sort the symmetric one
+//        Collections.sort(symDCS, comp);
+//        boolean smaller = false;
+//        // old version comparing by symmetric
+////            StringBuilder sbSym = new StringBuilder();
+//////            StringBuilder sbSmallestID = new StringBuilder();
+////            if (calcSmallestID) {
+////                sbSmallestID.setLength(0);
+////            }
+//        for (int i = 0; i < symDCS.size(); i++) {
+//            ILLDecision symDec = symDCS.get(i);
+//            ILLDecision smallestDec = smallest.get(i);
+//
+////                // new version, check if it gets better
+////                String symID = symDec.getIDChainByFirstSorting(); // here check just place!
+////                String smallestID = smallestDec.getIDChainByFirstSorting();
+////                int compare = symID.compareTo(smallestID);
+//            int compare = comp.compare(symDec, smallestDec);
+//            if (compare < 0) {
+//                smaller = true;
+//                break;
+//            } else if (compare > 0) {
+//                smaller = false;
+//                break;
+//            }
+////                sbSym.append(symDec.getIDChainByFirstSorting()).append("|");
+////                if (calcSmallestID) {
+////                    sbSmallestID.append(smallestDec.getIDChainByFirstSorting()).append("|");
+////                }
+//        }
+//        if (smaller) {
+////            if (sbSym.toString().compareTo(sbSmallestID.toString()) < 0) {
+//            return symDCS;
+////                calcSmallestID = true;
+////              notSorted = false;
+//        }
+////            } else if (calcSmallestID) {
+////                calcSmallestID = false;
+////            }
+//        return null;
+    }
+
+    private List<ILLDecision> calculateSmallestWhileApplyingSymmetry(Symmetry sym, List<ILLDecision> smallest, List<ILLDecision> inputDCS, LexiILLDecisionWithCommitmentComparator comp) {
+        List<ILLDecision> symDCS = new ArrayList<>();
+        List<ILLDecision> block = new ArrayList<>();
+        Iterator<ILLDecision> smallestPosition = smallest.iterator();
+        String hlIDPlace = null;
+        for (Iterator<ILLDecision> iterator = inputDCS.iterator(); iterator.hasNext();) {
+            // apply sym
+            ILLDecision symDC = (ILLDecision) iterator.next().apply(sym);
+            String hlIDCurrentPlace = HL2PGConverter.getOrigID(symDC.getPlace());
+            // still the same hl place
+            if (hlIDPlace == null || hlIDPlace.equals(hlIDCurrentPlace)) {
+                block.add(symDC); // just add it to the current block
+            } else {
+                Collections.sort(block, comp);
+                boolean smallerOrEqual = checkSmaller(block.iterator(), smallestPosition, comp, true);
+                if (smallerOrEqual) {
+                    symDCS.addAll(block);
+                    block = new ArrayList<>();
+                    block.add(symDC);
+                    hlIDPlace = hlIDCurrentPlace;
+                } else {
+                    return null;
+                }
+            }
+        }
+        boolean smallerOrEqual = checkSmaller(block.iterator(), smallestPosition, comp, true);
+        if (smallerOrEqual) {
+            symDCS.addAll(block);
+        } else {
+            return null;
+        }
+        return symDCS;
     }
 
     private Set<ILLDecision> makeCanonicalTrees(Set<ILLDecision> dcs) {
@@ -174,67 +224,131 @@ public class CanonDecisionSet extends LLDecisionSet {
         symIt.next();
         for (SymmetryIterator iterator = symIt; iterator.hasNext();) {
             Symmetry sym = iterator.next();
-            // apply the symmetry
-            TreeSet<ILLDecision> symDCS = new TreeSet<>(comp);
-            for (ILLDecision decision : inputDCS) {
-                symDCS.add((ILLDecision) decision.apply(sym));
+            TreeSet<ILLDecision> back = calculateSmallestWhileApplyingSymmetry(sym, smallest, inputDCS, comp);
+            if (back != null) {
+                smallest = back;
             }
-            // this is only helpful when comparing general decision sets for symmetric they are of equal length
-//            // when it is shorter it is smaller
-//            if (symDCS.size() < smallest.size()) {
-//                smallest = symDCS;
-//                notSorted = true;
-//                continue;
-//            } else if (symDCS.size() > smallest.size()) { // when it is greater, it is NOT smaller
-//                continue;
-//            }
-//            // if the size is equal, then sort
-//            if (notSorted) {
-//                // sort the smallest
-//                Collections.sort(smallest, new LexiILLDecisionWithCommitmentComparator());
-//                notSorted = false;
-//            }
-            boolean smaller = false;
-//            StringBuilder sbSym = new StringBuilder();
-////            StringBuilder sbSmallestID = new StringBuilder();
-//            if (calcSmallestID) {
-//                sbSmallestID.setLength(0);
-//            }
-            Iterator<ILLDecision> itSym = symDCS.iterator();
-            Iterator<ILLDecision> itSmallest = smallest.iterator();
-            while (itSym.hasNext()) {
-                ILLDecision symDec = itSym.next();
-                ILLDecision smallestDec = itSmallest.next();
-//                // new version, check if it gets better
-//                String symID = symDec.getIDChainByFirstSorting();
-//                String smallestID = smallestDec.getIDChainByFirstSorting();
-//                int compare = symID.compareTo(smallestID);
-                int compare = comp.compare(symDec, smallestDec);
-                if (compare < 0) {
-                    smaller = true;
-                    break;
-                } else if (compare > 0) {
-                    smaller = false;
-                    break;
-                }
-//                sbSym.append(symDec.getIDChainByFirstSorting()).append("|");
-//                if (calcSmallestID) {
-//                    sbSmallestID.append(smallestDec.getIDChainByFirstSorting()).append("|");
-//                }
-            }
-            if (smaller) {
-//            if (sbSym.toString().compareTo(sbSmallestID.toString()) < 0) {
-                smallest = symDCS;
-//                calcSmallestID = true;
-//              notSorted = false;
-            }
-//            } else if (calcSmallestID) {
-//                calcSmallestID = false;
-//            }
         }
         return new HashSet<>(smallest);
     }
 
+    private TreeSet<ILLDecision> calculateSmallestWhileApplyingSymmetry(Symmetry sym, TreeSet<ILLDecision> smallest, TreeSet<ILLDecision> inputDCS, LexiILLDecisionWithCommitmentComparator comp) {
+        TreeSet<ILLDecision> symDCS = new TreeSet<>(comp);
+        TreeSet<ILLDecision> block = new TreeSet<>(comp);
+        Iterator<ILLDecision> inputDCSPosition = smallest.iterator();
+        String hlIDPlace = null;
+        for (Iterator<ILLDecision> iterator = inputDCS.iterator(); iterator.hasNext();) {
+            // apply sym
+            ILLDecision symDC = (ILLDecision) iterator.next().apply(sym);
+            String hlIDCurrentPlace = HL2PGConverter.getOrigID(symDC.getPlace());
+            // still the same hl place
+            if (hlIDPlace == null || hlIDPlace.equals(hlIDCurrentPlace)) {
+                block.add(symDC); // just add it to the current block
+            } else {
+                boolean smaller = checkSmaller(block.iterator(), inputDCSPosition, comp, true);
+                if (smaller) {
+                    symDCS.addAll(block);
+                    block = new TreeSet<>(comp);
+                    block.add(symDC);
+                    hlIDPlace = hlIDCurrentPlace;
+                } else {
+                    return null;
+                }
+            }
+        }
+        boolean smaller = checkSmaller(block.iterator(), inputDCSPosition, comp, true);
+        if (smaller) {
+            symDCS.addAll(block);
+        } else {
+            return null;
+        }
+        return symDCS;
+    }
+
+    private TreeSet<ILLDecision> calculateSmallest(Symmetry sym, TreeSet<ILLDecision> smallest, TreeSet<ILLDecision> inputDCS, LexiILLDecisionWithCommitmentComparator comp) {
+        TreeSet<ILLDecision> symDCS = new TreeSet<>(comp);
+        // apply the symmetry
+        for (ILLDecision decision : inputDCS) {
+            symDCS.add((ILLDecision) decision.apply(sym));
+        }
+        boolean smaller = checkSmaller(symDCS.iterator(), smallest.iterator(), comp, false);
+        if (smaller) {
+            return symDCS;
+        }
+        return null;
+//        // this is only helpful when comparing general decision sets for symmetric they are of equal length
+////            // when it is shorter it is smaller
+////            if (symDCS.size() < smallest.size()) {
+////                smallest = symDCS;
+////                notSorted = true;
+////                continue;
+////            } else if (symDCS.size() > smallest.size()) { // when it is greater, it is NOT smaller
+////                continue;
+////            }
+////            // if the size is equal, then sort
+////            if (notSorted) {
+////                // sort the smallest
+////                Collections.sort(smallest, new LexiILLDecisionWithCommitmentComparator());
+////                notSorted = false;
+////            }
+//        boolean smaller = false;
+////            StringBuilder sbSym = new StringBuilder();
+//////            StringBuilder sbSmallestID = new StringBuilder();
+////            if (calcSmallestID) {
+////                sbSmallestID.setLength(0);
+////            }
+//        Iterator<ILLDecision> itSym = symDCS.iterator();
+//        Iterator<ILLDecision> itSmallest = smallest.iterator();
+//        while (itSym.hasNext()) {
+//            ILLDecision symDec = itSym.next();
+//            ILLDecision smallestDec = itSmallest.next();
+////                // new version, check if it gets better
+////                String symID = symDec.getIDChainByFirstSorting();
+////                String smallestID = smallestDec.getIDChainByFirstSorting();
+////                int compare = symID.compareTo(smallestID);
+//            int compare = comp.compare(symDec, smallestDec);
+//            if (compare < 0) {
+//                smaller = true;
+//                break;
+//            } else if (compare > 0) {
+//                smaller = false;
+//                break;
+//            }
+////                sbSym.append(symDec.getIDChainByFirstSorting()).append("|");
+////                if (calcSmallestID) {
+////                    sbSmallestID.append(smallestDec.getIDChainByFirstSorting()).append("|");
+////                }
+//        }
+//        if (smaller) {
+////            if (sbSym.toString().compareTo(sbSmallestID.toString()) < 0) {
+//            return symDCS;
+////                calcSmallestID = true;
+////              notSorted = false;
+//        }
+////            } else if (calcSmallestID) {
+////                calcSmallestID = false;
+////            }
+//        return null;
+    }
+
+    private boolean checkSmaller(Iterator<ILLDecision> itSym, Iterator<ILLDecision> itSmallest, LexiILLDecisionWithCommitmentComparator comp, boolean andEqual) {
+        boolean smaller = andEqual;
+        while (itSym.hasNext()) {
+            ILLDecision symDec = itSym.next();
+            ILLDecision smallestDec = itSmallest.next();
+            int compare = comp.compare(symDec, smallestDec);
+            if (compare < 0) {
+                smaller = true;
+                break;
+            } else if (compare > 0) {
+                smaller = false;
+                break;
+            }
+        }
+        return smaller;
+    }
+
+    /// %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     // these methods could be used, when some datastructure is used which
     // preserves an order (e.g. List, vs. HashSet). Then sorting would 
     // have an effect.

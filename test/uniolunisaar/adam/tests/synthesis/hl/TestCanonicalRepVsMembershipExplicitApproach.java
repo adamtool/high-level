@@ -146,32 +146,32 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
 //        HLTools.saveGraph2PDF(outputDir + name + "HL_Gstrat", stratHL);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOW LEVEL
         mean = 0;
-        for (int i = 0; i < ROUNDS; i++) {
-            time = System.currentTimeMillis();
-            HLASafetyWithoutType2SolverLLApproach solverLL = (HLASafetyWithoutType2SolverLLApproach) HLSolverFactoryLLApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
-            boolean llapproach = solverLL.existsWinningStrategy();
-            int sizeLL = solverLL.getGraph().getStatesView().size();
-            int sizeLLFlows = solverLL.getGraph().getFlows().size();
-//        int sizeLL = -1;
-            diff = System.currentTimeMillis() - time;
-//        timeLLApproach += diff;
-            double runningTime = Math.round((diff / 1000.0f) * 100.0) / 100.0;
-            mean += runningTime;
-            Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy LL approach (size " + sizeLL + "/" + sizeLLFlows + "): " + llapproach + " " + runningTime, false, true);
-//        System.out.println(solverLL.getGraph().getBadStatesView().size());
-//        HLTools.saveGraph2DotAndPDF(outputDir + "hl2llGG", solverLL.getGraph());
-//        System.out.println("strat size" + solverLL.calculateGraphStrategy().getStatesView().size());
-//        HLTools.saveGraph2DotAndPDF(outputDir + "hl2LLGGStrat", solverLL.calculateGraphStrategy());
-//        HLTools.saveGraph2PDF(outputDir + "hl2LLGGLLStrat", solverLL.calculateLLGraphStrategy());
-//        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
-//        PGTools.savePG2PDF(outputDir + "hl2llPGStrat", solverLL.getStrategy(), false);
-        }
+//        for (int i = 0; i < ROUNDS; i++) {
+//            time = System.currentTimeMillis();
+//            HLASafetyWithoutType2SolverLLApproach solverLL = (HLASafetyWithoutType2SolverLLApproach) HLSolverFactoryLLApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
+//            boolean llapproach = solverLL.existsWinningStrategy();
+//            int sizeLL = solverLL.getGraph().getStatesView().size();
+//            int sizeLLFlows = solverLL.getGraph().getFlows().size();
+////        int sizeLL = -1;
+//            diff = System.currentTimeMillis() - time;
+////        timeLLApproach += diff;
+//            double runningTime = Math.round((diff / 1000.0f) * 100.0) / 100.0;
+//            mean += runningTime;
+//            Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy LL approach (size " + sizeLL + "/" + sizeLLFlows + "): " + llapproach + " " + runningTime, false, true);
+////        System.out.println(solverLL.getGraph().getBadStatesView().size());
+////        HLTools.saveGraph2DotAndPDF(outputDir + "hl2llGG", solverLL.getGraph());
+////        System.out.println("strat size" + solverLL.calculateGraphStrategy().getStatesView().size());
+////        HLTools.saveGraph2DotAndPDF(outputDir + "hl2LLGGStrat", solverLL.calculateGraphStrategy());
+////        HLTools.saveGraph2PDF(outputDir + "hl2LLGGLLStrat", solverLL.calculateLLGraphStrategy());
+////        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
+////        PGTools.savePG2PDF(outputDir + "hl2llPGStrat", solverLL.getStrategy(), false);
+//        }
         Logger.getInstance().addMessage("Mean: " + mean / ROUNDS, false, true);
         //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANON REPS   
         //        SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.NONE;
         SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.SOME;
-            SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_DCS;
-//        SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_BY_TREE;
+//            SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_DCS;
+        SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_BY_TREE;
 //        SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_BY_LIST;
         mean = 0;
         for (int i = 0; i < ROUNDS; i++) {
