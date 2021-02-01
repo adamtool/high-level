@@ -302,7 +302,7 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
      *
      * @return
      */
-    public BDD canonicalReps() {
+    private BDD canonicalReps() {
         HLPetriGame hlgame = hlSolvingObject.getGame();
         // put the high-level places in a list to ensure a fixed order
         List<Place> hlplaces = null;
@@ -342,7 +342,7 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
      *
      * @return
      */
-    private BDD canonicalRepresentatives() throws CalculationInterruptedException {
+    public BDD canonicalRepresentatives() throws CalculationInterruptedException {
         Logger.getInstance().addMessage("Calculation of canonicalRepresentatives BDD ...", "INTERMEDIATE_TIMING");
         long time = System.currentTimeMillis();
         BDD symmetries = getSymmetries();

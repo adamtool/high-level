@@ -1,6 +1,7 @@
 package uniolunisaar.adam.tests.synthesis.hl;
 
 import java.io.File;
+import net.sf.javabdd.BDD;
 import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -51,8 +52,8 @@ public class TestCanonicalRepVsMembershipBDDApproach {
 
     @BeforeClass
     public void createFolder() {
-//        Logger.getInstance().setVerbose(false);
-        Logger.getInstance().setVerbose(true);
+        Logger.getInstance().setVerbose(false);
+//        Logger.getInstance().setVerbose(true);
 //        Logger.getInstance().setShortMessageStream(null);
 //        Logger.getInstance().setVerboseMessageStream(null);
         Logger.getInstance().setWarningStream(null);
@@ -107,18 +108,63 @@ public class TestCanonicalRepVsMembershipBDDApproach {
 
     @Test
     public void testCM() throws Exception {
-        int a = 2;
-        int b = 1;
+        int a = 4;
+        int b = 2;
         HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(a, b, true);
-        HLTools.saveHLPG2PDF(outputDir + "CM" + a + b, hlgame);
-        PGTools.savePG2PDF(outputDir + "CM" + a + b + "_ll", HL2PGConverter.convert(hlgame), false);
-        checkExistsStrat("CM" + a + "" + b, hlgame);
+//        HLTools.saveHLPG2PDF(outputDir + "CM" + a + b, hlgame);
+//        PGTools.savePG2PDF(outputDir + "CM" + a + b + "_ll", HL2PGConverter.convert(hlgame), false);
+//        checkExistsStrat("CM" + a + "" + b, hlgame);
+        checkLLBDDvsCanonBDDCreation("CM" + a + "" + b, hlgame);
     }
 
     @Test
     public void testPD() throws Exception {
         HLPetriGame hlgame = PackageDeliveryHL.generateEwithPool(1, 4, true);
         checkExistsStrat("PD14", hlgame);
+    }
+
+    private void checkLLBDDvsCanonBDDCreation(String name, HLPetriGame hlgame) throws Exception {
+        long time, diff;
+        double mean;
+
+        final int ROUNDS = 3;
+
+        //%%% LL SOLVER
+        mean = 0;
+        for (int i = 0; i < ROUNDS; i++) {
+            time = System.currentTimeMillis();
+            PetriGameWithTransits game = HL2PGConverter.convert(hlgame, true, true);
+            BDDSolverOptions opt = new BDDSolverOptions(true);
+            opt.setNoType2(true);
+            DistrSysBDDSolver<? extends Condition<?>> llsol = DistrSysBDDSolverFactory.getInstance().getSolver(PGTools.getPetriGameFromParsedPetriNet(game, true, false), opt);
+            llsol.initialize();
+
+            boolean exWinStrat = llsol.existsWinningStrategy();
+            Logger.getInstance().addMessage("Low-Level approach with BDDs. Exists winning strategy: " + exWinStrat);
+            diff = System.currentTimeMillis() - time;
+            double runningTime = Math.round((diff / 1000.0f) * 100.0) / 100.0;
+            mean += runningTime;
+            Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% LL realizable: " + exWinStrat + " " + runningTime, false, true);
+        }
+        Logger.getInstance().addMessage("Mean: " + mean / ROUNDS, false, true);
+
+        // %%%% HL CANON REPS
+        mean = 0;
+        for (int i = 0; i < ROUNDS; i++) {
+            time = System.currentTimeMillis();
+            BDDSolverOptions opt = new BDDSolverOptions(true);
+            opt.setNoType2(true);
+            HLASafetyWithoutType2CanonRepSolverBDDApproach hlSol = (HLASafetyWithoutType2CanonRepSolverBDDApproach) HLSolverFactoryBDDApproachCanonReps.getInstance().getSolver(hlgame, opt);
+            hlSol.getSolver().initialize();
+            BDDASafetyWithoutType2CanonRepHLSolver solver = hlSol.getSolver();
+//            BDD reps = solver.canonicalRepresentatives();
+            BDD reps = solver.getSymmetries();
+            diff = System.currentTimeMillis() - time;
+            double runningTime = Math.round((diff / 1000.0f) * 100.0) / 100.0;
+            mean += runningTime;
+            Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL canon reps: " + runningTime, false, true);
+        }
+        Logger.getInstance().addMessage("Mean: " + mean / ROUNDS, false, true);
     }
 
     private void checkExistsStrat(String name, HLPetriGame hlgame) throws Exception {

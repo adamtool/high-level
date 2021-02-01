@@ -463,8 +463,8 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
     }
 
     protected boolean calcBad(Set<ILLDecision> dcs) {
-        return calcBadPlace(dcs) || calcDeadlock(dcs) || calcNdet(dcs);
-//        return calcBadPlace(dcs) || calcDeadlock(dcs) || calcNdetOnPG(dcs);
+//        return calcBadPlace(dcs) || calcDeadlock(dcs) || calcNdet(dcs);
+        return calcBadPlace(dcs) || calcDeadlock(dcs) || calcNdetOnPG(dcs);
 //        return calcDeadlock(dcs);// || calcNdet(dcs);
 //        return calcBadPlace(dcs) ;//|| calcDeadlock(dcs) || calcNdet(dcs);
 //        return calcNdet(dcs);
