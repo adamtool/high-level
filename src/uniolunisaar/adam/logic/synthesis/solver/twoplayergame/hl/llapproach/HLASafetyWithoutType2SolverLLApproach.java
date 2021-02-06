@@ -87,9 +87,11 @@ public class HLASafetyWithoutType2SolverLLApproach extends HLASafetyWithoutType2
             attr.add(in.getId());
             lastRound.add(in.getId());
         }
-//        int i = 0;
+        int i = 0;
+        int countContains = 0;
         while (!lastRound.isEmpty()) {
-//            System.out.println("i " + i++);
+            long time = System.currentTimeMillis();
+//            System.out.println("i " + i++ + "size: " + attr.size());
             if (Thread.interrupted()) {
                 CalculationInterruptedException e = new CalculationInterruptedException();
                 Logger.getInstance().addError(e.getMessage(), e);
@@ -111,6 +113,7 @@ public class HLASafetyWithoutType2SolverLLApproach extends HLASafetyWithoutType2
 
                     // if it is already in the attractor we have nothing to do
                     if (attr.contains(pre.getId())) {
+                        countContains++;
                         continue;
                     }
                     boolean belongsToThePlayer = (p1 && pre.isMcut()) || (!p1 && !pre.isMcut()); // it belongs to the current player
@@ -141,6 +144,9 @@ public class HLASafetyWithoutType2SolverLLApproach extends HLASafetyWithoutType2
                         if (withAbortion && pre.getId() == abortionState.getId()) {
                             return null;
                         }
+//                        if(i==11) {
+//                            System.out.println("add");
+//                        }
 
                         lastRound.add(pre.getId());
                     }
@@ -148,7 +154,10 @@ public class HLASafetyWithoutType2SolverLLApproach extends HLASafetyWithoutType2
             }
 //            System.out.println("add:" + lastRound.toString());
             attr.addAll(lastRound);
+            long diff = System.currentTimeMillis() - time;
+//            System.out.println("time: " + diff + " adding "+ lastRound.size());
         }
+//        System.out.println("nb contains" + countContains);
 
         Set<DecisionSet> out = new HashSet<>();
         for (Integer id : attr) {

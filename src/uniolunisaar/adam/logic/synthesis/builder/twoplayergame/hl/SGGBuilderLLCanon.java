@@ -196,12 +196,14 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
         }
 
         // Create the graph iteratively
+//        AbstractGameGraph<Place, Transition, ILLDecision, DecisionSet, DecisionSet, GameGraphFlow<Transition, DecisionSet>> srg;
         AbstractGameGraph<Place, Transition, ILLDecision, DecisionSet, DecisionSet, GameGraphFlow<Transition, DecisionSet>> srg;
         if (!withBidi) {
             srg = new GameGraphUsingIDs<>(hlgame.getName() + "_SRG", init);
         } else {
             srg = new GameGraphUsingIDsBidiMap<>(hlgame.getName() + "_SRG", init);
         }
+//        srg = new GameGraph<>(hlgame.getName() + "_SRG", init);
         addStatesIteratively(hlgame, srg, init, pgame.getTransitions(), sysTransitions);
 //        System.out.println(dcs2canon.size());
         return srg;
