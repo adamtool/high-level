@@ -281,7 +281,7 @@ public class OrderedDecisionSet extends LLDecisionSet {
             single.retainAll((Collection<Transition>) getGame().getExtension("singlePresetTransitions"));
             if (single.isEmpty() || set.size() == 1) {
                 // todo: check this could be expensive and maybe smarter to adapt the powerset construction
-                TreeSet<Transition> c = new TreeSet(new LexiTransitionIDComparator());
+                TreeSet<Transition> c = new TreeSet<>(new LexiTransitionIDComparator());
                 c.addAll(set);
                 converted.add(c);
             }
