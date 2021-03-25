@@ -39,7 +39,8 @@ import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.logic.synthesis.pgwt.calculators.ConcurrencyPreservingCalculator;
 import uniolunisaar.adam.logic.synthesis.pgwt.calculators.MaxTokenCountCalculator;
 import uniolunisaar.adam.tools.CartesianProduct;
-import uniolunisaar.adam.util.AdamExtensions;
+import uniolunisaar.adam.util.AdamHLExtensions;
+import uniolunisaar.adam.util.ExtensionManagement;
 import uniolunisaar.adam.util.PGTools;
 
 /**
@@ -144,33 +145,34 @@ public class HL2PGConverter {
     }
 
     public static Transition getTransition(PetriNet llPetriGame, String origID, Valuation val) {
-        return ((Map<TransitionKey, Transition>) llPetriGame.getExtension(AdamExtensions.convTransitionMapping.name())).get(new TransitionKey(origID, val));
+        return ((Map<TransitionKey, Transition>) ExtensionManagement.getInstance().getExtension(llPetriGame, AdamHLExtensions.convTransitionMapping, Map.class))
+                .get(new TransitionKey(origID, val));
     }
 
     public static void setColorsAndID2Extension(Place llPlace, String origID, List<Color> colors) {
-        llPlace.putExtension(AdamExtensions.convOrigID.name(), origID);
-        llPlace.putExtension(AdamExtensions.convColors.name(), colors);
+        ExtensionManagement.getInstance().putExtension(llPlace, AdamHLExtensions.convOrigID, origID);
+        ExtensionManagement.getInstance().putExtension(llPlace, AdamHLExtensions.convColors, colors);
     }
 
     public static String getOrigID(Place llPlace) {
-        return (String) llPlace.getExtension(AdamExtensions.convOrigID.name());
+        return ExtensionManagement.getInstance().getExtension(llPlace, AdamHLExtensions.convOrigID, String.class);
     }
 
     public static List<Color> getColors(Place llPlace) {
-        return (List<Color>) llPlace.getExtension(AdamExtensions.convColors.name());
+        return ExtensionManagement.getInstance().getExtension(llPlace, AdamHLExtensions.convColors, List.class);
     }
 
     public static void setValuationAndID2Extension(Transition lltransition, String origID, Valuation val) {
-        lltransition.putExtension(AdamExtensions.convOrigID.name(), origID);
-        lltransition.putExtension(AdamExtensions.convValuation.name(), val);
+        ExtensionManagement.getInstance().putExtension(lltransition, AdamHLExtensions.convOrigID, origID);
+        ExtensionManagement.getInstance().putExtension(lltransition, AdamHLExtensions.convValuation, val);
     }
 
     public static String getOrigID(Transition llTransition) {
-        return (String) llTransition.getExtension(AdamExtensions.convOrigID.name());
+        return ExtensionManagement.getInstance().getExtension(llTransition, AdamHLExtensions.convOrigID, String.class);
     }
 
     public static Valuation getValuation(Transition llTransition) {
-        return (Valuation) llTransition.getExtension(AdamExtensions.convValuation.name());
+        return ExtensionManagement.getInstance().getExtension(llTransition, AdamHLExtensions.convValuation, Valuation.class);
     }
 
     public static int getHashCode(Place llPlace) {
@@ -322,7 +324,7 @@ public class HL2PGConverter {
                 }
             }
         }
-        pg.putExtension(AdamExtensions.convTransitionMapping.name(), transitionMapping);
+        ExtensionManagement.getInstance().putExtension(pg, AdamHLExtensions.convTransitionMapping, transitionMapping);
     }
 
     private static void createFlows(Transition tLL, Flow flowHL, Valuation val, HLPetriGame hlgame, PetriGameWithTransits pg, boolean pre) {

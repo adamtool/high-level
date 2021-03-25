@@ -4,7 +4,8 @@ import java.util.Comparator;
 import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.ILLDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.SysDecision;
-import uniolunisaar.adam.util.AdamExtensions;
+import uniolunisaar.adam.util.AdamPGWTExtensions;
+import uniolunisaar.adam.util.ExtensionManagement;
 
 /**
  * ATTENTION: this only works for correct decision sets (so no env and sys with
@@ -30,7 +31,7 @@ public class LexiILLDecisionWithCommitmentComparator implements Comparator<ILLDe
             return 1;
         }
         // ATTENTION: this only works for correct decision sets (so no env and sys with the same id)
-        if (p1.hasExtension(AdamExtensions.env.name())) {
+        if (ExtensionManagement.getInstance().hasExtension(p1, AdamPGWTExtensions.env)) {
             return 0;
         }
 

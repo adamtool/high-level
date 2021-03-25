@@ -6,7 +6,8 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.synthesis.highlevel.arcexpressions.ArcExpression;
 import uniolunisaar.adam.ds.synthesis.highlevel.predicate.IPredicate;
-import uniolunisaar.adam.util.AdamExtensions;
+import uniolunisaar.adam.util.AdamHLExtensions;
+import uniolunisaar.adam.util.ExtensionManagement;
 
 /**
  *
@@ -14,47 +15,53 @@ import uniolunisaar.adam.util.AdamExtensions;
  */
 public class HLPetriGameExtensionHandler {
 
+    // register the Extensions for the framework
+    static {
+        ExtensionManagement.getInstance().registerExtensions(true, AdamHLExtensions.values());
+    }
+
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PLACE EXTENSIONS   
     static ColorDomain getColorDomain(Place place) {
-        return (ColorDomain) place.getExtension(AdamExtensions.colorDomain.name());
+        return ExtensionManagement.getInstance().getExtension(place, AdamHLExtensions.colorDomain, ColorDomain.class);
     }
 
     static void setColorClasses(Place place, ColorDomain domain) {
-        place.putExtension(AdamExtensions.colorDomain.name(), domain, ExtensionProperty.WRITE_TO_FILE);
+        ExtensionManagement.getInstance().putExtension(place, AdamHLExtensions.colorDomain, domain, ExtensionProperty.WRITE_TO_FILE);
     }
 
     static boolean hasColorTokens(Place place) {
-        return place.hasExtension(AdamExtensions.colorTokens.name()) && !((ColorTokens) place.getExtension(AdamExtensions.colorTokens.name())).isEmpty();
+        return ExtensionManagement.getInstance().hasExtension(place, AdamHLExtensions.colorTokens)
+                && !(ExtensionManagement.getInstance().getExtension(place, AdamHLExtensions.colorTokens, ColorTokens.class)).isEmpty();
     }
 
     static ColorTokens getColorTokens(Place place) {
-        return (ColorTokens) place.getExtension(AdamExtensions.colorTokens.name());
+        return ExtensionManagement.getInstance().getExtension(place, AdamHLExtensions.colorTokens, ColorTokens.class);
     }
 
     static void setColorTokens(Place place, ColorTokens token) {
-        place.putExtension(AdamExtensions.colorTokens.name(), token, ExtensionProperty.WRITE_TO_FILE);
+        ExtensionManagement.getInstance().putExtension(place, AdamHLExtensions.colorTokens, token, ExtensionProperty.WRITE_TO_FILE);
     }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TRANSITION EXTENSIONS   
     static IPredicate getPredicate(Transition transition) {
-        return (IPredicate) transition.getExtension(AdamExtensions.predicate.name());
+        return ExtensionManagement.getInstance().getExtension(transition, AdamHLExtensions.predicate, IPredicate.class);
     }
 
     static void setPredicate(Transition transition, IPredicate pred) {
-        transition.putExtension(AdamExtensions.predicate.name(), pred, ExtensionProperty.WRITE_TO_FILE);
+        ExtensionManagement.getInstance().putExtension(transition, AdamHLExtensions.predicate, pred, ExtensionProperty.WRITE_TO_FILE);
     }
 
 // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% FLOW EXTENSIONS   
     static boolean hasArcExpression(Flow flow) {
-        return flow.hasExtension(AdamExtensions.arcExpression.name());
+        return ExtensionManagement.getInstance().hasExtension(flow, AdamHLExtensions.arcExpression);
     }
 
     static ArcExpression getArcExpression(Flow flow) {
-        return (ArcExpression) flow.getExtension(AdamExtensions.arcExpression.name());
+        return ExtensionManagement.getInstance().getExtension(flow, AdamHLExtensions.arcExpression, ArcExpression.class);
     }
 
     static void setArcExpression(Flow flow, ArcExpression expr) {
-        flow.putExtension(AdamExtensions.arcExpression.name(), expr, ExtensionProperty.WRITE_TO_FILE);
+        ExtensionManagement.getInstance().putExtension(flow, AdamHLExtensions.arcExpression, expr, ExtensionProperty.WRITE_TO_FILE);
     }
 
 }
