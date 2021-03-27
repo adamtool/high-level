@@ -11,7 +11,7 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.DecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.ILLDecision;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.ds.objectives.Condition;
-import uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException;
+import uniolunisaar.adam.exceptions.CalculationInterruptedException;
 import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.GGStrategyBuilder;
 import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.explicit.GGBuilder;
 import uniolunisaar.adam.logic.synthesis.solver.twoplayergame.AbstractSolver;

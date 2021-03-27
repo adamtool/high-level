@@ -9,7 +9,7 @@ import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractGameGraph;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecision;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.IDecisionSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.GameGraphFlow;
-import uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException;
+import uniolunisaar.adam.exceptions.CalculationInterruptedException;
 
 /**
  *

@@ -14,7 +14,7 @@ import uniolunisaar.adam.ds.synthesis.highlevel.StaticColorClass;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NotSupportedGameException;
-import uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException;
+import uniolunisaar.adam.exceptions.CalculationInterruptedException;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.InvalidPartitionException;
 import uniolunisaar.adam.ds.synthesis.solver.symbolic.bddapproach.BDDSolverOptions;
 import uniolunisaar.adam.exceptions.synthesis.pgwt.NoStrategyExistentException;
@@ -252,7 +252,7 @@ public class BDDASafetyWithoutType2CanonRepHLSolver extends BDDASafetyWithoutTyp
      * Returns the winning decisionsets for the system players
      *
      * @return
-     * @throws uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException
+     * @throws uniolunisaar.adam.exceptions.CalculationInterruptedException
      */
     @Override
     protected BDD calcWinningDCSs(Map<Integer, BDD> distance) throws CalculationInterruptedException {
