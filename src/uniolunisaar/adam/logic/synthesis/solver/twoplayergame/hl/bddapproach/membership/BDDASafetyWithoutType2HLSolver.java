@@ -135,7 +135,7 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
         // Only useable if it's not an mcut        
         BDD sys1 = super.sysTransitionCP(t);
         // bad states don't have succesors
-        sys1.andWith(badStates().not());
+        sys1.andWith(badStates().not()); // todo: check this for the new ndet now have, getForceNoSuccessorsDCSs
 //        sys1.andWith(oldType2());//.andWith(wellformed(1));//.andWith(wellformedTransition()));
         return sys1;//.andWith(wellformed(1));//.andWith(wellformedTransition()));
     }
@@ -148,7 +148,7 @@ public class BDDASafetyWithoutType2HLSolver extends DistrSysBDDSolver<Safety> {
         // Only useable if it's not an mcut        
         BDD sys1 = super.sysTransitionNotCP(t);
         // bad states don't have succesors
-        sys1.andWith(badStates().not());
+        sys1.andWith(badStates().not());// todo: check this for the new ndet now have, getForceNoSuccessorsDCSs
 //        sys1.andWith(oldType2());//.andWith(wellformed(1));//.andWith(wellformedTransition()));
         return sys1;//.andWith(wellformed(1));//.andWith(wellformedTransition()));
     }
