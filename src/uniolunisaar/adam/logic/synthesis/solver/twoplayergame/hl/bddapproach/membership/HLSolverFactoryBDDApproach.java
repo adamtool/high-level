@@ -40,7 +40,7 @@ public class HLSolverFactoryBDDApproach extends SolverFactory<HLPetriGame, BDDSo
     @Override
     protected HLASafetyWithoutType2SolverBDDApproach getASafetySolver(HLPetriGame game, Safety con, BDDSolverOptions opts) throws SolvingException, NotSupportedGameException, NoSuitableDistributionFoundException, InvalidPartitionException {
         try {
-            return new HLASafetyWithoutType2SolverBDDApproach(createSolvingObject(game, con), opts);
+            return new HLASafetyWithoutType2SolverBDDApproach(createSolvingObject(game, con, opts), opts);
         } catch (NetNotSafeException ex) {
             throw new NotSupportedGameException("Could not create solver.", ex);
         }
@@ -57,7 +57,7 @@ public class HLSolverFactoryBDDApproach extends SolverFactory<HLPetriGame, BDDSo
     }
 
     @Override
-    protected <W extends Condition<W>> HLBDDSolvingObject<W> createSolvingObject(HLPetriGame game, W winCon) throws NotSupportedGameException {
+    protected <W extends Condition<W>> HLBDDSolvingObject<W> createSolvingObject(HLPetriGame game, W winCon, BDDSolverOptions options) throws NotSupportedGameException {
         try {
             return new HLBDDSolvingObject<>(game, winCon);
         } catch (NetNotSafeException | NoSuitableDistributionFoundException | InvalidPartitionException ex) {

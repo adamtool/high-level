@@ -38,7 +38,7 @@ public abstract class AbstractHLSolverFactory<P, T, DC extends IDecision<P, T>, 
     }
 
     @Override
-    protected <W extends Condition<W>> HLSolvingObject<W> createSolvingObject(HLPetriGame game, W winCon) throws NotSupportedGameException {
+    protected <W extends Condition<W>> HLSolvingObject<W> createSolvingObject(HLPetriGame game, W winCon, HLSolverOptions options) throws NotSupportedGameException {
         return new HLSolvingObject<>(game, winCon);
     }
 

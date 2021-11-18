@@ -32,7 +32,7 @@ public class HLSolverFactoryCanonApproach extends AbstractHLSolverFactory<Place,
 
     @Override
     protected HLASafetyWithoutType2SolverCanonApproach getASafetySolver(HLPetriGame game, Safety con, HLSolverOptions opts) throws SolvingException {
-        return new HLASafetyWithoutType2SolverCanonApproach(createSolvingObject(game, con), opts);
+        return new HLASafetyWithoutType2SolverCanonApproach(createSolvingObject(game, con, opts), opts);
     }
 
 }

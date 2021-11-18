@@ -32,7 +32,7 @@ public class HLSolverFactoryLLApproach extends AbstractHLSolverFactory<Place, Tr
 
     @Override
     protected HLASafetyWithoutType2SolverLLApproach getASafetySolver(HLPetriGame game, Safety con, HLSolverOptions opts) throws SolvingException {
-        return new HLASafetyWithoutType2SolverLLApproach(createSolvingObject(game, con), opts);
+        return new HLASafetyWithoutType2SolverLLApproach(createSolvingObject(game, con, opts), opts);
     }
 
 }

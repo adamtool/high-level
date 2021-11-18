@@ -29,7 +29,7 @@ public class ExplicitSolverFactory extends LLSolverFactory<ExplicitSolverOptions
     }
 
     @Override
-    protected <W extends Condition<W>> ExplicitSolvingObject<W> createSolvingObject(PetriGameWithTransits game, W winCon) throws NotSupportedGameException {
+    protected <W extends Condition<W>> ExplicitSolvingObject<W> createSolvingObject(PetriGameWithTransits game, W winCon, ExplicitSolverOptions options) throws NotSupportedGameException {
         return new ExplicitSolvingObject<>(game, winCon);
     }
 
@@ -40,7 +40,7 @@ public class ExplicitSolverFactory extends LLSolverFactory<ExplicitSolverOptions
 
     @Override
     protected ExplicitASafetyWithoutType2Solver getASafetySolver(PetriGameWithTransits game, Safety con, ExplicitSolverOptions options) throws SolvingException {
-        return new ExplicitASafetyWithoutType2Solver(createSolvingObject(game, con), options);
+        return new ExplicitASafetyWithoutType2Solver(createSolvingObject(game, con, options), options);
     }
 
     @Override
