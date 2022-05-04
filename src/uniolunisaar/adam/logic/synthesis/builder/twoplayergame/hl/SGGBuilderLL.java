@@ -64,16 +64,18 @@ public class SGGBuilderLL extends SGGBuilder<Place, Transition, ILLDecision, Dec
 
     private LLDecisionSet createInitDecisionSet(PetriGameWithTransits pgame) {
         Set<ILLDecision> inits = new HashSet<>();
+        boolean hasSysDecision = false;
         for (Place place : pgame.getPlaces()) {
             if (place.getInitialToken().getValue() > 0) {
                 if (pgame.isEnvironment(place)) {
                     inits.add(new LLEnvDecision(pgame, place));
                 } else {
+                    hasSysDecision = true;
                     inits.add(new LLSysDecision(pgame, place, new LLCommitmentSet(pgame, true)));
                 }
             }
         }
-        return new LLDecisionSet(inits, false, false, pgame);
+        return new LLDecisionSet(inits, !hasSysDecision, false, pgame); // todo: attention bad is not calculated to save time
     }
 
     /**

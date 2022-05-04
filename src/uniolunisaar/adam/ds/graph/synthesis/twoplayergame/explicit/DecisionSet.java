@@ -543,10 +543,11 @@ public class DecisionSet extends Extensible implements IDecisionSet<Place, Trans
                 sbSys.append(dc.toDot()).append("\\n");
             }
         }
+        StringBuilder ret = new StringBuilder(sbEnv.toString() + sbSys.toString());
         if (decisions.size() >= 1) {
-            sbSys.delete(sbSys.length() - 2, sbSys.length());
+            ret.delete(ret.length() - 2, ret.length());
         }
-        return sbEnv.toString() + sbSys.toString();
+        return ret.toString();
     }
 
     @Override

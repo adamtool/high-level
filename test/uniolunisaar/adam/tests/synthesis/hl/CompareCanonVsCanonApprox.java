@@ -217,6 +217,7 @@ public class CompareCanonVsCanonApprox {
             PGTools.savePG2PDF(outputDir + "LLpg", SGGBuilderLLCanon.getInstance().getCurrentLLGame(), false);
 //            System.out.println(solverCanon.getGraph().getBadStatesView().size());
             HLTools.saveHLPG2DotAndPDF(outputDir + "hlPg", hlgame, false);
+//            System.out.println(solverCanon.getGraph().getInitial().toString());
 //            HLTools.saveGraph2DotAndPDF(outputDir + "hlcanonGG", solverCanon.getGraph());
             SGGBuilderLLCanon.getInstance().clearBufferedData(); // s.th. like all what is saved in hlgame (like symmetries, and the stuff for the converter) should be cleared
         }

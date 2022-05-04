@@ -122,16 +122,18 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
 
     private OrderedDecisionSet createOrderedInitDecisionSet(HLPetriGame hlgame, PetriGameWithTransits pgame) {
         TreeSet<ILLDecision> inits = new TreeSet<>(new LexiILLDecisionComparator());
+        boolean hasSysDecision = false;
         for (Place place : pgame.getPlaces()) {
             if (place.getInitialToken().getValue() > 0) {
                 if (pgame.isEnvironment(place)) {
                     inits.add(new LLEnvDecision(pgame, place));
                 } else {
+                    hasSysDecision = true;
                     inits.add(new LLSysDecision(pgame, place, new OrderedCommitmentSet(pgame, true)));
                 }
             }
         }
-        OrderedDecisionSet dcs = new OrderedDecisionSet(inits, false, false, pgame, hlgame.getSymmetries());
+        OrderedDecisionSet dcs = new OrderedDecisionSet(inits, !hasSysDecision, false, pgame, hlgame.getSymmetries());// todo: attention bad is not calculated to save time
         if (saveMapping != SaveMapping.NONE) {
             dcsOrdered2canon.put(dcs, dcs);
         }
@@ -148,17 +150,19 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
      */
     private LLDecisionSet createCanonInitDecisionSet(HLPetriGame hlgame, PetriGameWithTransits pgame) {
         Set<ILLDecision> inits = new HashSet<>();
+        boolean hasSysDecision = false;
         for (Place place : pgame.getPlaces()) {
             if (place.getInitialToken().getValue() > 0) {
                 if (pgame.isEnvironment(place)) {
                     inits.add(new LLEnvDecision(pgame, place));
                 } else {
+                    hasSysDecision = true;
                     inits.add(new LLSysDecision(pgame, place, new CommitmentSet(pgame, true)));
                 }
             }
         }
 //        CanonDecisionSet dcs = new CanonDecisionSet(inits, false, false, pgame, hlgame.getSymmetries());
-        CanonDecisionSet dcs = new CanonDecisionSet(inits, false, false, pgame);
+        CanonDecisionSet dcs = new CanonDecisionSet(inits, !hasSysDecision, false, pgame);// todo: attention bad is not calculated to save time
         if (saveMapping != SaveMapping.NONE) {
             dcs2canon.put(inits, dcs);
         }

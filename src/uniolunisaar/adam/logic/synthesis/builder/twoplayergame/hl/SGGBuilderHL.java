@@ -46,6 +46,7 @@ public class SGGBuilderHL extends SGGBuilder<ColoredPlace, ColoredTransition, IH
 
     private HLDecisionSet createInitDCS(OneEnvHLPG hlgame) {
         Set<IHLDecision> inits = new HashSet<>();
+        boolean hasSysDecision = false;
         for (Place place : hlgame.getPlaces()) {
             ColorTokens tokens = hlgame.getColorTokens(place);
             if (tokens == null) {
@@ -55,13 +56,16 @@ public class SGGBuilderHL extends SGGBuilder<ColoredPlace, ColoredTransition, IH
                 for (ColorToken token : tokens) {
                     inits.add(new HLEnvDecision(place, token));
                 }
-            } else {
-                for (ColorToken token : tokens) {
+            } else {                
+                if(!tokens.isEmpty()) {
+                    hasSysDecision = true;
+                }
+                for (ColorToken token : tokens) {                    
                     inits.add(new HLSysDecision(place, token, new HLCommitmentSet(true)));
                 }
             }
         }
-        return new HLDecisionSet(inits, false, false, hlgame);
+        return new HLDecisionSet(inits, !hasSysDecision, false, hlgame); // todo: attention bad is not calculated to save time
     }
 
     /**
