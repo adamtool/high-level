@@ -2,6 +2,7 @@ package uniolunisaar.adam.ds.graph.synthesis.twoplayergame;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Objects;
 import java.util.Set;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
@@ -115,6 +116,14 @@ public abstract class AbstractCommitmentSet<T> {
         return transitions;
     }
 
+    public int size() {
+        return transitions.size();
+    }
+
+    public Iterator<T> getIterator() {
+        return transitions.iterator();
+    }
+
     @Override
     public int hashCode() {
         int hash = 7;
@@ -122,9 +131,7 @@ public abstract class AbstractCommitmentSet<T> {
         hash = 97 * hash + Objects.hashCode(this.transitions);
         return hash;
     }
-    
-  
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

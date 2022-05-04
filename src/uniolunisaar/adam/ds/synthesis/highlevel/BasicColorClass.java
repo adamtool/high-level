@@ -63,6 +63,10 @@ public class BasicColorClass {
         this.staticSubclasses.put(id, clazz);
     }
 
+    public int getIndex(Color c) {
+        return colors.indexOf(c);
+    }
+
     /**
      * Checks whether this basic color class is valid, i.e., whether the static
      * subclasses really partition the basic class.
@@ -160,6 +164,10 @@ public class BasicColorClass {
 
     public List<Color> getColors() {
         return Collections.unmodifiableList(colors);
+    }
+
+    public Color getColor(int idx) {
+        return colors.get(idx);
     }
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DELEGATES

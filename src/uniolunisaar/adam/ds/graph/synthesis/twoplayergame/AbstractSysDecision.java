@@ -52,7 +52,7 @@ public abstract class AbstractSysDecision<P, T, C extends AbstractCommitmentSet<
     protected C getC() {
         return c;
     }
-
+    
     @Override
     public String toDot() {
         StringBuilder sb = new StringBuilder("(");

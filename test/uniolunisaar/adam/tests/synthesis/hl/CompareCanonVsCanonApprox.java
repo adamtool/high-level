@@ -49,7 +49,7 @@ import uniolunisaar.adam.util.symbolic.bddapproach.BDDTools;
  * @author Manuel Gieseking
  */
 @Test
-public class TestCanonicalRepVsMembershipExplicitApproach {
+public class CompareCanonVsCanonApprox {
 
     private static final String outputDir = System.getProperty("testoutputfolder") + "/sgg/";
 
@@ -62,44 +62,6 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
         Logger.getInstance().setWarningStream(null);
 //        Logger.getInstance().addMessageStream("INTERMEDIATE_TIMING", System.out);
         (new File(outputDir)).mkdirs();
-    }
-
-    @Test
-    public void firstTests() throws Exception {
-        HLPetriGame hlgame = ConcurrentMachinesHL.generateImprovedVersionWithSetMinus(4, 2, true);
-
-//        BDD init = solver1.getInitialDCSs();
-//
-//        System.out.println("%%%%%%% THE STATE ITSELF");
-//        BDDTools.printDecodedDecisionSets(init, solver1, true);
-////        BDDTools.saveStates2Pdf(outputDir + "testcm21_init", init, solver1);
-////
-//        BDD makeCanonical = solver1.makeCanonical(init);
-//        BDD canonWell = makeCanonical.and(solver1.getWellformed(0));
-//        System.out.println("%%%%%%% ALL");
-//        BDDTools.printDecodedDecisionSets(canonWell, solver1, true);
-//        
-//        BDD transitions = solver1.getSystemTrans();
-//        System.out.println("%%%%%%% THE SySTEM TRANSITIONS");
-//        BDDTools.printDecodedDecisionSets(transitions, solver1, true);
-//        BDDTools.saveStates2Pdf(outputDir + "testcm21_init", init, solver1);
-//
-////        BDDTools.saveStates2Pdf(outputDir + "testcm21", makeCanonical, solver1);
-//
-//        System.out.println("%%%%%%% Wellformed");
-//        BDDTools.printDecodedDecisionSets(canonWell, solver1, true);
-//        
-//        BDDTools.saveStates2Pdf(outputDir + "testcm21_well", makeCanonical, solver1);
-//        BDD makeCanonical = solver1.makeCanonical(solver1.badSysDCS(),0);
-//        BDD canonWell = makeCanonical.and(solver1.getWellformed(0));
-//        System.out.println("%%%%%%% ALL");
-//        BDDTools.printDecodedDecisionSets(makeCanonical, solver1, true);
-//        BDDTools.saveStates2Pdf(outputDir+"testcm21", makeCanonical, solver1);
-//        
-//        System.out.println("%%%%%%% Wellformed");
-//        BDDTools.printDecodedDecisionSets(canonWell, solver1, true);
-//        BDDTools.saveStates2Pdf(outputDir+"testcm21_well", makeCanonical, solver1);
-//        create("CM21", hlgame);
     }
 
     @Test
@@ -124,6 +86,7 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
 //        PGTools.savePG2PDF(outputDir + "CM" + a + b + "_ll", HL2PGConverter.convert(hlgame), false);
         checkExistsStrat("CM" + a + "" + b, hlgame);
     }
+
     @Test
     public void testDWs() throws Exception {
         int a = 4;
@@ -138,6 +101,19 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
     }
 
     @Test
+    public void testDW() throws Exception {
+        int a = 3;
+//        int a = 4;
+//        int b = 2;
+//        int a = 2;
+//        int b = 1;
+        HLPetriGame hlgame = DocumentWorkflowHL.generateDW(a, true);
+//        HLTools.saveHLPG2PDF(outputDir + "CM" + a + b, hlgame);
+//        PGTools.savePG2PDF(outputDir + "CM" + a + b + "_ll", HL2PGConverter.convert(hlgame), false);
+        checkExistsStrat("DW" + a, hlgame);
+    }
+
+    @Test
     public void testPD() throws Exception {
         int a = 1;
         int b = 2;
@@ -146,63 +122,59 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
 //        PGTools.savePG2PDF(outputDir + "PD" + a + b + "_ll", HL2PGConverter.convert(hlgame), false);
         checkExistsStrat("PD" + a + "" + b, hlgame);
     }
+
     private final int ROUNDS = 1;
 
-    private void checkExistsStrat(String name, HLPetriGame hlgame2) throws Exception {
+    private void checkExistsStrat(String name, HLPetriGame hlgame) throws Exception {
         Logger.getInstance().addMessage(name, false, true);
         long timeHLApproach = 0;
         long timeCanonRepApproach = 0;
         long time, diff;
         double mean;
 
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% HIGH LEVEL
-//        time = System.currentTimeMillis();
-//        HLASafetyWithoutType2SolverHLApproach solverHL = (HLASafetyWithoutType2SolverHLApproach) HLSolverFactoryHLApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
-//        GameGraph<ColoredPlace, ColoredTransition, IHLDecision, HLDecisionSet, GameGraphFlow<ColoredTransition, HLDecisionSet>> stratHL = solverHL.calculateGraphStrategy();
-//        diff = System.currentTimeMillis() - time;
-//        timeHLApproach += diff;
-//        Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL graph strategy HL approach " + Math.round((diff / 1000.0f) * 100.0) / 100.0);
-//        HLTools.saveGraph2PDF(outputDir + name + "HL_Gstrat", stratHL);
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LOW LEVEL
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANON COMPLETE
+        hlgame.storeSymmetries = true;
+        SGGBuilderLLCanon.getInstance().skipSomeSymmetries = true;
+        SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.SOME;
+        SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_BY_LIST;
+
         mean = 0;
         for (int i = 0; i < ROUNDS; i++) {
             time = System.currentTimeMillis();
-            HLPetriGame hlgame = DocumentWorkflowHL.generateDWs(4, true);
-            HLASafetyWithoutType2SolverLLApproach solverLL = (HLASafetyWithoutType2SolverLLApproach) HLSolverFactoryLLApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
-            boolean llapproach = solverLL.existsWinningStrategy();
-            int sizeLL = solverLL.getGraph().getStatesView().size();
-            int sizeLLFlows = solverLL.getGraph().getFlows().size();
+            HLASafetyWithoutType2SolverCanonApproach solverCanon = (HLASafetyWithoutType2SolverCanonApproach) HLSolverFactoryCanonApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
+            boolean exWinStrat = solverCanon.existsWinningStrategy();
+            System.out.println("High-level approach explicit by first reducing to LL game using canonical representatives. Exists winning strategy: " + exWinStrat);
+            int sizeCanonComplete = solverCanon.getGraph().getStates().size();
+            int sizeLLFlows = solverCanon.getGraph().getFlows().size();
 //        int sizeLL = -1;
             diff = System.currentTimeMillis() - time;
 //        timeLLApproach += diff;
             double runningTime = Math.round((diff / 1000.0f) * 100.0) / 100.0;
             mean += runningTime;
-            Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy LL approach (size " + sizeLL + "/" + sizeLLFlows + "): " + llapproach + " " + runningTime, false, true);
-            System.out.println(solverLL.getGraph().getBadStatesView().size());
+            Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% Realizability CANON COMPLETE (size " + sizeCanonComplete + "/" + sizeLLFlows + "): " + exWinStrat + " " + runningTime, false, true);
+//            System.out.println(solverLL.getGraph().getBadStatesView().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "hl2llGG", solverLL.getGraph());
 //        System.out.println("strat size" + solverLL.calculateGraphStrategy().getStatesView().size());
 //        HLTools.saveGraph2DotAndPDF(outputDir + "hl2LLGGStrat", solverLL.calculateGraphStrategy());
 //        HLTools.saveGraph2PDF(outputDir + "hl2LLGGLLStrat", solverLL.calculateLLGraphStrategy());
 //        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
 //        PGTools.savePG2PDF(outputDir + "hl2llPGStrat", solverLL.getStrategy(), false);
-            // s.th. like all what is saved in hlgame (like symmetries, and the stuff for the converter) should be cleared
+            SGGBuilderLLCanon.getInstance().clearBufferedData(); // s.th. like all what is saved in hlgame (like symmetries, and the stuff for the converter) should be cleared
         }
         Logger.getInstance().addMessage("Mean: " + mean / ROUNDS, false, true);
-        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANON REPS   
-//        SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.NONE;
-        SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.SOME;
-//            SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_DCS;
-//        SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_BY_TREE;
-        SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.ORDERED_BY_LIST;
-//        SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.APPROX;
+
+        //%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% CANON APPROXIMATELY   
+        hlgame.storeSymmetries = true;
         SGGBuilderLLCanon.getInstance().skipSomeSymmetries = true;
+        SGGBuilderLLCanon.getInstance().saveMapping = SGGBuilderLLCanon.SaveMapping.SOME;
+        SGGBuilderLLCanon.getInstance().approach = SGGBuilderLLCanon.Approach.APPROX;
         mean = 0;
         for (int i = 0; i < ROUNDS; i++) {
             time = System.currentTimeMillis();
 
-            HLPetriGame hlgame = DocumentWorkflowHL.generateDWs(4, true);
             HLASafetyWithoutType2SolverCanonApproach solverCanon = (HLASafetyWithoutType2SolverCanonApproach) HLSolverFactoryCanonApproach.getInstance().getSolver(hlgame, new HLSolverOptions(true));
-            boolean canonApproach = solverCanon.existsWinningStrategy();
+            boolean exWinStrat = solverCanon.existsWinningStrategy();
+            System.out.println("High-level approach explicit by first reducing to LL game using canonical representatives. Exists winning strategy: " + exWinStrat);
             int sizeCanon = solverCanon.getGraph().getStatesView().size();
             int sizeCanonFlows = solverCanon.getGraph().getFlows().size();
 
@@ -226,13 +198,14 @@ public class TestCanonicalRepVsMembershipExplicitApproach {
 //        timeLLApproach += diff;        
             double runningTime = Math.round((diff / 1000.0f) * 100.0) / 100.0;
             mean += runningTime;
-            Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% HL strategy canon approach (size " + sizeCanon + "/" + sizeCanonFlows + "): " + canonApproach + " " + runningTime, false, true);
+            Logger.getInstance().addMessage("%%%%%%%%%%%%%%%%% Realizability CANON APPROX (size " + sizeCanon + "/" + sizeCanonFlows + "): " + exWinStrat + " " + runningTime, false, true);
 //        HLTools.saveGraph2PDF(outputDir + "hlcanonGGStrat", solverCanon.calculateGraphStrategy());
 //        HLTools.saveGraph2PDF(outputDir + "hlcanonGGLLStrat", solverCanon.calculateLLGraphStrategy());
 ////        PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
-//        PGTools.savePG2PDF(outputDir + "hlcanonPGStrat", solverCanon.getStrategy(), false);
-        System.out.println(solverCanon.getGraph().getBadStatesView().size());
-//        HLTools.saveGraph2DotAndPDF(outputDir + "hlcanonGG", solverCanon.getGraph()); 
+            PGTools.savePG2PDF(outputDir + "LLpg", SGGBuilderLLCanon.getInstance().getCurrentLLGame(), false);
+//            System.out.println(solverCanon.getGraph().getBadStatesView().size());
+            HLTools.saveHLPG2DotAndPDF(outputDir + "hlPg", hlgame, false);
+            HLTools.saveGraph2DotAndPDF(outputDir + "hlcanonGG", solverCanon.getGraph());
             SGGBuilderLLCanon.getInstance().clearBufferedData(); // s.th. like all what is saved in hlgame (like symmetries, and the stuff for the converter) should be cleared
         }
 

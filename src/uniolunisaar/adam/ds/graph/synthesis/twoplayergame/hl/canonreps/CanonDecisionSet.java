@@ -1,15 +1,28 @@
 package uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.canonreps;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import uniol.apt.adt.pn.Place;
+import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit.ILLDecision;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLCommitmentSet;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLDecisionSet;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLEnvDecision;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.llapproach.LLSysDecision;
+import uniolunisaar.adam.ds.synthesis.highlevel.BasicColorClass;
+import uniolunisaar.adam.ds.synthesis.highlevel.Color;
+import uniolunisaar.adam.ds.synthesis.highlevel.HLPetriGame;
+import uniolunisaar.adam.ds.synthesis.highlevel.Valuation;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
+import uniolunisaar.adam.ds.synthesis.highlevel.terms.Variable;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
 import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl.SGGBuilderLLCanon;
 import uniolunisaar.adam.logic.synthesis.transformers.highlevel.HL2PGConverter;
@@ -37,8 +50,13 @@ public class CanonDecisionSet extends LLDecisionSet {
             Set<ILLDecision> canon;
             if (SGGBuilderLLCanon.getInstance().approach == SGGBuilderLLCanon.Approach.ORDERED_BY_LIST) {
                 canon = makeCanonicalLists(decisions);
-            } else {
+            } else if (SGGBuilderLLCanon.getInstance().approach == SGGBuilderLLCanon.Approach.ORDERED_BY_TREE) {
                 canon = makeCanonicalTrees(decisions);
+            } else if (SGGBuilderLLCanon.getInstance().approach == SGGBuilderLLCanon.Approach.APPROX) {
+                canon = makeCanonicalApproximately(decisions);
+            } else {
+                // not implemented
+                throw new UnsupportedOperationException("Approach " + SGGBuilderLLCanon.getInstance().approach + " is not yet implemented.");
             }
 //            CanonDecisionSet dcs = new CanonDecisionSet(canon, mcut, bad, game, syms);
             CanonDecisionSet dcs = new CanonDecisionSet(canon, mcut, bad, game);
@@ -51,14 +69,19 @@ public class CanonDecisionSet extends LLDecisionSet {
                 Set<ILLDecision> canon;
                 if (SGGBuilderLLCanon.getInstance().approach == SGGBuilderLLCanon.Approach.ORDERED_BY_LIST) {
                     canon = makeCanonicalLists(decisions);
-                } else {
+                } else if (SGGBuilderLLCanon.getInstance().approach == SGGBuilderLLCanon.Approach.ORDERED_BY_TREE) {
                     canon = makeCanonicalTrees(decisions);
+                } else if (SGGBuilderLLCanon.getInstance().approach == SGGBuilderLLCanon.Approach.APPROX) {
+                    canon = makeCanonicalApproximately(decisions);
+                } else {
+                    // not implemented
+                    throw new UnsupportedOperationException("Approach " + SGGBuilderLLCanon.getInstance().approach + " is not yet implemented.");
                 }
 //                canonDCS = new CanonDecisionSet(canon, mcut, bad, game, syms);
                 canonDCS = new CanonDecisionSet(canon, mcut, bad, game);
                 if (mapping == SGGBuilderLLCanon.SaveMapping.SOME) { // remember this pair
                     SGGBuilderLLCanon.getInstance().dcs2canon.put(decisions, canonDCS);
-                } else { // calculate also all symmetric dcs to store also those combis                    
+                } else { // calculate also all symmetric dcs to store also those combis     
                     SGGBuilderLLCanon.getInstance().dcs2canon.put(decisions, canonDCS);
 //                    SymmetryIterator symIt = syms.iterator();
                     Iterator<Symmetry> symIt = SGGBuilderLLCanon.getInstance().getCurrentSymmetries().iterator();
@@ -77,6 +100,108 @@ public class CanonDecisionSet extends LLDecisionSet {
             }
             return canonDCS;
         }
+    }
+
+    private Set<ILLDecision> makeCanonicalApproximately(Set<ILLDecision> dcs) {
+        Set<ILLDecision> ret = new HashSet<>();
+        LexiILLDecisionComparatorWithoutColors comp = new LexiILLDecisionComparatorWithoutColors();
+        List<ILLDecision> inputDCS = new ArrayList<>(dcs);
+        // sort it 
+        Collections.sort(inputDCS, comp);
+        // make it minimal
+        HLPetriGame hlgame = SGGBuilderLLCanon.getInstance().getCurrentHLGame();
+        PetriGameWithTransits llgame = SGGBuilderLLCanon.getInstance().getCurrentLLGame();
+        Map<Color, Color> colorMapping = new HashMap<>();
+        Map<BasicColorClass, Integer> colorClassIdx = new HashMap<>(); // idx for the next color to use
+        for (Iterator<ILLDecision> it = inputDCS.iterator(); it.hasNext();) {
+            ILLDecision dc = it.next();
+            // place
+            String placeID = HL2PGConverter.getOrigID(dc.getPlace());
+            List<Color> placeColors = HL2PGConverter.getColors(dc.getPlace());
+            List<Color> newColors = getNewColors(hlgame, colorMapping, colorClassIdx, placeColors);
+            Place newPlace = llgame.getPlace(HL2PGConverter.getPlaceID(placeID, newColors));
+            if (dc.isEnvDecision()) {
+                ret.add(new LLEnvDecision(llgame, newPlace));
+            } else {
+                // commitment sets
+                if (dc.isTop()) {
+                    ret.add(new LLSysDecision(llgame, newPlace, new LLCommitmentSet(llgame, true)));
+                } else {
+                    LLSysDecision sysDC = (LLSysDecision) dc;
+                    Set<Transition> newTransitions = new HashSet<>();
+                    for (Iterator<Transition> itTrans = sysDC.getCommitmentSetIterator(); itTrans.hasNext();) {
+                        Transition t = itTrans.next();
+                        String hlID = HL2PGConverter.getOrigID(t);
+                        Valuation val = HL2PGConverter.getValuation(t);
+                        Valuation newVal = new Valuation();
+                        for (Map.Entry<Variable, Color> entry : val.entrySet()) {
+                            Variable key = entry.getKey();
+                            Color color = entry.getValue();
+                            if (colorMapping.containsKey(color)) { // color already selected
+                                newVal.put(key, colorMapping.get(color));
+                            } else { // get the next color
+                                BasicColorClass basicColorClass = hlgame.getBasicColorClass(color);
+                                if (!colorClassIdx.containsKey(basicColorClass)) {
+                                    colorClassIdx.put(basicColorClass, 0);
+                                }
+                                int idx = colorClassIdx.get(basicColorClass);
+                                if (!basicColorClass.isOrdered()) {
+                                    Color newColor = basicColorClass.getColor(idx);
+                                    newVal.put(key, newColor);
+                                    colorClassIdx.put(basicColorClass, ++idx);
+                                    colorMapping.put(color, newColor);
+                                } else { // the first fixed color of an ordered class fixed the complete class
+                                    int oldIdx = basicColorClass.getIndex(color);
+                                    List<Color> colors = basicColorClass.getColors();
+                                    newVal.put(key, colors.get(0));
+                                    for (int i = 0; i < colors.size(); i++) {
+                                        Color newColor = colors.get(i);
+                                        Color oldColor = colors.get(Math.floorMod((oldIdx + i), colors.size()));
+                                        colorMapping.put(oldColor, newColor);
+                                    }
+                                }
+                            }
+                        }
+                        Transition newTransition = llgame.getTransition(HL2PGConverter.calculateTransitionID(hlID, newVal));
+                        newTransitions.add(newTransition);
+                    }
+                    ret.add(new LLSysDecision(llgame, newPlace, new LLCommitmentSet(llgame, newTransitions)));
+                }
+            }
+        }
+        return ret;
+    }
+
+    private List<Color> getNewColors(HLPetriGame hlgame, Map<Color, Color> colorMapping, Map<BasicColorClass, Integer> colorClassIdx, Collection<Color> colors) {
+        List<Color> newColors = new ArrayList<>();
+        for (Iterator<Color> itCol = colors.iterator(); itCol.hasNext();) {
+            Color color = itCol.next();
+            if (colorMapping.containsKey(color)) { // color already selected
+                newColors.add(colorMapping.get(color));
+            } else { // get the next color
+                BasicColorClass basicColorClass = hlgame.getBasicColorClass(color);
+                if (!colorClassIdx.containsKey(basicColorClass)) {
+                    colorClassIdx.put(basicColorClass, 0);
+                }
+                int idx = colorClassIdx.get(basicColorClass);
+                if (!basicColorClass.isOrdered()) {
+                    Color newColor = basicColorClass.getColor(idx);
+                    newColors.add(newColor);
+                    colorClassIdx.put(basicColorClass, ++idx);
+                    colorMapping.put(color, newColor);
+                } else { // the first fixed color of an ordered class fixed the complete class
+                    int oldIdx = basicColorClass.getIndex(color);
+                    List<Color> basiColors = basicColorClass.getColors();
+                    newColors.add(basiColors.get(0));
+                    for (int i = 0; i < basiColors.size(); i++) {
+                        Color newColor = basiColors.get(i);
+                        Color oldColor = basiColors.get(Math.floorMod((oldIdx + i), basiColors.size()));
+                        colorMapping.put(oldColor, newColor);
+                    }
+                }
+            }
+        }
+        return newColors;
     }
 
     private Set<ILLDecision> makeCanonicalLists(Set<ILLDecision> dcs) {

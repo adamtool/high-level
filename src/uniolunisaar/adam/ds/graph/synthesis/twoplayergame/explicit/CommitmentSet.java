@@ -2,11 +2,13 @@ package uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractCommitmentSet;
+import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.canonreps.LexiLLTransitionIDWithoutColorComparator;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.hl.canonreps.LexiTransitionIDComparator;
 import uniolunisaar.adam.ds.synthesis.highlevel.symmetries.Symmetry;
 import uniolunisaar.adam.ds.synthesis.pgwt.PetriGameWithTransits;
@@ -59,7 +61,7 @@ public class CommitmentSet extends AbstractCommitmentSet<Transition> {
     public CommitmentSet apply(Symmetry sym) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-  
+
     @Override
     public String toDot() {
         StringBuilder sb = new StringBuilder();
@@ -99,12 +101,13 @@ public class CommitmentSet extends AbstractCommitmentSet<Transition> {
         return sb.toString();
     }
 
-    public String getIDChainByFirstSorting() {
+    public String getIDChainByFirstSorting(boolean withoutColor) {
         if (getTransitions() == null) {
             return (isTop()) ? "T" : "";
         }
         List<Transition> trans = new ArrayList<>(getTransitions());
-        Collections.sort(trans, new LexiTransitionIDComparator());
+        Comparator<Transition> comp = withoutColor ? new LexiLLTransitionIDWithoutColorComparator() : new LexiTransitionIDComparator();
+        Collections.sort(trans, comp);
         StringBuilder sb = new StringBuilder();
         for (Iterator<Transition> iterator = trans.iterator(); iterator.hasNext();) {
             sb.append(iterator.next().getId()).append("-");

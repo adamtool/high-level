@@ -59,7 +59,8 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
     public enum Approach {
         ORDERED_DCS,
         ORDERED_BY_LIST,
-        ORDERED_BY_TREE
+        ORDERED_BY_TREE,
+        APPROX
     }
 
     //todo: make it properly with locks, just a quick hack to not save it in
@@ -67,6 +68,7 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
     // kind of expensive to copy for this large amount of states
     private Iterable<Symmetry> currentSymmetries;
     private PetriGameWithTransits currentLLGame;
+    private HLPetriGame currentHLGame;
 
     // todo: just a hack to check if it's faster
     public HashMap<OrderedDecisionSet, OrderedDecisionSet> dcsOrdered2canon = new HashMap<>();
@@ -182,8 +184,11 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
         // Convert the high-level game to its low-level version
         PetriGameWithTransits pgame = HL2PGConverter.convert(hlgame, true);
         // set the current values
+        currentHLGame = hlgame;
         currentLLGame = pgame;
-        currentSymmetries = hlgame.getSymmetries();
+        if (approach != Approach.APPROX) {
+            currentSymmetries = hlgame.getSymmetries();
+        }
 
         // calculate the system transitions
         Collection<Transition> sysTransitions = putSysAndSingleEnvTransitionsToExtention(pgame);
@@ -218,5 +223,9 @@ public class SGGBuilderLLCanon extends GameGraphBuilder<HLPetriGame, Place, Tran
 //    protected <ID extends StateIdentifier> void addSuccessors(ILLDecision pre, Transition t, Set<ILLDecision> succs, Stack<ID> todo, AbstractGameGraph<Place, Transition, DecisionSet, S, ID, GameGraphFlow<T, ID>> srg) {
 ////        addSuccessors(pre, t, succs, syms, todo, srg);
 //    }
+
+    public HLPetriGame getCurrentHLGame() {
+        return currentHLGame;
+    }
 
 }

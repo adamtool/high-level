@@ -1,5 +1,6 @@
 package uniolunisaar.adam.ds.graph.synthesis.twoplayergame.explicit;
 
+import java.util.Iterator;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.graph.synthesis.twoplayergame.AbstractSysDecision;
@@ -62,18 +63,25 @@ public class SysDecision extends AbstractSysDecision<Place, Transition, Commitme
     @Override
     public String getIDChainByFirstSorting() {
         if (idByFirstSorting == null) {
-            idByFirstSorting = getPlace().getId().concat("+").concat(getC().getIDChainByFirstSorting());
+            idByFirstSorting = getPlace().getId().concat("+").concat(getC().getIDChainByFirstSorting(false));
         }
         return idByFirstSorting;
     }
 
     private String commitIdByFirstSorting = null;
 
-    public String getCommitmentSetIDChainByFirstSorting() {
+    public String getCommitmentSetIDChainByFirstSorting(boolean withoutColor) {
         if (commitIdByFirstSorting == null) {
-            commitIdByFirstSorting = getC().getIDChainByFirstSorting();
+            commitIdByFirstSorting = getC().getIDChainByFirstSorting(withoutColor);
         }
         return commitIdByFirstSorting;
     }
 
+    public int getCommitmentSetSize() {
+        return getC().size();
+    }
+
+    public Iterator<Transition> getCommitmentSetIterator() {
+        return getC().getIterator();
+    }
 }

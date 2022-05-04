@@ -140,7 +140,13 @@ public class HL2PGConverter {
         return sb.toString();
     }
 
-    private static String calculateTransitionID(String origID, Valuation val) {
+    /**
+     * It's kind of expensive, due to the ordering of the valuation.
+     * @param origID
+     * @param val
+     * @return 
+     */
+    public static String calculateTransitionID(String origID, Valuation val) {
         return origID.concat(ID_DELIM) + valToTransitionIdentifier(val);
     }
 
