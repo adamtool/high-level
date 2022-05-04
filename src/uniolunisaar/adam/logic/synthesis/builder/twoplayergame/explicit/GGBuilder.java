@@ -59,20 +59,20 @@ public class GGBuilder extends GameGraphBuilder<PetriGameWithTransits, Place, Tr
 
     public DecisionSet createInitDecisionSet(PetriGameWithTransits pgame) {
         Set<ILLDecision> inits = new HashSet<>();
+        boolean hasSysDecision = false;
         for (Place place : pgame.getPlaces()) {
             if (place.getInitialToken().getValue() > 0) {
                 if (pgame.isEnvironment(place)) {
                     inits.add(new EnvDecision(pgame, place));
                 } else {
+                    hasSysDecision = true;
                     inits.add(new SysDecision(pgame, place, new CommitmentSet(pgame, true)));
                 }
             }
         }
-        return new DecisionSet(inits, false, false, pgame);
+        return new DecisionSet(inits, !hasSysDecision, false, pgame); // todo: attention bad is not calculated to save time
     }
 
-    
-    
 //    public GameGraph<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> create(PetriGameWithTransits pgame) {
     public GameGraphUsingIDs<Place, Transition, ILLDecision, DecisionSet, GameGraphFlow<Transition, DecisionSet>> create(PetriGameWithTransits pgame) {
         // calculate the system transitions
