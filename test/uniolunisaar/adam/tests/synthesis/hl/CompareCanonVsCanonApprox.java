@@ -23,6 +23,7 @@ import uniolunisaar.adam.generators.highlevel.ClientServerHL;
 import uniolunisaar.adam.generators.highlevel.ConcurrentMachinesHL;
 import uniolunisaar.adam.generators.highlevel.DocumentWorkflowHL;
 import uniolunisaar.adam.generators.highlevel.PackageDeliveryHL;
+import uniolunisaar.adam.generators.highlevel.WhacAMole;
 import uniolunisaar.adam.logic.synthesis.builder.twoplayergame.hl.SGGBuilderLLCanon;
 import uniolunisaar.adam.logic.synthesis.solver.symbolic.bddapproach.distrsys.mcutscheduling.safe.DistrSysBDDSolver;
 import uniolunisaar.adam.logic.synthesis.solver.symbolic.bddapproach.distrsys.mcutscheduling.safe.DistrSysBDDSolverFactory;
@@ -123,6 +124,17 @@ public class CompareCanonVsCanonApprox {
         checkExistsStrat("PD" + a + "" + b, hlgame);
     }
 
+    @Test
+    public void testWM() throws Exception {
+        int a = 5;
+        HLPetriGame hlgame = WhacAMole.create(a, true);
+        HLTools.saveHLPG2PDF(outputDir + "WM" + a, hlgame);
+        PetriGameWithTransits llgame = HL2PGConverter.convert(hlgame);
+        PGTools.saveAPT(outputDir + "WM" + a, llgame, true, false);
+        PGTools.savePG2PDF(outputDir + "WM" + a + "_ll", llgame, false, true);
+        checkExistsStrat("WM" + a, hlgame);
+    }
+
     private final int ROUNDS = 1;
 
     private void checkExistsStrat(String name, HLPetriGame hlgame) throws Exception {
@@ -205,7 +217,7 @@ public class CompareCanonVsCanonApprox {
             PGTools.savePG2PDF(outputDir + "LLpg", SGGBuilderLLCanon.getInstance().getCurrentLLGame(), false);
 //            System.out.println(solverCanon.getGraph().getBadStatesView().size());
             HLTools.saveHLPG2DotAndPDF(outputDir + "hlPg", hlgame, false);
-            HLTools.saveGraph2DotAndPDF(outputDir + "hlcanonGG", solverCanon.getGraph());
+//            HLTools.saveGraph2DotAndPDF(outputDir + "hlcanonGG", solverCanon.getGraph());
             SGGBuilderLLCanon.getInstance().clearBufferedData(); // s.th. like all what is saved in hlgame (like symmetries, and the stuff for the converter) should be cleared
         }
 
